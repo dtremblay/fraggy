@@ -28,7 +28,7 @@ INIT_DISPLAY
                 STA BORDER_CTRL_REG
 
                 ; enable graphics, tiles and sprites display
-                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_Bitmap_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_Bitmap_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
                 STA MASTER_CTRL_REG_L
                 
                 
@@ -40,16 +40,13 @@ INIT_DISPLAY
                 setaxl
                 LDX #<>TILES
                 LDY #0
-                LDA #$1100 ; 256 * 16
+                LDA #$2100 ; 256 * 32
                 MVN <`TILES,$B0
-                
-                
-                ; load tileset
 
                 ; load LUT
                 LDX #<>PALETTE
                 LDY #<>GRPH_LUT0_PTR
-                LDA #28
+                LDA #52
                 MVN <`PALETTE,<`GRPH_LUT0_PTR
                 
                 LDX #<>PALETTE
@@ -71,6 +68,9 @@ INIT_DISPLAY
                 ; enable sprite 0
                 LDA #SPRITE_Enable
                 STA @lSP01_CONTROL_REG
+                
+                ; load tileset
+                JSR LOAD_TILESET
                 
                 ; render the first frame
                 JSR LOAD_SPRITE
@@ -124,7 +124,7 @@ UPDATE_DISPLAY
                 DEY
                 CPY #32
                 BNE JOY_LEFT
-                LDY #480-32
+                LDY #480-64
                 BRA JOY_LEFT
                 
         JOY_DOWN
@@ -132,7 +132,7 @@ UPDATE_DISPLAY
                 BNE JOY_LEFT
                 INY
                 INY
-                CPY #480-32
+                CPY #480-64
                 BNE JOY_LEFT
                 LDY #32
                 
@@ -143,7 +143,7 @@ UPDATE_DISPLAY
                 DEX
                 CPX #32
                 BNE JOY_DONE
-                LDX #640-32
+                LDX #640-64
                 BRA JOY_DONE
                 
         JOY_RIGHT 
@@ -151,7 +151,7 @@ UPDATE_DISPLAY
                 BNE JOY_DONE
                 INX
                 INX
-                CPX #640-32
+                CPX #640-64
                 BNE JOY_DONE
                 LDX #32
                 
@@ -210,48 +210,136 @@ WRITE_HEX
             PLX
         PLA
                 RTS
+
+; *********************************************************
+; * Convert the game_board to a tile set
+; *********************************************************
+LOAD_TILESET
+                LDX #0
+                LDY #0
+                setdbr $AF
+                setas
+    GET_TILE
+                LDA game_board,X
+
+        DOT     CMP #'.'
+                BNE GRASS
+                LDA #0
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+                
+        GRASS
+                CMP #'G'
+                BNE HOME
+                LDA #2
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+                
+        HOME
+                CMP #'H'
+                BNE WATER
+                LDA #$12
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+             
+        WATER
+                CMP #'W'
+                BNE CONCRETE
+                LDA #4
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+                
+        CONCRETE
+                CMP #'C'
+                BNE ASHPHALT
+                LDA #1
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+                
+        ASHPHALT
+                CMP #'A'
+                BNE DIRT
+                LDA #5
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+                
+        DIRT
+                CMP #'D'
+                BNE LT_DONE
+                LDA #3
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+                
+    LT_DONE
+                INY
+                setal
+                TYA
+                AND #$3F
+                CMP #40
+                BNE LT_NEXT_TILE
+                TYA
+                CLC
+                ADC #24
+                TAY
+                
+    LT_NEXT_TILE
+                setas
+                INX
+                CPX #(640/16) * (480 / 16)
+                BNE GET_TILE
+                RTS
                 
 ; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
 game_board 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "..................o....................." 
-                .text "................o...o..................." 
-                .text "........................................" 
-                .text "........................................" 
-                .text "................#####..................." 
-                .text "...........#............................" 
-                .text ".........###............#_#............." 
-                .text "........####............#.#............." 
-                .text "#########################.##############" 
-                .text "........................#.#............." 
-                .text "........................#.#............." 
-                .text "........................#.#............." 
-                .text ".........###############...#............" 
-                .text ".........#.ooooooooooooooo.#............" 
-                .text ".........###################............" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
-                .text "........................................" 
+                .text "........................................" ;1 - not shown
+                .text "........................................" ;2 - not shown
+                .text "........................................" ;3
+                .text "........................................" ;4 ; display score and remaining lives here?
+                .text "........................................" ;5
+                .text "........................................" ;6
+                .text "..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.." ;7
+                .text "..GGGGHHHGGGGGGGGGHHHHGGGGGGGGGHHHGGGG.." ;8
+                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;9
+                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;10
+                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;11
+                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;12
+                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;13
+                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;14
+                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;15
+                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;16
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;18
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;19
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;20
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;21
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;22
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;24
+                .text "........................................" ;25
+                .text "........................................" ;26
+                .text "........................................" ;27
+                .text "........................................" ;28
+                .text "........................................" ;29
+                .text "........................................" ;30
 
-PALETTE         .byte 0,0,0, $00           ;black
-                .byte $40,$20,$e0, $00     ;red
-                .byte $40,$80,$c0, $00     ;brown
-                .byte $40,$c0,$20, $00     ;green
-                .byte $00,$00,$FF, $00     ;pure red
-                .byte $00,$FF,$00, $00     ;pure green
-                .byte $FF,$00,$00, $00     ;pure blue
+
+PALETTE         
+                .byte $ff,$ff,$ff,$00 
+                .byte $00,$cc,$99,$00 
+                .byte $99,$99,$99,$00 
+                .byte $00,$00,$00,$00 
+                .byte $00,$33,$6,$00 
+                
+                .byte $33,$33,$33,$00 
+                .byte $ff,$99,$33,$00 
+                .byte $ff,$00,$00,$00 
+                .byte $00,$99,$33,$00 
+                
+                .byte $33,$33,$ff,$00 
+                .byte $66,$99,$00,$00 
+                .byte $33,$00,$99,$00 
+                .byte $00,$ff,$ff,$00  
                 
 * = $170000
 TILES
-.binary "simple-tiles.data"
+.binary "assets/simple-tiles.data"
