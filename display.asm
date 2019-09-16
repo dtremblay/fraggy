@@ -31,8 +31,6 @@ INIT_DISPLAY
                 LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_Bitmap_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
                 STA MASTER_CTRL_REG_L
                 
-                
-                
                 ; display intro screen
                 ; wait for user to press a key or joystick button
                 
@@ -46,126 +44,232 @@ INIT_DISPLAY
                 ; load LUT
                 LDX #<>PALETTE
                 LDY #<>GRPH_LUT0_PTR
-                LDA #52
+                LDA #1024
                 MVN <`PALETTE,<`GRPH_LUT0_PTR
                 
-                LDX #<>PALETTE
+                LDX #<>FG_PALETTE
                 LDY #<>GRPH_LUT1_PTR
-                LDA #28
-                MVN <`PALETTE,<`GRPH_LUT1_PTR
-                
-                ; start at position (100,100)
-                LDA #100
-                STA @lSP01_X_POS_L
-                LDA #100
-                STA @lSP01_Y_POS_L
+                LDA #1024
+                MVN <`FG_PALETTE,<`GRPH_LUT1_PTR
                 
                 setas
                 
                 ; enable tiles
                 LDA #TILE_Enable + TILESHEET_256x256_En
                 STA @lTL0_CONTROL_REG
-                ; enable sprite 0
-                LDA #SPRITE_Enable
-                STA @lSP01_CONTROL_REG
                 
                 ; load tileset
                 JSR LOAD_TILESET
                 
                 ; render the first frame
-                JSR LOAD_SPRITE
+                JSR LOAD_SPRITES
+                
+                JSR INIT_PLAYER
+                JSR INIT_NPC
+                
                 LDA #$9F ; - joystick in initial state
                 JSR UPDATE_DISPLAY
-                
                 RTS
 
-LOAD_SPRITE
+LOAD_SPRITES
                 .as
-                ; read joystick
-                ; display player
-                LDA #0
-                STA @lSP01_ADDY_PTR_L
-                STA @lSP01_ADDY_PTR_M
-                LDA #1
-                STA @lSP01_ADDY_PTR_H  ; address of the sprite data - sprite data is located at $B1:0000
                 
-                LDX #32 * 32
-                LDA #2
-        BUILD_SPRITE
-                STA @l$B0FFFF,X
-                ;INC A
-            COLOR_RAMP
-                DEX
-                BNE BUILD_SPRITE
+                LDA #0
+                XBA
+                LDX #0  ; X increments in steps of 8
+    LS_LOOP
+                ; enable sprites
+                LDA #0
+                STA @lSP00_ADDY_PTR_L,X
+                LDA #SPRITE_Enable
+                STA @lSP00_CONTROL_REG,X
+                STA @lSP00_ADDY_PTR_H,X
+                TXA
+                LSR
+                STA @lSP00_ADDY_PTR_M,X
+                ASL
+                
+                CLC
+                ADC #8
+                TAX
+                CPX #64
+                BNE LS_LOOP
+                
+                ; display player
+                setal
+                LDX #<>SPRITES
+                LDY #0
+                LDA #8*32*32
+                MVN <`SPRITES,$B1
+                setas
+                
                 
                 RTS
                 
+INIT_PLAYER
+                ; start at position (100,100)
+                setal
+                LDA #8 * 32 + 32
+                STA PLAYER_X
+                STA @lSP07_X_POS_L
+                LDA #10 * 32 + 64
+                STA PLAYER_Y
+                STA @lSP07_Y_POS_L
+                setas
+                RTS
+
+INIT_NPC
+                .as
+                setal
+                LDX #0
                 
+        INIT_NPC_LOOP
+                CLC
+                LDA game_array + 2,X ; X POSITION
+                STA @lSP00_X_POS_L,X
+                LDA game_array + 4,X ; Y POSITION
+                STA @lSP00_Y_POS_L,X
+                
+                LDA game_array + 6,X ; sprite #
+                
+                CLC
+                TXA
+                ADC #8
+                TAX
+                CPX #56
+                BNE INIT_NPC_LOOP
+                
+                setas
+                RTS
+
 ; ****************************************************
 ; * A contains the joystick byte
 ; ****************************************************
 UPDATE_DISPLAY
                 .as
-                LDY #0
-                JSR WRITE_HEX
-                
-                PHA
                 setal
-                LDA @lPLAYER_X
-                TAX
-                LDA @lPLAYER_Y
-                TAY
-                setas
-                PLA
         JOY_UP
                 BIT #1 ; up
                 BNE JOY_DOWN
-                DEY
-                DEY
-                CPY #32
-                BNE JOY_LEFT
-                LDY #480-64
-                BRA JOY_LEFT
+                JSR PLAYER_MOVE_UP
+                BRA JOY_DONE
                 
         JOY_DOWN
                 BIT #2 ; down
                 BNE JOY_LEFT
-                INY
-                INY
-                CPY #480-64
-                BNE JOY_LEFT
-                LDY #32
+                JSR PLAYER_MOVE_DOWN
+                BRA JOY_DONE
                 
         JOY_LEFT
                 BIT #4
                 BNE JOY_RIGHT
-                DEX
-                DEX
-                CPX #32
-                BNE JOY_DONE
-                LDX #640-64
+                JSR PLAYER_MOVE_LEFT
                 BRA JOY_DONE
                 
         JOY_RIGHT 
                 BIT #8
                 BNE JOY_DONE
-                INX
-                INX
-                CPX #640-64
-                BNE JOY_DONE
-                LDX #32
+                JSR PLAYER_MOVE_RIGHT
+                BRA JOY_DONE
                 
         JOY_DONE
-                setal
-                TXA
-                STA PLAYER_X
-                STA @lSP01_X_POS_L
-                
-                TYA
-                STA PLAYER_Y
-                STA @lSP01_Y_POS_L
                 setas
+                JSR UPDATE_NPC_POSITIONS
+                RTS
+
+UPDATE_NPC_POSITIONS
+                .as
+                setal
+                LDX #0
                 
+        UNPC_LOOP
+                CLC
+                LDA game_array + 2,X ; X POSITION
+                CLC
+                ADC game_array,X ; add the speed
+                BCC GRT_LFT_MRG
+                
+                CMP #16
+                BCS GRT_LFT_MRG
+                LDA #640-32 ; right edge
+                BRA LESS_RGT_MRG
+                
+        GRT_LFT_MRG
+                CMP #640 - 32
+                BCC LESS_RGT_MRG
+                LDA #0
+                
+        LESS_RGT_MRG
+                STA @lSP00_X_POS_L,X
+                STA game_array + 2,X
+                
+                CLC
+                TXA
+                ADC #8
+                TAX
+                CPX #56
+                BNE UNPC_LOOP
+                
+                setas
+                RTS
+; ********************************************
+; * Player movements
+; ********************************************
+PLAYER_MOVE_DOWN
+                .al
+                LDA PLAYER_Y
+                CLC
+                ADC #32
+                ; check for collisions and out of screen
+                CMP #480 - 96
+                BCC PMD_DONE
+                LDA #480 - 96 ; the lowest position on screen
+                
+        PMD_DONE
+                STA PLAYER_Y
+                STA SP07_Y_POS_L
+                RTS
+                
+PLAYER_MOVE_UP
+                LDA PLAYER_Y
+                SEC
+                SBC #32
+                ; check for collisions and out of screen
+                CMP #96
+                BCS PMU_DONE
+                LDA #96
+                
+        PMU_DONE
+                STA PLAYER_Y
+                STA SP07_Y_POS_L
+                RTS
+                
+PLAYER_MOVE_RIGHT
+                LDA PLAYER_X
+                CLC
+                ADC #32
+                ; check for collisions and out of screen
+                CMP #640 - 64
+                BCC PMR_DONE
+                LDA #640 - 64 ; the lowest position on screen
+                
+        PMR_DONE
+                STA PLAYER_X
+                STA SP07_X_POS_L
+                RTS
+                
+PLAYER_MOVE_LEFT
+                LDA PLAYER_X
+                SEC
+                SBC #32
+                ; check for collisions and out of screen
+                CMP #32
+                BCS PML_DONE
+                LDA #32
+                
+        PML_DONE
+                STA PLAYER_X
+                STA SP07_X_POS_L
                 RTS
                 
 ; ****************************************************
@@ -298,7 +402,7 @@ game_board
                 .text "........................................" ;5
                 .text "........................................" ;6
                 .text "..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.." ;7
-                .text "..GGGGHHHGGGGGGGGGHHHHGGGGGGGGGHHHGGGG.." ;8
+                .text "..GGGGHHHHHHGGGGHHHHHHGGGGGGHHHHHHGGGG.." ;8
                 .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;9
                 .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;10
                 .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;11
@@ -315,31 +419,29 @@ game_board
                 .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;22
                 .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
                 .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;24
-                .text "........................................" ;25
-                .text "........................................" ;26
+                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;25
+                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;26
                 .text "........................................" ;27
                 .text "........................................" ;28
                 .text "........................................" ;29
                 .text "........................................" ;30
 
+PALETTE
+.binary "assets/simple-tiles.data.pal"
+FG_PALETTE
+.binary "assets/simple-tiles.data.pal"
 
-PALETTE         
-                .byte $ff,$ff,$ff,$00 
-                .byte $00,$cc,$99,$00 
-                .byte $99,$99,$99,$00 
-                .byte $00,$00,$00,$00 
-                .byte $00,$33,$6,$00 
-                
-                .byte $33,$33,$33,$00 
-                .byte $ff,$99,$33,$00 
-                .byte $ff,$00,$00,$00 
-                .byte $00,$99,$33,$00 
-                
-                .byte $33,$33,$ff,$00 
-                .byte $66,$99,$00,$00 
-                .byte $33,$00,$99,$00 
-                .byte $00,$ff,$ff,$00  
-                
+SPRITES
+.binary "assets/car1.data"
+.binary "assets/car2.data"
+.binary "assets/bus1.data"
+.binary "assets/bus2.data"
+.binary "assets/bus3.data"
+.binary "assets/car1.data"
+.binary "assets/car2.data"
+.binary "assets/frog.data"
+
 * = $170000
 TILES
 .binary "assets/simple-tiles.data"
+
