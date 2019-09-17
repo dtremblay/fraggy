@@ -38,7 +38,7 @@ INIT_DISPLAY
                 setaxl
                 LDX #<>TILES
                 LDY #0
-                LDA #$2100 ; 256 * 32
+                LDA #$2100 ; 256 * 32 - this is two rows of tiles
                 MVN <`TILES,$B0
 
                 ; load LUT
@@ -75,6 +75,10 @@ LOAD_SPRITES
                 .as
                 
                 LDA #0
+                STA sprite_addr
+                LDA #$B1
+                STA sprite_addr + 2
+                
                 XBA
                 LDX #0  ; X increments in steps of 8
     LS_LOOP
@@ -87,23 +91,78 @@ LOAD_SPRITES
                 TXA
                 LSR
                 STA @lSP00_ADDY_PTR_M,X
+                STA sprite_addr + 1
                 ASL
+                
+                JSR READ_SPRITE
                 
                 CLC
                 ADC #8
                 TAX
-                CPX #64
+                CPX #128
                 BNE LS_LOOP
+
+                RTS
                 
-                ; display player
+sprite_line    = $6
+sprite_addr    = $3
+READ_SPRITE 
+                .as
+                PHA
                 setal
-                LDX #<>SPRITES
+                
+                LDA game_array+6,X ; 0 to 15
+                AND #$7
+                asl
+                asl
+                asl
+                asl ; multiply by 32
+                asl
+                STA sprite_line
+                LDA game_array+6,X ; 0 to 15
+                AND #8
+                BEQ LOAD_X
+                
+                LDA #$2000
+                
+        LOAD_X
+                CLC
+                ADC sprite_line
+                TAX
+                
+                LDA #32 ; sprites are 32 lines high
+                STA sprite_line
+                
+                
+    NEXT_LINE
                 LDY #0
-                LDA #8*32*32
-                MVN <`SPRITES,$B1
+                
+        NEXT_PIXEL
+                LDA TILES + 256 * 32,X
+                STA [sprite_addr],Y
+                INX
+                INX
+                INY
+                INY
+                CPY #32 ; sprites are 32 pixels wide
+                BNE NEXT_PIXEL
+                
+                TXA
+                CLC
+                ADC #256-32
+                TAX
+                
+                LDA sprite_addr
+                CLC
+                ADC #32
+                STA sprite_addr
+                
+                DEC sprite_line
+                BNE NEXT_LINE
+                LDA #0
+                
                 setas
-                
-                
+                PLA
                 RTS
                 
 INIT_PLAYER
@@ -111,10 +170,10 @@ INIT_PLAYER
                 setal
                 LDA #8 * 32 + 32
                 STA PLAYER_X
-                STA @lSP07_X_POS_L
+                STA @lSP15_X_POS_L
                 LDA #10 * 32 + 64
                 STA PLAYER_Y
-                STA @lSP07_Y_POS_L
+                STA @lSP15_Y_POS_L
                 setas
                 RTS
 
@@ -124,19 +183,16 @@ INIT_NPC
                 LDX #0
                 
         INIT_NPC_LOOP
-                CLC
                 LDA game_array + 2,X ; X POSITION
                 STA @lSP00_X_POS_L,X
                 LDA game_array + 4,X ; Y POSITION
                 STA @lSP00_Y_POS_L,X
                 
-                LDA game_array + 6,X ; sprite #
-                
-                CLC
                 TXA
+                CLC
                 ADC #8
                 TAX
-                CPX #56
+                CPX #120
                 BNE INIT_NPC_LOOP
                 
                 setas
@@ -183,7 +239,6 @@ UPDATE_NPC_POSITIONS
                 LDX #0
                 
         UNPC_LOOP
-                CLC
                 LDA game_array + 2,X ; X POSITION
                 CLC
                 ADC game_array,X ; add the speed
@@ -203,11 +258,12 @@ UPDATE_NPC_POSITIONS
                 STA @lSP00_X_POS_L,X
                 STA game_array + 2,X
                 
-                CLC
+                
                 TXA
+                CLC
                 ADC #8
                 TAX
-                CPX #56
+                CPX #120
                 BNE UNPC_LOOP
                 
                 setas
@@ -227,7 +283,7 @@ PLAYER_MOVE_DOWN
                 
         PMD_DONE
                 STA PLAYER_Y
-                STA SP07_Y_POS_L
+                STA SP15_Y_POS_L
                 RTS
                 
 PLAYER_MOVE_UP
@@ -241,7 +297,7 @@ PLAYER_MOVE_UP
                 
         PMU_DONE
                 STA PLAYER_Y
-                STA SP07_Y_POS_L
+                STA SP15_Y_POS_L
                 RTS
                 
 PLAYER_MOVE_RIGHT
@@ -255,7 +311,7 @@ PLAYER_MOVE_RIGHT
                 
         PMR_DONE
                 STA PLAYER_X
-                STA SP07_X_POS_L
+                STA SP15_X_POS_L
                 RTS
                 
 PLAYER_MOVE_LEFT
@@ -269,7 +325,7 @@ PLAYER_MOVE_LEFT
                 
         PML_DONE
                 STA PLAYER_X
-                STA SP07_X_POS_L
+                STA SP15_X_POS_L
                 RTS
                 
 ; ****************************************************
@@ -430,16 +486,6 @@ PALETTE
 .binary "assets/simple-tiles.data.pal"
 FG_PALETTE
 .binary "assets/simple-tiles.data.pal"
-
-SPRITES
-.binary "assets/car1.data"
-.binary "assets/car2.data"
-.binary "assets/bus1.data"
-.binary "assets/bus2.data"
-.binary "assets/bus3.data"
-.binary "assets/car1.data"
-.binary "assets/car2.data"
-.binary "assets/frog.data"
 
 * = $170000
 TILES
