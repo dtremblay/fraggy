@@ -72,12 +72,12 @@ game_array  ; the array treats each sprite in order
             .word $FFFA, 128   , 480-192, 1 ; sprite  6 - car back
             .word     1, 192   , 256    , 8 ; sprite  7 - oldie front
             .word     1, 224   , 256    , 9 ; sprite  8 - oldie back
-            .word $FFFE, 320   , 128    , 5 ; sprite  9 - log 1
-            .word $FFFE, 352   , 128    , 6 ; sprite 10 - log 2
-            .word $FFFE, 384   , 128    , 7 ; sprite 11 - log 3
-            .word     1, 416   , 160    , 5 ; sprite 12 - log 1
-            .word     1, 448   , 160    , 7 ; sprite 13 - log 3
-            .word $FFFC, 512   , 192    ,10 ; - not used
+            .word $FFFB, 320   , 128    , 5 ; sprite  9 - log 1
+            .word $FFFB, 352   , 128    , 6 ; sprite 10 - log 2
+            .word $FFFB, 384   , 128    , 7 ; sprite 11 - log 3
+            .word     2, 416   , 160    , 5 ; sprite 12 - log 1
+            .word     2, 448   , 160    , 7 ; sprite 13 - log 3
+            .word $FFFE, 512   , 192    ,10 ; sprite 15 - lilypad
             .word     0, 0     , 0      ,15 ; - not used
 
 

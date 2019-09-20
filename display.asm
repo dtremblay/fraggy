@@ -38,7 +38,7 @@ INIT_DISPLAY
                 setaxl
                 LDX #<>TILES
                 LDY #0
-                LDA #$2100 ; 256 * 32 - this is two rows of tiles
+                LDA #$2000 ; 256 * 32 - this is two rows of tiles
                 MVN <`TILES,$B0
 
                 ; load LUT
@@ -103,16 +103,19 @@ LOAD_SPRITES
                 BNE LS_LOOP
 
                 RTS
-                
+
+; *************************************************************
+; * Read a sprite from tile memory
+; *************************************************************
 sprite_line    = $6
-sprite_addr    = $3
+sprite_addr    = $10
 READ_SPRITE 
                 .as
                 PHA
                 setal
-                
+                ; in our tileset, we have 8 sprites per line
                 LDA game_array+6,X ; 0 to 15
-                AND #$7
+                AND #$7 
                 asl
                 asl
                 asl
@@ -123,7 +126,7 @@ READ_SPRITE
                 AND #8
                 BEQ LOAD_X
                 
-                LDA #$2000
+                LDA #$2000 ; add 32 lines at 256 pixels
                 
         LOAD_X
                 CLC
@@ -135,18 +138,18 @@ READ_SPRITE
                 
                 
     NEXT_LINE
+                
                 LDY #0
                 
         NEXT_PIXEL
+                setas
                 LDA TILES + 256 * 32,X
                 STA [sprite_addr],Y
                 INX
-                INX
-                INY
                 INY
                 CPY #32 ; sprites are 32 pixels wide
                 BNE NEXT_PIXEL
-                
+                setal
                 TXA
                 CLC
                 ADC #256-32
@@ -165,6 +168,9 @@ READ_SPRITE
                 PLA
                 RTS
                 
+; *************************************************************
+; * Initialize player position
+; *************************************************************
 INIT_PLAYER
                 ; start at position (100,100)
                 setal
@@ -177,6 +183,9 @@ INIT_PLAYER
                 setas
                 RTS
 
+; *************************************************************
+; * Initialize non-player components, from the game_array
+; *************************************************************
 INIT_NPC
                 .as
                 setal
@@ -231,8 +240,12 @@ UPDATE_DISPLAY
         JOY_DONE
                 setas
                 JSR UPDATE_NPC_POSITIONS
+                JSR COLLISION_CHECK
                 RTS
 
+; ****************************************************
+; * Update non-players
+; ****************************************************
 UPDATE_NPC_POSITIONS
                 .as
                 setal
@@ -268,6 +281,7 @@ UPDATE_NPC_POSITIONS
                 
                 setas
                 RTS
+
 ; ********************************************
 ; * Player movements
 ; ********************************************
@@ -327,6 +341,145 @@ PLAYER_MOVE_LEFT
                 STA PLAYER_X
                 STA SP15_X_POS_L
                 RTS
+                
+; *****************************************************************
+; * Compare the location of each sprite with the player's position
+; * Sprites are 32 x 32 so the math is pretty simple.
+; * Collisions occur with cars and buses and with water.
+; * Frog can hop on logs.
+; *****************************************************************
+COLLISION_CHECK
+                .as
+                setal
+                LDA PLAYER_Y
+                CMP #256 ; mid-screen
+                
+                BCC WATER_COLLISION
+                JSR STREET_COLLISION
+                setas
+                RTS
+                
+        WATER_COLLISION
+                .al
+        ; here do the water collision routine
+                CMP #224
+                BCS CCW_DONE
+                
+                CMP #128
+                BCC HOME_LINE
+                
+                LDX #0
+                
+        NEXT_WATER_ROW
+                LDA game_array+4,X  ; read the Y position
+                CMP PLAYER_Y
+                BNE CCW_CONTINUE
+                
+                LDA PLAYER_X
+                CMP game_array+2,X  ; read the X position
+                BEQ FLOAT
+                BCC CHECK_RIGHT_BOUND_W
+        CHECK_LEFT_BOUND_W
+                LDA game_array+2,X
+                ADC #32
+                CMP PLAYER_X
+                BCS FLOAT
+                BRA CCW_CONTINUE
+        CHECK_RIGHT_BOUND_W
+                ADC #32
+                CMP game_array+2,X  ; read the X position
+                BCS FLOAT
+                
+                
+        CCW_CONTINUE
+                TXA
+                CLC
+                ADC #8
+                TAX
+                CPX #8*16-8
+                BNE NEXT_WATER_ROW
+                BRA COLLISION
+                
+        CCW_DONE
+                setas
+                RTS
+                
+        FLOAT
+                .al
+                ; move the frog with the NPC
+                CLC
+                LDA PLAYER_X
+                ADC game_array,X
+                CMP #32
+                BCC COLLISION
+                CMP #640-32
+                BCS COLLISION
+                
+                STA PLAYER_X
+                STA SP15_X_POS_L
+                setas
+                RTS
+                
+        HOME_LINE
+                .al
+                LDA PLAYER_X
+                LSR
+                LSR
+                LSR
+                LSR ; divide by 16
+                TAX
+                setas
+                LDA game_board + 280,X
+                AND #$FF
+                CMP #'H'
+                BNE COLLISION
+                
+                setas
+                RTS
+                
+        COLLISION
+                .al
+                ; restart the player at first row
+                setas
+                JSR INIT_PLAYER
+                RTS
+                
+STREET_COLLISION
+                .al
+                LDX #0
+        NEXT_STREET_ROW
+                LDA game_array+4,X  ; read the Y position
+                CMP PLAYER_Y
+                BNE CCS_CONTINUE
+                
+                LDA PLAYER_X
+                CMP game_array+2,X  ; read the X position
+
+                BEQ COLLISION
+                BCC CHECK_RIGHT_BOUND
+        CHECK_LEFT_BOUND
+                LDA game_array+2,X
+                ADC #32
+                CMP PLAYER_X
+                BCS COLLISION
+                BRA CCS_CONTINUE
+                
+        CHECK_RIGHT_BOUND
+                ADC #32
+                CMP game_array+2,X  ; read the X position
+                BCS COLLISION
+                
+        CCS_CONTINUE
+                TXA
+                CLC
+                ADC #8
+                TAX
+                CPX #8*16-8
+                BNE NEXT_STREET_ROW
+        CC_DONE
+                setas
+                RTS
+                
                 
 ; ****************************************************
 ; * Write a Hex Value to the position specified by Y
