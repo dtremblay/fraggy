@@ -1,4 +1,9 @@
-# c256-game
+# Fraggy
+Fraggy is a Frogger-like game for the C256 Foenix Retro Computer: https://c256foenix.com/
+
+![Screenshot]fraggy.png
+
+The game runs on the machine and the Foenix IDE: https://github.com/Trinity-11/FoenixIDE
 
 Release 3
 ---------
