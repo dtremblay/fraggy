@@ -47,10 +47,10 @@ INIT_DISPLAY
                 LDA #1024
                 MVN <`PALETTE,<`GRPH_LUT0_PTR
                 
-                LDX #<>FG_PALETTE
+                LDX #<>PALETTE
                 LDY #<>GRPH_LUT1_PTR
                 LDA #1024
-                MVN <`FG_PALETTE,<`GRPH_LUT1_PTR
+                MVN <`PALETTE,<`GRPH_LUT1_PTR
                 
                 setas
                 
@@ -212,6 +212,10 @@ INIT_NPC
 ; ****************************************************
 UPDATE_DISPLAY
                 .as
+                PHA
+                JSR UPDATE_HOME_TILES
+                JSR UPDATE_WATER_TILES
+                PLA
                 setal
         JOY_UP
                 BIT #1 ; up
@@ -480,7 +484,145 @@ STREET_COLLISION
                 setas
                 RTS
                 
+HOME_CYCLE      .byte 0
+EVEN_TILE_VAL   .byte $12
+ODD_TILE_VAL    .byte $13
+UPDATE_HOME_TILES
+                .as
+                ; alternate the HOME tiles to imitate wind motion
+                LDA HOME_CYCLE
+                INC A
+                CMP #15 ; only update every N SOF cycle
+                BNE UT_SKIP
+                LDA #0
+                STA HOME_CYCLE
+
+                LDX #280 ; line 8 in the game board`
+                LDY #7 * 64 ; line 8 in the tileset
+                setdbr $AF
+
+        UT_GET_TILE
+                LDA game_board,X
+                CMP #'H'
+                BNE UT_DONE
                 
+                TXA
+                AND #1
+                BEQ UT_EVEN_TILE
+                LDA EVEN_TILE_VAL
+                
+                STA TILE_MAP0,Y
+                BRA UT_DONE
+                
+        UT_EVEN_TILE
+                LDA ODD_TILE_VAL
+                STA TILE_MAP0,Y
+                
+        UT_DONE
+                INY
+                INX
+                CPX #320
+                BNE UT_GET_TILE
+                
+                ; alternate the tiles
+                LDA EVEN_TILE_VAL
+                CMP #$12
+                BEQ ALT_ODD
+                ; A is $13
+                STA ODD_TILE_VAL
+                LDA #$12
+                STA EVEN_TILE_VAL
+                RTS
+                
+        ALT_ODD
+                ; A is 12
+                STA ODD_TILE_VAL
+                LDA #$13
+                STA EVEN_TILE_VAL
+
+                RTS
+                
+    UT_SKIP
+                STA HOME_CYCLE
+                RTS
+
+
+
+WATER_CYCLE     .byte 0
+EVEN_WTILE_VAL  .byte $4
+ODD_WTILE_VAL   .byte $14
+UPDATE_WATER_TILES
+                .as
+                ; alternate the HOME tiles to imitate wind motion
+                LDA WATER_CYCLE
+                INC A
+                CMP #12 ; only update every N SOF cycle
+                BNE UW_SKIP
+                LDA #0
+                STA WATER_CYCLE
+
+                LDX #8 * 40 ; line 9 in the game board`
+                LDY #8 * 64 ; line 8 in the tileset
+                setdbr $AF
+
+        UW_GET_TILE
+                LDA game_board,X
+                CMP #'W'
+                BNE UW_DONE
+
+                ;check if X is even/odd
+                TXA
+                AND #1
+                BEQ UW_EVEN_TILE
+                LDA EVEN_WTILE_VAL
+                
+                STA TILE_MAP0,Y
+                BRA UW_DONE
+                
+        UW_EVEN_TILE
+                LDA ODD_WTILE_VAL
+                STA TILE_MAP0,Y
+                
+        UW_DONE
+                INY
+                setal
+                TYA
+                AND #$3F
+                CMP #40
+                BNE WT_NEXT_TILE
+                TYA
+                CLC
+                ADC #24
+                TAY
+                
+    WT_NEXT_TILE
+                setas
+                
+                INX
+                CPX #14 * 40
+                BNE UW_GET_TILE
+                
+                ; alternate the tiles
+                LDA EVEN_WTILE_VAL
+                CMP #4
+                BEQ W_ALT_ODD
+                ; A is $14
+                STA ODD_WTILE_VAL
+                LDA #$4
+                STA EVEN_WTILE_VAL
+                RTS
+                
+        W_ALT_ODD
+                ; A is 4
+                STA ODD_WTILE_VAL
+                LDA #$14
+                STA EVEN_WTILE_VAL
+
+                RTS
+                
+    UW_SKIP
+                STA WATER_CYCLE
+                RTS
 ; ****************************************************
 ; * Write a Hex Value to the position specified by Y
 ; * Y contains the screen position
@@ -551,6 +693,15 @@ LOAD_TILESET
         HOME
                 CMP #'H'
                 BNE WATER
+                
+                TXA
+                AND #1
+                BEQ EVEN_TILE
+                LDA #$13
+                STA TILE_MAP0,Y
+                BRA LT_DONE
+                
+            EVEN_TILE
                 LDA #$12
                 STA TILE_MAP0,Y
                 BRA LT_DONE
@@ -636,8 +787,6 @@ game_board
                 .text "........................................" ;30
 
 PALETTE
-.binary "assets/simple-tiles.data.pal"
-FG_PALETTE
 .binary "assets/simple-tiles.data.pal"
 
 * = $170000
