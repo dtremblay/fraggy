@@ -1,5 +1,17 @@
 # c256-game
 
+Release 3
+---------
+Added tile cycling for the home and water tiles.  This gives the game a more dynamic look.
+
+Release 2
+---------
+Added collisions and floating on lilypads and logs.
+Added home.
+Added logs, antique car and lilypad.
+Loading the sprites from the same file as the tiles: this reduces the amount of memory used. 
+This also makes it easier to build sprites in one single sheet.
+
 Release 1
 ---------
 Multiple sprites (cars and buses) moving at differents speeds.
