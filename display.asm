@@ -170,6 +170,7 @@ INIT_PLAYER
                 STA PLAYER_Y
                 STA @lSP15_Y_POS_L
                 setas
+            
                 RTS
 
 ; *************************************************************
@@ -202,6 +203,33 @@ INIT_NPC
 UPDATE_DISPLAY
                 .as
                 PHA
+                ; check if the player is dead
+                LDA DEAD
+                BEQ NOT_DEAD
+                
+                LDA RESET_BOARD
+                DEC A
+                STA RESET_BOARD
+                BNE NO_UPDATE
+                
+                LDA LIVES ; 
+                DEC A
+                STA LIVES 
+                
+                LDA #0
+                STA DEAD
+                
+                ; restart the player at first row
+                LDA #PLAYER_UP * 4
+                STA SP15_ADDY_PTR_M
+
+                JSR INIT_PLAYER
+        NO_UPDATE
+                PLA
+                RTS
+                
+                
+    NOT_DEAD
                 JSR UPDATE_HOME_TILES
                 JSR UPDATE_WATER_TILES
                 PLA
@@ -294,6 +322,10 @@ PLAYER_MOVE_DOWN
         PMD_DONE
                 STA PLAYER_Y
                 STA SP15_Y_POS_L
+                setas
+                LDA #PLAYER_DOWN * 4
+                STA SP15_ADDY_PTR_M
+                setal
                 RTS
                 
 PLAYER_MOVE_UP
@@ -308,6 +340,10 @@ PLAYER_MOVE_UP
         PMU_DONE
                 STA PLAYER_Y
                 STA SP15_Y_POS_L
+                setas
+                LDA #PLAYER_UP * 4
+                STA SP15_ADDY_PTR_M
+                setal
                 RTS
                 
 PLAYER_MOVE_RIGHT
@@ -322,6 +358,10 @@ PLAYER_MOVE_RIGHT
         PMR_DONE
                 STA PLAYER_X
                 STA SP15_X_POS_L
+                setas
+                LDA #PLAYER_RIGHT * 4
+                STA SP15_ADDY_PTR_M
+                setal
                 RTS
                 
 PLAYER_MOVE_LEFT
@@ -336,6 +376,10 @@ PLAYER_MOVE_LEFT
         PML_DONE
                 STA PLAYER_X
                 STA SP15_X_POS_L
+                setas
+                LDA #PLAYER_LEFT * 4
+                STA SP15_ADDY_PTR_M
+                setal
                 RTS
                 
 ; *****************************************************************
@@ -394,7 +438,8 @@ COLLISION_CHECK
                 TAX
                 CPX #8*16-8
                 BNE NEXT_WATER_ROW
-                BRA COLLISION
+                
+                BRA W_COLLISION
                 
         CCW_DONE
                 setas
@@ -407,9 +452,9 @@ COLLISION_CHECK
                 LDA PLAYER_X
                 ADC game_array,X
                 CMP #32
-                BCC COLLISION
+                BCC W_COLLISION
                 CMP #640-32
-                BCS COLLISION
+                BCS W_COLLISION
                 
                 STA PLAYER_X
                 STA SP15_X_POS_L
@@ -428,17 +473,37 @@ COLLISION_CHECK
                 LDA game_board + 280,X
                 AND #$FF
                 CMP #'H'
-                BNE COLLISION
+                BNE S_COLLISION
                 
                 setas
                 RTS
                 
-        COLLISION
+        W_COLLISION
                 .al
-                ; restart the player at first row
+                
                 setas
-                JSR INIT_PLAYER
+                ; show splash sprite at player's location
+                LDA #SPLASH_SPRITE * 4
+                STA SP15_ADDY_PTR_M
+
+                ; set the player to DEAD
+            SET_DEAD
+                LDA #1
+                STA DEAD
+                LDA #THREE_SECS
+                STA RESET_BOARD
+                
                 RTS
+                
+        S_COLLISION
+                .al
+                
+                setas
+                ; show splash sprite at player's location
+                LDA #SPLATT_SPRITE * 4
+                STA SP15_ADDY_PTR_M
+                BRA SET_DEAD
+                
                 
 STREET_COLLISION
                 .al
@@ -451,19 +516,19 @@ STREET_COLLISION
                 LDA PLAYER_X
                 CMP game_array+2,X  ; read the X position
 
-                BEQ COLLISION
+                BEQ S_COLLISION
                 BCC CHECK_RIGHT_BOUND
         CHECK_LEFT_BOUND
                 LDA game_array+2,X
                 ADC #32
                 CMP PLAYER_X
-                BCS COLLISION
+                BCS S_COLLISION
                 BRA CCS_CONTINUE
                 
         CHECK_RIGHT_BOUND
                 ADC #32
                 CMP game_array+2,X  ; read the X position
-                BCS COLLISION
+                BCS S_COLLISION
                 
         CCS_CONTINUE
                 TXA
@@ -744,39 +809,6 @@ LOAD_TILESET
                 CPX #(640/16) * (480 / 16)
                 BNE GET_TILE
                 RTS
-                
-; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
-game_board 
-                .text "........................................" ;1 - not shown
-                .text ".....A.............AA..................." ;2 - not shown
-                .text "........................................" ;3
-                .text "........................................" ;4 ; display score and remaining lives here?
-                .text "........................................" ;5
-                .text "........................................" ;6
-                .text "..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.." ;7
-                .text "..GGGGHHHHHHGGGGHHHHHHGGGGGGHHHHHHGGGG.." ;8
-                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;9
-                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;10
-                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;11
-                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;12
-                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;13
-                .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;14
-                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;15
-                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;16
-                .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.A" ;18
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" ;19
-                .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;20
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA." ;21
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;22
-                .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;24
-                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;25
-                .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;26
-                .text "........................................" ;27
-                .text "........................................" ;28
-                .text "............AAA........................." ;29
-                .text ".............AAA........................" ;30
 
 PALETTE
 .binary "assets/simple-tiles.data.pal"
