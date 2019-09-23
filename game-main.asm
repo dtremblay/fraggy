@@ -10,6 +10,7 @@
 .include "keyboard_def.asm"
 .include "io_def.asm"
 
+TOTAL_SPRITES   = 24
 * = HRESET
                 CLC
                 XCE   ; go into native mode
@@ -77,8 +78,8 @@ game_array  ; the array treats each sprite in order
             .word $FFFB, 384   , 128    , 7 ; sprite 11 - log 3
             .word     2, 416   , 160    , 5 ; sprite 12 - log 1
             .word     2, 448   , 160    , 7 ; sprite 13 - log 3
-            .word $FFFE, 512   , 192    ,10 ; sprite 15 - lilypad
-            .word     0, 0     , 0      ,15 ; - not used
+            .word $FFFE, 512   , 192    ,16 ; sprite 15 - lilypad
+            .word     0, 0     , 0      ,10 ; - not used
 
 
 GAME_START

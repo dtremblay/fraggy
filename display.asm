@@ -71,102 +71,91 @@ INIT_DISPLAY
                 JSR UPDATE_DISPLAY
                 RTS
 
+; ******************************************************************
+; * We're loading sprites (1024 bytes) from a 256x256 tileset
+; ******************************************************************
+sprite_line    = $6
+sprite_addr    = $10
 LOAD_SPRITES
                 .as
-                
+                setas
                 LDA #0
                 STA sprite_addr
+                STA sprite_addr + 1
                 LDA #$B1
                 STA sprite_addr + 2
+                LDX #0
+        NEXT_SPRITE
+                LDY #0
                 
-                XBA
-                LDX #0  ; X increments in steps of 8
-    LS_LOOP
-                ; enable sprites
+        LS_LOOP
+                LDA TILES + 256 * 32,X
+                STA [sprite_addr],Y 
+                INX
+                setal
+                TXA
+                AND #$1F
+                BEQ LS_NEXT_LINE
+                
+        LS_CONTINUE
+                setas
+                INY
+                CPY #1024
+                BNE LS_LOOP
+                
+                LDA sprite_addr + 1
+                CLC
+                ADC #4
+                STA sprite_addr + 1
+                AND #$1F
+                ASL A
+                ASL A
+                ASL A ; multiply by 8
+                STA sprite_line
+                LDA sprite_addr + 1
+                AND #$E0
+                STA sprite_line + 1
+                LDX sprite_line
+                LDA sprite_addr + 1
+                CMP #4 * TOTAL_SPRITES
+                BNE NEXT_SPRITE
+
                 LDA #0
+                setaxs
+                
+                ; now enabled the sprites
+                ; the address of the sprite is based on the game_array
+                LDX #0  ; X increments in steps of 8
+        LSP_LOOP
+                LDA #0
+                STA M0_OPERAND_A + 1
+                
                 STA @lSP00_ADDY_PTR_L,X
                 LDA #SPRITE_Enable
                 STA @lSP00_CONTROL_REG,X
                 STA @lSP00_ADDY_PTR_H,X
-                TXA
-                LSR
+                LDA game_array+6,X ; 0 to 15
+                ASL A
+                ASL A
                 STA @lSP00_ADDY_PTR_M,X
-                STA sprite_addr + 1
-                ASL
                 
-                JSR READ_SPRITE
-                
+                TXA
                 CLC
                 ADC #8
                 TAX
                 CPX #128
-                BNE LS_LOOP
-
+                BNE LSP_LOOP
+                setxl
+                
                 RTS
-
-; *************************************************************
-; * Read a sprite from tile memory
-; *************************************************************
-sprite_line    = $6
-sprite_addr    = $10
-READ_SPRITE 
-                .as
-                PHA
-                setal
-                ; in our tileset, we have 8 sprites per line
-                LDA game_array+6,X ; 0 to 15
-                AND #$7 
-                asl
-                asl
-                asl
-                asl ; multiply by 32
-                asl
-                STA sprite_line
-                LDA game_array+6,X ; 0 to 15
-                AND #8
-                BEQ LOAD_X
                 
-                LDA #$2000 ; add 32 lines at 256 pixels
-                
-        LOAD_X
-                CLC
-                ADC sprite_line
-                TAX
-                
-                LDA #32 ; sprites are 32 lines high
-                STA sprite_line
-                
-                
-    NEXT_LINE
-                
-                LDY #0
-                
-        NEXT_PIXEL
-                setas
-                LDA TILES + 256 * 32,X
-                STA [sprite_addr],Y
-                INX
-                INY
-                CPY #32 ; sprites are 32 pixels wide
-                BNE NEXT_PIXEL
-                setal
+    LS_NEXT_LINE
+                .al
                 TXA
                 CLC
                 ADC #256-32
                 TAX
-                
-                LDA sprite_addr
-                CLC
-                ADC #32
-                STA sprite_addr
-                
-                DEC sprite_line
-                BNE NEXT_LINE
-                LDA #0
-                
-                setas
-                PLA
-                RTS
+                BRA LS_CONTINUE
                 
 ; *************************************************************
 ; * Initialize player position
