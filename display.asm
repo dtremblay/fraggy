@@ -259,15 +259,18 @@ UPDATE_NPC_POSITIONS
                 LDA game_array + 2,X ; X POSITION
                 CLC
                 ADC game_array,X ; add the speed
-                BCC GRT_LFT_MRG
+                BPL GRT_LFT_MRG
+                 
                 
-                CMP #16
-                BCS GRT_LFT_MRG
-                LDA #640-32 ; right edge
+;                CMP #4
+;                BCS GRT_LFT_MRG
+                LDA #640-4 ; right edge
+                CLC
+                ADC game_array,X ; add the speed
                 BRA LESS_RGT_MRG
                 
         GRT_LFT_MRG
-                CMP #640 - 32
+                CMP #640 - 4
                 BCC LESS_RGT_MRG
                 LDA #0
                 
@@ -756,7 +759,7 @@ LOAD_TILESET
 ; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
 game_board 
                 .text "........................................" ;1 - not shown
-                .text "........................................" ;2 - not shown
+                .text ".....A.............AA..................." ;2 - not shown
                 .text "........................................" ;3
                 .text "........................................" ;4 ; display score and remaining lives here?
                 .text "........................................" ;5
@@ -771,20 +774,20 @@ game_board
                 .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;14
                 .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;15
                 .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;16
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;18
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;19
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;20
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;21
+                .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.A" ;18
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" ;19
+                .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;20
+                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA." ;21
                 .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;22
-                .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
+                .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
                 .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;24
                 .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;25
                 .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;26
                 .text "........................................" ;27
                 .text "........................................" ;28
-                .text "........................................" ;29
-                .text "........................................" ;30
+                .text "............AAA........................." ;29
+                .text ".............AAA........................" ;30
 
 PALETTE
 .binary "assets/simple-tiles.data.pal"
