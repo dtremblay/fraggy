@@ -53,7 +53,6 @@ INIT_DISPLAY
                 MVN <`PALETTE,<`GRPH_LUT1_PTR
                 
                 setas
-                
                 ; enable tiles
                 LDA #TILE_Enable + TILESHEET_256x256_En
                 STA @lTL0_CONTROL_REG
@@ -134,7 +133,7 @@ LOAD_SPRITES
                 LDA #SPRITE_Enable
                 STA @lSP00_CONTROL_REG,X
                 STA @lSP00_ADDY_PTR_H,X
-                LDA game_array+6,X ; 0 to 15
+                LDA game_array+6,X ; 0 to 23
                 ASL A
                 ASL A
                 STA @lSP00_ADDY_PTR_M,X
@@ -153,7 +152,7 @@ LOAD_SPRITES
                 .al
                 TXA
                 CLC
-                ADC #256-32
+                ADC #256-32 ; go to the next line, for this sprite
                 TAX
                 BRA LS_CONTINUE
                 
@@ -207,6 +206,7 @@ UPDATE_DISPLAY
                 LDA DEAD
                 BEQ NOT_DEAD
                 
+                ; when the player is dead, wait 180 SOF cycles
                 LDA RESET_BOARD
                 DEC A
                 STA RESET_BOARD
@@ -232,6 +232,7 @@ UPDATE_DISPLAY
     NOT_DEAD
                 JSR UPDATE_HOME_TILES
                 JSR UPDATE_WATER_TILES
+                JSR UPDATE_LILLY
                 PLA
                 setal
         JOY_UP
@@ -680,6 +681,35 @@ UPDATE_WATER_TILES
     UW_SKIP
                 STA WATER_CYCLE
                 RTS
+            
+LILLY_CYCLE     .byte 0
+UPDATE_LILLY
+                .as
+                ; alternate the HOME tiles to imitate wind motion
+                LDA LILLY_CYCLE
+                INC A
+                CMP #10 ; only update every N SOF cycle
+                BNE UL_SKIP
+                LDA #0
+                STA LILLY_CYCLE
+                
+                LDA game_array + 14 * 8 + 6
+                INC A
+                CMP #24
+                BNE STORE_LILLY
+                LDA #16
+                
+        STORE_LILLY
+                STA game_array + 14 * 8 + 6
+                ASL A
+                ASL A
+                STA @lSP14_ADDY_PTR_M
+                RTS
+                
+        UL_SKIP
+                STA LILLY_CYCLE
+                RTS
+                
 ; ****************************************************
 ; * Write a Hex Value to the position specified by Y
 ; * Y contains the screen position
