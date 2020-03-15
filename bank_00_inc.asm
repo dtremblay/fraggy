@@ -39,28 +39,8 @@ OPL2_BLOCK       = $000036 ;
 
 ; SD Card (CH376S) Variables
 SDCARD_FILE_PTR  = $000038 ; 3 Bytes Pointer to Filename to open
-SDCARD_BYTE_NUM  = $00003C ; 2Bytes
+SDCARD_BYTE_NUM  = $00003C ; 2 Bytes
 SDCARD_PRSNT_MNT = $00003F ; 1 Byte, Indicate that the SDCard is Present and that it is Mounted
-
-; Command Line Parser Variables
-CMD_PARSER_TMPX  = $000040 ; <<< Command Parser 2Bytes
-CMD_PARSER_TMPY  = $000042 ; <<< Command Parser 2Bytes
-CMD_LIST_PTR     = $000044 ; <<< Command Parser 3 Bytes
-CMD_PARSER_PTR   = $000048 ; <<< Command Parser 3 Bytes
-CMD_ATTRIBUTE    = $00004B ; <<< Command Parser 2 Bytes (16bits Attribute Field)
-CMD_EXEC_ADDY    = $00004D ; <<< Command Parser 3 Bytes 24 Bits Address Jump to execute the Command
-KEY_BUFFER_RPOS  = $000050 ;
-KEY_BUFFER_WPOS  = $000052 ;
-CMD_VARIABLE_TMP = $000054 ;
-CMD_ARG_DEV      = $000056 ;
-CMD_ARG_SA       = $000057 ;
-CMD_ARG_EA       = $00005A ;
-CMD_VALID        = $00005D ;
-
-
-; Bitmap Clear Routine
-BM_CLEAR_SCRN_X  = $000040
-BM_CLEAR_SCRN_Y  = $000042
 
 ; RAD File Player
 RAD_STARTLINE    = $000040 ; 1 Byte
@@ -73,21 +53,12 @@ RAD_Y_POINTER    = $000046 ; 2 Bytes
 RAD_ORDER_NUM    = $000048 ; 2 Bytes
 RAD_CHANNEL_DATA = $00004A ; 2 Bytes
 RAD_CHANNE_EFFCT = $00004C
-RAD_TEMP         = $00004D
+RAD_TEMP         = $00004E
+RAD_EFFECT       = $000050
 
-; BMP File Parser Variables (Can be shared if BMP Parser not used)
-; Used for Command Parser Mainly
-BMP_X_SIZE       = $000040 ; 2 Bytes
-BMP_Y_SIZE       = $000042 ; 2 Bytes
-BMP_PRSE_SRC_PTR = $000044 ; 3 Bytes
-BMP_PRSE_DST_PTR = $000048 ; 3 Bytes
-BMP_COLOR_PALET  = $00004C ; 2 Bytes
-SCRN_X_STRIDE    = $00004E ; 2 Bytes, Basically How many Pixel Accross in Bitmap Mode
-BMP_FILE_SIZE    = $000050 ; 4 Bytes
-BMP_POSITION_X   = $000054 ; 2 Bytes Where, the BMP will be position on the X Axis
-BMP_POSITION_Y   = $000056 ; 2 Bytes Where, the BMP will be position on the Y Axis
-BMP_PALET_CHOICE = $000058 ;
-
+SDOS_FILE_REC_PTR= $000051 ; 3 byte pointer to a simple file struct
+SDOS_LOOP        = $000054 ; variable to count file length
+SDOS_FILE_SIZE   = $000055 ; 4 bytes for the file length
 
 ;Empty Region
 ;XXX             = $000060
@@ -108,6 +79,7 @@ DEC_MEM         .byte 1
 PTRN_ADDR       .long 0
 LINE_ADDR       .long 0
 CONV_VAL        .byte 0
+
 ;..
 ;..
 ;..
@@ -118,7 +90,8 @@ MOUSE_POS_X_LO   = $0000E1
 MOUSE_POS_X_HI   = $0000E2
 MOUSE_POS_Y_LO   = $0000E3
 MOUSE_POS_Y_HI   = $0000E4
-MOUSE_BUTTONS_REG= $0000E5
+
+
 
 RAD_ADDR         = $0000F0 ; 3 bytes to avoid OPL2 errors.
 RAD_PATTRN       = $0000F3 ; 1 bytes - offset to patter
@@ -128,82 +101,13 @@ RAD_LAST_NOTE    = $0000F9 ; 1 if this is the last note
 RAD_LINE_PTR     = $0000FA ; 2 bytes - offset to memory location
 
 ;;///////////////////////////////////////////////////////////////
-;;; NO CODE or Variable ought to be Instatied in this REGION
+;;; NO CODE or Variable ought to be Instantiated in this REGION
 ;; BEGIN
 ;;///////////////////////////////////////////////////////////////
 GAVIN_BLOCK      = $000100 ;256 Bytes Gavin reserved, overlaps debugging registers at $1F0
 
-MULTIPLIER_0     = $000100 ;0 Byte  Unsigned multiplier
-M0_OPERAND_A     = $000100 ;2 Bytes Operand A (ie: A x B)
-M0_OPERAND_B     = $000102 ;2 Bytes Operand B (ie: A x B)
-M0_RESULT        = $000104 ;4 Bytes Result of A x B
-
-MULTIPLIER_1     = $000108 ;0 Byte  Signed Multiplier
-M1_OPERAND_A     = $000108 ;2 Bytes Operand A (ie: A x B)
-M1_OPERAND_B     = $00010A ;2 Bytes Operand B (ie: A x B)
-M1_RESULT        = $00010C ;4 Bytes Result of A x B
-
-DIVIDER_0        = $000110 ;0 Byte  Signed divider
-D0_OPERAND_A     = $000110 ;2 Bytes Divider 1 Dividend ex: A in  B/A
-D0_OPERAND_B     = $000112 ;2 Bytes Divider 1 Divisor ex B in B/A
-D0_RESULT        = $000114 ;2 Bytes Signed quotient result of B/A ex: 7/2 = 3 r 1
-D0_REMAINDER     = $000116 ;2 Bytes Signed remainder of B/A ex: 1 in 7/2=3 r 1
-
-DIVIDER_1        = $000118 ;0 Byte  Unsigned divider
-D1_OPERAND_A     = $000118 ;2 Bytes Divider 0 Dividend ex: A in  A/B
-D1_OPERAND_B     = $00011A ;2 Bytes Divider 0 Divisor ex B in A/B
-D1_RESULT        = $00011C ;2 Bytes Quotient result of A/B ex: 7/2 = 3 r 1
-D1_REMAINDER     = $00011E ;2 Bytes Remainder of A/B ex: 1 in 7/2=3 r 1
-
-; Reserved
-ADDER_SIGNED_32  = $000120 ; The 32 Bit Adders takes 12Byte that are NOT RAM Location
-; Reserved
-INT_CONTROLLER   = $000140 ; $000140...$00015F Interrupt Controller
-
-; ***************************************************************************
-; Pending Interrupt (Read and Write Back to Clear)
-; TIMER0
-TIMER0_CTRL_REG   = $000160 ; (Write - Control, Read Status)
-; Control Register Definitions
-TMR0_EN     = $01
-TMR0_SCLR   = $02
-TMR0_SLOAD  = $04 ; Use SLOAD is
-TMR0_UPDWN  = $08
-
-TIMER0_CHARGE_L   = $000161 ; Use if you want to Precharge and countdown
-TIMER0_CHARGE_M   = $000162 ;
-TIMER0_CHARGE_H   = $000163 ;
-; Compare Block
-TIMER0_CMP_REG    = $000164 ;
-TMR0_CMP_RECLR     = $01 ; set to one for it to cycle when Counting up
-TMR0_CMP_RELOAD    = $02 ; Set to one for it to reload when Counting Down
-
-TIMER0_CMP_L      = $000165 ; Load this Value for Countup
-TIMER0_CMP_M      = $000166 ;
-TIMER0_CMP_H      = $000167 ;
-
-; ***************************************************************************
-; Pending Interrupt (Read and Write Back to Clear)
-; TIMER1
-TIMER1_CTRL_REG   = $000168 ;
-TMR1_EN     = $01
-TMR1_SCLR   = $02
-TMR1_SLOAD  = $04
-TMR1_UPDWN  = $08 ; 1 = Up, 0 = Down
-TIMER1_CHARGE_L   = $000169 ; Use if you want to Precharge and countdown
-TIMER1_CHARGE_M   = $00016A ;
-TIMER1_CHARGE_H   = $00016B ;
-; Compare Block
-TIMER1_CMP_REG    = $00016C ;
-TMR1_CMP_RECLR     = $01 ; set to one for it to cycle when Counting up
-TMR1_CMP_RELOAD    = $02 ; Set to one for it to reload when Counting Down
-TIMER1_CMP_L      = $00016D ;
-TIMER1_CMP_M      = $00016E ;
-TIMER1_CMP_H      = $00016F ;
-
-
 ;;///////////////////////////////////////////////////////////////
-;;; NO CODE or Variable ought to be Instatied in this REGION
+;;; NO CODE or Variable ought to be Instantiated in this REGION
 ;; END
 ;;///////////////////////////////////////////////////////////////
 CPU_REGISTERS    = $000240 ; Byte
@@ -246,15 +150,14 @@ BLOCK_BANK       = $000311 ;1 Byte  (temp) Bank of block being loaded
 BLOCK_COUNT      = $000312 ;2 Bytes (temp) Counter of bytes read as file is loaded
 
 ; $00:0320 to $00:06FF - Reserved for CH376S SDCard Controller
-SDOS_BLOCK_BEGIN = $000320 ;
-SDOS_LOAD_ADDY   = $000324 ; 4 Bytes (Uses 3 Only)
-SDOS_FILE_SIZE   = $000328 ;
+SDOS_LINE_SELECT = $00031F ; used by the file menu to track which item is selected (0-37)
+
+
+; TODO - Fix the following - do we really need them?
 SDOS_BYTE_NUMBER = $00032C ; Number of Byte to Read or Write before changing the Pointer
-SDOS_REG_WR32_AD = $000330 ; 4 Bytes (Used to read and Write Values in/from CH376S)
+
 SDOS_BYTE_PTR    = $000334
-SDOS_FILE_NAME   = $000380 ; // Max of 128 Chars
-SDOS_BLK_BEGIN   = $000400 ; 512 Bytes to Store SD Card Incoming or Outcoming Block
-SDOS_BLK_END     = $0006FF ;
+SDOS_FILE_NAME   = $000380 ; // Max of 128 Chars for the file path
 
 ; COMMAND PARSER Variables
 ; Command Parser Stuff between $000F00 -> $000F84 (see CMD_Parser.asm)
@@ -275,16 +178,16 @@ TEST_END         = $007FFF ;0 Byte
 STACK_BEGIN      = $008000 ;32512 Bytes The default beginning of stack space
 STACK_END        = $00FEFF ;0 Byte  End of stack space. Everything below this is I/O space
 
-ISR_BEGIN        = $18FF00 ; Byte  Beginning of CPU vectors in Direct page
-HRESET           = $18FF00 ;16 Bytes Handle RESET asserted. Reboot computer and re-initialize the kernel.
-HCOP             = $18FF10 ;16 Bytes Handle the COP instruction. Program use; not used by OS
-HBRK             = $18FF20 ;16 Bytes Handle the BRK instruction. Returns to BASIC Ready prompt.
-HABORT           = $18FF30 ;16 Bytes Handle ABORT asserted. Return to Ready prompt with an error message.
-HNMI             = $18FF40 ;32 Bytes Handle NMI
-HIRQ             = $18FF60 ;32 Bytes Handle IRQ
-Unused_FF80      = $18FF80 ;End of direct page Interrrupt handlers
+ISR_BEGIN        = $38FF00 ; Byte  Beginning of CPU vectors in Direct page
+HRESET           = $38FF00 ;16 Bytes Handle RESET asserted. Reboot computer and re-initialize the kernel.
+HCOP             = $38FF10 ;16 Bytes Handle the COP instruction. Program use; not used by OS
+HBRK             = $38FF20 ;16 Bytes Handle the BRK instruction. Returns to BASIC Ready prompt.
+HABORT           = $38FF30 ;16 Bytes Handle ABORT asserted. Return to Ready prompt with an error message.
+HNMI             = $38FF40 ;32 Bytes Handle NMI
+HIRQ             = $38FF60 ;32 Bytes Handle IRQ
+Unused_FF80      = $38FF80 ;End of direct page Interrrupt handlers
 
-VECTORS_BEGIN    = $18FFE0 ;0 Byte  Interrupt vectors
+VECTORS_BEGIN    = $38FFE0 ;0 Byte  Interrupt vectors
 JMP_READY        = $00FFE0 ;4 Bytes Jumps to ROM READY routine. Modified whenever alternate command interpreter is loaded.
 VECTOR_COP       = $00FFE4 ;2 Bytes Native COP Interrupt vector
 VECTOR_BRK       = $00FFE6 ;2 Bytes Native BRK Interrupt vector

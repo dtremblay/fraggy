@@ -127,8 +127,7 @@ LOAD_SPRITES
                 LDX #0  ; X increments in steps of 8
         LSP_LOOP
                 LDA #0
-                STA M0_OPERAND_A + 1
-                
+
                 STA @lSP00_ADDY_PTR_L,X
                 LDA #SPRITE_Enable
                 STA @lSP00_CONTROL_REG,X
