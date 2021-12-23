@@ -57,6 +57,7 @@ INIT_DISPLAY
                 LDA #0
                 STA TL0_START_ADDY_H
                 ; set the tilemap window position to 0
+                LDA #0
                 STA TL0_WINDOW_X_POS_L
                 STA TL0_WINDOW_Y_POS_L
                 ; set the columns to 40
@@ -182,10 +183,10 @@ LOAD_SPRITES
 INIT_PLAYER
                 ; start at position (100,100)
                 setal
-                LDA #8 * 32 + 32
+                LDA #9 * 32 + 32
                 STA PLAYER_X
                 STA @lSP15_X_POS_L
-                LDA #10 * 32 + 64
+                LDA #10 * 32 + 96
                 STA PLAYER_Y
                 STA @lSP15_Y_POS_L
                 setas
@@ -336,9 +337,9 @@ PLAYER_MOVE_DOWN
                 CLC
                 ADC #32
                 ; check for collisions and out of screen
-                CMP #480 - 96
+                CMP #480 - 64
                 BCC PMD_DONE
-                LDA #480 - 96 ; the lowest position on screen
+                LDA #480 - 64 ; the lowest position on screen
                 
         PMD_DONE
                 STA PLAYER_Y
@@ -354,9 +355,9 @@ PLAYER_MOVE_UP
                 SEC
                 SBC #32
                 ; check for collisions and out of screen
-                CMP #96
+                CMP #128
                 BCS PMU_DONE
-                LDA #96
+                LDA #128
                 
         PMU_DONE
                 STA PLAYER_Y
@@ -372,9 +373,9 @@ PLAYER_MOVE_RIGHT
                 CLC
                 ADC #32
                 ; check for collisions and out of screen
-                CMP #640 - 64
+                CMP #640 - 32
                 BCC PMR_DONE
-                LDA #640 - 64 ; the lowest position on screen
+                LDA #640 - 32 ; the lowest position on screen
                 
         PMR_DONE
                 STA PLAYER_X
@@ -390,9 +391,9 @@ PLAYER_MOVE_LEFT
                 SEC
                 SBC #32
                 ; check for collisions and out of screen
-                CMP #32
+                CMP #64
                 BCS PML_DONE
-                LDA #32
+                LDA #64
                 
         PML_DONE
                 STA PLAYER_X
@@ -423,10 +424,10 @@ COLLISION_CHECK
         WATER_COLLISION
                 .al
         ; here do the water collision routine
-                CMP #224
+                CMP #256
                 BCS CCW_DONE
                 
-                CMP #128
+                CMP #160
                 BCC HOME_LINE
                 
                 LDX #0
@@ -667,7 +668,7 @@ UPDATE_WATER_TILES
                 INY
                 setal
                 TYA
-                AND #$7F
+                AND #$4F
                 CMP #80
                 BNE WT_NEXT_TILE
                 TYA
@@ -780,7 +781,7 @@ WRITE_HEX
 ; *********************************************************
 LOAD_TILESET
                 LDX #0
-                LDY #0
+                LDY #2  ; the tilemap is offset by 1 column
                 setdbr <`TILE_MAP0
                 setas
     GET_TILE
@@ -850,7 +851,7 @@ LOAD_TILESET
                 INY
                 setal
                 TYA
-                AND #$7F
+                AND #$4F
                 CMP #80
                 BNE LT_NEXT_TILE
                 TYA

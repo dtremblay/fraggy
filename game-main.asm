@@ -35,21 +35,21 @@ RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
 
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
-            .word $FFFC, 640-96, 480-128, 0        ; sprite  0 - car front
-            .word $FFFC, 640-64, 480-128, 1        ; sprite  1 - car back
-            .word     2, 32    , 480-160, 2        ; sprite  2 - bus back
-            .word     2, 64    , 480-160, 3        ; sprite  3 - bus middle
-            .word     2, 96    , 480-160, 4        ; sprite  4 - bus front
-            .word $FFFA, 96    , 480-192, 0        ; sprite  5 - car front
-            .word $FFFA, 128   , 480-192, 1        ; sprite  6 - car back
-            .word     1, 192   , 256    , 8        ; sprite  7 - oldie front
-            .word     1, 224   , 256    , 9        ; sprite  8 - oldie back
-            .word $FFFB, 320   , 128    , 5        ; sprite  9 - log 1
-            .word $FFFB, 352   , 128    , 6        ; sprite 10 - log 2
-            .word $FFFB, 384   , 128    , 7        ; sprite 11 - log 3
-            .word     2, 416   , 160    , 5        ; sprite 12 - log 1
-            .word     2, 448   , 160    , 7        ; sprite 13 - log 3
-            .word $FFFE, 512   , 192    ,16        ; sprite 15 - lilypad
+            .word $FFFC, 640-96, 480-96, 0        ; sprite  0 - car front
+            .word $FFFC, 640-64, 480-96, 1        ; sprite  1 - car back
+            .word     2, 32    , 480-128, 2        ; sprite  2 - bus back
+            .word     2, 64    , 480-128, 3        ; sprite  3 - bus middle
+            .word     2, 96    , 480-128, 4        ; sprite  4 - bus front
+            .word $FFFA, 96    , 480-160, 0        ; sprite  5 - car front
+            .word $FFFA, 128   , 480-160, 1        ; sprite  6 - car back
+            .word     1, 192   , 288    , 8        ; sprite  7 - oldie front
+            .word     1, 224   , 288    , 9        ; sprite  8 - oldie back
+            .word $FFFB, 320   , 160    , 5        ; sprite  9 - log 1
+            .word $FFFB, 352   , 160    , 6        ; sprite 10 - log 2
+            .word $FFFB, 384   , 160    , 7        ; sprite 11 - log 3
+            .word     2, 416   , 192    , 5        ; sprite 12 - log 1
+            .word     2, 448   , 192    , 7        ; sprite 13 - log 3
+            .word $FFFE, 512   , 224    ,16        ; sprite 15 - lilypad
             .word     0, 0     , 0      ,PLAYER_UP ; - player sprite
 
 ; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
@@ -72,10 +72,10 @@ game_board
             .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;15
             .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;16
             .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.A" ;18
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" ;19
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;18
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;19
             .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;20
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA." ;21
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;21
             .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;22
             .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
             .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;24
