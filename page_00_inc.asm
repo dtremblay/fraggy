@@ -3,8 +3,9 @@
 ;
 ;* Addresses are the byte AFTER the block. Use this to confirm block locations and check for overlaps
 BANK0_BEGIN      = $000000 ;Start of bank 0 and Direct page
-unused_0000      = $000000 ;12 Bytes unused
-OPL2_ADDY_PTR_LO = $000008 ; This Points towards the Instruments Database
+TMPPTR1          = $000000 ; 4 byte temporary pointer
+TMPPTR2          = $000004 ; 4 byte temporary pointer
+OPL2_ADDY_PTR_LO = $000008 ; THis Points towards the Instruments Database
 OPL2_ADDY_PTR_MD = $000009
 OPL2_ADDY_PTR_HI = $00000A
 SCREENBEGIN      = $00000C ;3 Bytes Start of screen in video RAM. This is the upper-left corrner of the current video page being written to. This may not be what's being displayed by VICKY. Update this if you change VICKY's display page.
@@ -19,12 +20,43 @@ CURCOLOR         = $00001E ;1 Byte Color of next character to be printed to the 
 COLORPOS         = $00001F ;3 Byte address of cursor's position in the color matrix
 STACKBOT         = $000022 ;2 Bytes Lowest location the stack should be allowed to write to. If SP falls below this value, the runtime should generate STACK OVERFLOW error and abort.
 STACKTOP         = $000024 ;2 Bytes Highest location the stack can occupy. If SP goes above this value, the runtime should generate STACK OVERFLOW error and abort.
-
+; OPL2 Library Variable (Can be shared if Library is not used)
+; THis will need to move eventually
+OPL2_OPERATOR    = $000026 ;
+OPL2_CHANNEL     = $000027 ;
+OPL2_REG_REGION  = $000028 ; Offset to the Group of Registers
+OPL2_REG_OFFSET  = $00002A ; 2 Bytes (16Bits)
+OPL2_IND_ADDY_LL = $00002C ; 2 Bytes Reserved (Only need 3)
+OPL2_IND_ADDY_HL = $00002E ; 2 Bytes Reserved (Only need 3)
+OPL2_NOTE        = $000030 ; 1 Byte
+OPL2_OCTAVE      = $000031 ; 1 Byte
+OPL2_PARAMETER0  = $000032 ; 1 Byte - Key On/Feedback
+OPL2_PARAMETER1  = $000033 ; 1 Byte
+OPL2_PARAMETER2  = $000034 ; 1 Byte
+OPL2_PARAMETER3  = $000035 ; 1 Byte
+OPL2_LOOP        = $000036 ;
+OPL2_BLOCK       = $000036
 ; SD Card (CH376S) Variables
 SDCARD_FILE_PTR  = $000038 ; 3 Bytes Pointer to Filename to open
-SDCARD_BYTE_NUM  = $00003C ; 2 Bytes
+SDCARD_BYTE_NUM  = $00003C ; 2Bytes
 SDCARD_PRSNT_MNT = $00003F ; 1 Byte, Indicate that the SDCard is Present and that it is Mounted
+; Command Line Parser Variables
+; CMD_PARSER_TMPX  = $000040 ; <<< Command Parser 2Bytes
+; CMD_PARSER_TMPY  = $000042 ; <<< Command Parser 2Bytes
+; CMD_LIST_PTR     = $000044 ; <<< Command Parser 3 Bytes
+; CMD_PARSER_PTR   = $000048 ; <<< Command Parser 3 Bytes
+; CMD_ATTRIBUTE    = $00004B ; <<< Command Parser 2 Bytes (16bits Attribute Field)
+; CMD_EXEC_ADDY    = $00004D ; <<< Command Parser 3 Bytes 24 Bits Address Jump to execute the Command
+; CMD_VARIABLE_TMP = $000050 ;
+; CMD_ARG_DEV      = $000052 ;
+; CMD_ARG_SA       = $000053 ;
+; CMD_ARG_EA       = $000056 ;
+; CMD_VALID        = $00005A ;
 
+
+; Bitmap Clear Routine
+BM_CLEAR_SCRN_X  = $000040
+BM_CLEAR_SCRN_Y  = $000042
 ; RAD File Player
 RAD_STARTLINE    = $000040 ; 1 Byte
 RAD_PATTERN_IDX  = $000041 ; 1 Byte
@@ -33,16 +65,32 @@ RAD_LINENUMBER   = $000043 ; 1 Byte
 RAD_CHANNEL_NUM  = $000044 ; 1 Byte
 RAD_ISLASTCHAN   = $000045 ; 1 Byte
 RAD_Y_POINTER    = $000046 ; 2 Bytes
-RAD_ORDER_NUM    = $000048 ; 2 Bytes
+RAD_TICK         = $000048
 RAD_CHANNEL_DATA = $00004A ; 2 Bytes
 RAD_CHANNE_EFFCT = $00004C
-RAD_TEMP         = $00004E
-RAD_EFFECT       = $000050
+RAD_TEMP         = $00004D
 
-SDOS_FILE_REC_PTR= $000051 ; 3 byte pointer to a simple file struct
-SDOS_LOOP        = $000054 ; variable to count file length
-SDOS_FILE_SIZE   = $000055 ; 4 bytes for the file length
+RAD_ADDR         = $000050 ; 3 bytes to avoid OPL2 errors.
+RAD_PATTRN       = $000053 ; 1 bytes - offset to patter
+RAD_PTN_DEST     = $000054 ; 3 bytes - where to write the pattern data
+RAD_CHANNEL      = $000057 ; 2 bytes - 0 to 8 
+RAD_LAST_NOTE    = $000059 ; 1 if this is the last note
+RAD_LINE_PTR     = $00005A ; 2 bytes - offset to memory location
 
+; BMP File Parser Variables (Can be shared if BMP Parser not used)
+; Used for Command Parser Mainly
+BMP_X_SIZE       = $000040 ; 2 Bytes
+BMP_Y_SIZE       = $000042 ; 2 Bytes
+BMP_PRSE_SRC_PTR = $000044 ; 3 Bytes
+BMP_PRSE_DST_PTR = $000048 ; 3 Bytes
+BMP_COLOR_PALET  = $00004C ; 2 Bytes
+SCRN_X_STRIDE    = $00004E ; 2 Bytes, Basically How many Pixel Accross in Bitmap Mode
+BMP_FILE_SIZE    = $000050 ; 4 Bytes
+BMP_POSITION_X   = $000054 ; 2 Bytes Where, the BMP will be position on the X Axis
+BMP_POSITION_Y   = $000056 ; 2 Bytes Where, the BMP will be position on the Y Axis
+BMP_PALET_CHOICE = $000058 ;
+;Empty Region
+;XXX             = $000060
 ;..
 ;..
 ;..
@@ -54,14 +102,24 @@ MOUSE_POS_X_HI   = $0000E2
 MOUSE_POS_Y_LO   = $0000E3
 MOUSE_POS_Y_HI   = $0000E4
 
+USER_TEMP        = $0000F0 ;32 Bytes Temp space for user programs
+
 ;;///////////////////////////////////////////////////////////////
 ;;; NO CODE or Variable ought to be Instantiated in this REGION
 ;; BEGIN
 ;;///////////////////////////////////////////////////////////////
 GAVIN_BLOCK      = $000100 ;256 Bytes Gavin reserved, overlaps debugging registers at $1F0
 
+; Reserved
+INT_CONTROLLER   = $000140 ; $000140...$00015F Interrupt Controller
+
+TIMER_CONTROLLER = $000160 ; $000160...$00017F Timer0/Timer1/Timer2 Block
+TIMER_CTRL_REGLL = $000160 ;
+TIMER_CTRL_REGLH = $000161 ;
+TIMER_CTRL_REGHL = $000162 ;
+TIMER_CTRL_REGHH = $000163 ;
 ;;///////////////////////////////////////////////////////////////
-;;; NO CODE or Variable ought to be Instantiated in this REGION
+;;; NO CODE or Variable ought to be Instatied in this REGION
 ;; END
 ;;///////////////////////////////////////////////////////////////
 CPU_REGISTERS    = $000240 ; Byte
@@ -162,35 +220,51 @@ FDC_RESULT_NUM   = $000532      ; 1 byte - The number of results expected
 FDC_EXPECT_DAT   = $000533      ; 1 byte - 0 = the command expects no data, otherwise expects data
 FDC_CMD_RETRY    = $000534      ; 1 byte - a retry counter for commands
 
+;
+; Channel, UART variables, and Timer
+;
+CURRUART         = $000700 ; 3-bytes: the base address of the current UART
+CHAN_OUT         = $000703 ; 1-byte: the number of the current output channel (for PUTC, etc.)
+CHAN_IN          = $000704 ; 1-byte: the number of the current input channel (for GETCH, etc.)
+TIMERFLAGS       = $000705 ; 1-byte: flags to indicate that one of the timer interupts has triggered
+TIMER0TRIGGER    = $80
+TIMER1TRIGGER    = $40
+TIMER2TRIGGER    = $20
+
 ; COMMAND PARSER Variables
 ; Command Parser Stuff between $000F00 -> $000F84 (see CMD_Parser.asm)
-KEY_BUFFER       = $000F00 ;64 Bytes keyboard buffer
-KEY_BUFFER_SIZE  = $0080 ;128 Bytes (constant) keyboard buffer length
-KEY_BUFFER_END   = $000F7F ;1 Byte  Last byte of keyboard buffer
-KEY_BUFFER_CMD   = $000F83 ;1 Byte  Indicates the Command Process Status
-COMMAND_SIZE_STR = $000F84 ; 1 Byte
-COMMAND_COMP_TMP = $000F86 ; 2 Bytes
-KEYBOARD_SC_FLG  = $000F87 ;1 Bytes that indicate the Status of Left Shift, Left CTRL, Left ALT, Right Shift
-KEYBOARD_SC_TMP  = $000F88 ;1 Byte, Interrupt Save Scan Code while Processing
+KEY_BUFFER       = $000F00 ; 64 Bytes keyboard buffer
+KEY_BUFFER_SIZE  = $0080   ;128 Bytes (constant) keyboard buffer length
+KEY_BUFFER_END   = $000F7F ;  1 Byte  Last byte of keyboard buffer
+KEY_BUFFER_CMD   = $000F83 ;  1 Byte  Indicates the Command Process Status
+COMMAND_SIZE_STR = $000F84 ;  1 Byte
+COMMAND_COMP_TMP = $000F86 ;  2 Bytes
+KEYBOARD_SC_FLG  = $000F87 ;  1 Bytes that indicate the Status of Left Shift, Left CTRL, Left ALT, Right Shift
+KEYBOARD_SC_TMP  = $000F88 ;  1 Byte, Interrupt Save Scan Code while Processing
+KEYBOARD_LOCKS   = $000F89 ;  1 Byte, the status of the various lock keys
+KEYFLAG          = $000F8A ;  1 Byte, flag to indicate if CTRL-C has been pressed
+KEY_BUFFER_RPOS  = $000F8B ;  2 Byte, position of the character to read from the KEY_BUFFER
+KEY_BUFFER_WPOS  = $000F8D ;  2 Byte, position of the character to write to the KEY_BUFFER
 
+KERNEL_JMP_BEGIN = $001000 ; Reserved for the Kernel jump table
+KERNEL_JMP_END   = $001FFF
 
-
-TEST_BEGIN       = $001000 ;28672 Bytes Test/diagnostic code for prototype.
+TEST_BEGIN       = $002000 ;28672 Bytes Test/diagnostic code for prototype.
 TEST_END         = $007FFF ;0 Byte
 
 STACK_BEGIN      = $008000 ;32512 Bytes The default beginning of stack space
 STACK_END        = $00FEFF ;0 Byte  End of stack space. Everything below this is I/O space
 
-ISR_BEGIN        = $38FF00 ; Byte  Beginning of CPU vectors in Direct page
-HRESET           = $38FF00 ;16 Bytes Handle RESET asserted. Reboot computer and re-initialize the kernel.
-HCOP             = $38FF10 ;16 Bytes Handle the COP instruction. Program use; not used by OS
-HBRK             = $38FF20 ;16 Bytes Handle the BRK instruction. Returns to BASIC Ready prompt.
-HABORT           = $38FF30 ;16 Bytes Handle ABORT asserted. Return to Ready prompt with an error message.
-HNMI             = $38FF40 ;32 Bytes Handle NMI
-HIRQ             = $38FF60 ;32 Bytes Handle IRQ
-Unused_FF80      = $38FF80 ;End of direct page Interrrupt handlers
-
-VECTORS_BEGIN    = $38FFE0 ;0 Byte  Interrupt vectors
+.if TARGET = TARGET_RAM
+ISR_BEGIN        = $00FF00 ; Byte  Beginning of CPU vectors in Direct page
+HRESET           = $00FF00 ;16 Bytes Handle RESET asserted. Reboot computer and re-initialize the kernel.
+HCOP             = $00FF10 ;16 Bytes Handle the COP instruction. Program use; not used by OS
+HBRK             = $00FF20 ;16 Bytes Handle the BRK instruction. Returns to BASIC Ready prompt.
+HABORT           = $00FF30 ;16 Bytes Handle ABORT asserted. Return to Ready prompt with an error message.
+HNMI             = $00FF40 ;32 Bytes Handle NMI
+HIRQ             = $00FF60 ;32 Bytes Handle IRQ
+Unused_FF80      = $00FF80 ;End of direct page Interrrupt handlers
+VECTORS_BEGIN    = $00FFE0 ;0 Byte  Interrupt vectors
 JMP_READY        = $00FFE0 ;4 Bytes Jumps to ROM READY routine. Modified whenever alternate command interpreter is loaded.
 VECTOR_COP       = $00FFE4 ;2 Bytes Native COP Interrupt vector
 VECTOR_BRK       = $00FFE6 ;2 Bytes Native BRK Interrupt vector
@@ -205,6 +279,63 @@ VECTOR_EABORT    = $00FFF8 ;2 Bytes Emulation mode interrupt handler
 VECTOR_ENMI      = $00FFFA ;2 Bytes Emulation mode interrupt handler
 VECTOR_ERESET    = $00FFFC ;2 Bytes Emulation mode interrupt handler
 VECTOR_EIRQ      = $00FFFE ;2 Bytes Emulation mode interrupt handler
+VECTORS_END      = $010000 ;*End of vector space
+
+.elsif TARGET = TARGET_FLASH
+    .if TARGET_SYS = SYS_C256_FMX
+ISR_BEGIN        = $38FF00 ; Byte  Beginning of CPU vectors in Direct page
+HRESET           = $38FF00 ;16 Bytes Handle RESET asserted. Reboot computer and re-initialize the kernel.
+HCOP             = $38FF10 ;16 Bytes Handle the COP instruction. Program use; not used by OS
+HBRK             = $38FF20 ;16 Bytes Handle the BRK instruction. Returns to BASIC Ready prompt.
+HABORT           = $38FF30 ;16 Bytes Handle ABORT asserted. Return to Ready prompt with an error message.
+HNMI             = $38FF40 ;32 Bytes Handle NMI
+HIRQ             = $38FF60 ;32 Bytes Handle IRQ
+Unused_FF80      = $38FF80 ;End of direct page Interrrupt handlers
+
+VECTORS_BEGIN    = $38FFE0 ;0 Byte  Interrupt vectors
+JMP_READY        = $38FFE0 ;4 Bytes Jumps to ROM READY routine. Modified whenever alternate command interpreter is loaded.
+VECTOR_COP       = $38FFE4 ;2 Bytes Native COP Interrupt vector
+VECTOR_BRK       = $38FFE6 ;2 Bytes Native BRK Interrupt vector
+VECTOR_ABORT     = $38FFE8 ;2 Bytes Native ABORT Interrupt vector
+VECTOR_NMI       = $38FFEA ;2 Bytes Native NMI Interrupt vector
+VECTOR_RESET     = $38FFEC ;2 Bytes Unused (Native RESET vector)
+VECTOR_IRQ       = $38FFEE ;2 Bytes Native IRQ Vector
+RETURN           = $38FFF0 ;4 Bytes RETURN key handler. Points to BASIC or MONITOR subroutine to execute when RETURN is pressed.
+VECTOR_ECOP      = $38FFF4 ;2 Bytes Emulation mode interrupt handler
+VECTOR_EBRK      = $38FFF6 ;2 Bytes Emulation mode interrupt handler
+VECTOR_EABORT    = $38FFF8 ;2 Bytes Emulation mode interrupt handler
+VECTOR_ENMI      = $38FFFA ;2 Bytes Emulation mode interrupt handler
+VECTOR_ERESET    = $38FFFC ;2 Bytes Emulation mode interrupt handler
+VECTOR_EIRQ      = $38FFFE ;2 Bytes Emulation mode interrupt handler
+VECTORS_END      = $400000 ;*End of vector space
+    .else
+ISR_BEGIN        = $18FF00 ; Byte  Beginning of CPU vectors in Direct page
+HRESET           = $18FF00 ;16 Bytes Handle RESET asserted. Reboot computer and re-initialize the kernel.
+HCOP             = $18FF10 ;16 Bytes Handle the COP instruction. Program use; not used by OS
+HBRK             = $18FF20 ;16 Bytes Handle the BRK instruction. Returns to BASIC Ready prompt.
+HABORT           = $18FF30 ;16 Bytes Handle ABORT asserted. Return to Ready prompt with an error message.
+HNMI             = $18FF40 ;32 Bytes Handle NMI
+HIRQ             = $18FF60 ;32 Bytes Handle IRQ
+Unused_FF80      = $18FF80 ;End of direct page Interrrupt handlers
+
+VECTORS_BEGIN    = $18FFE0 ;0 Byte  Interrupt vectors
+JMP_READY        = $18FFE0 ;4 Bytes Jumps to ROM READY routine. Modified whenever alternate command interpreter is loaded.
+VECTOR_COP       = $18FFE4 ;2 Bytes Native COP Interrupt vector
+VECTOR_BRK       = $18FFE6 ;2 Bytes Native BRK Interrupt vector
+VECTOR_ABORT     = $18FFE8 ;2 Bytes Native ABORT Interrupt vector
+VECTOR_NMI       = $18FFEA ;2 Bytes Native NMI Interrupt vector
+VECTOR_RESET     = $18FFEC ;2 Bytes Unused (Native RESET vector)
+VECTOR_IRQ       = $18FFEE ;2 Bytes Native IRQ Vector
+RETURN           = $18FFF0 ;4 Bytes RETURN key handler. Points to BASIC or MONITOR subroutine to execute when RETURN is pressed.
+VECTOR_ECOP      = $18FFF4 ;2 Bytes Emulation mode interrupt handler
+VECTOR_EBRK      = $18FFF6 ;2 Bytes Emulation mode interrupt handler
+VECTOR_EABORT    = $18FFF8 ;2 Bytes Emulation mode interrupt handler
+VECTOR_ENMI      = $18FFFA ;2 Bytes Emulation mode interrupt handler
+VECTOR_ERESET    = $18FFFC ;2 Bytes Emulation mode interrupt handler
+VECTOR_EIRQ      = $18FFFE ;2 Bytes Emulation mode interrupt handler
 VECTORS_END      = $200000 ;*End of vector space
+    .endif
+.endif
+
 BANK0_END        = $00FFFF ;End of Bank 00 and Direct page
 ;

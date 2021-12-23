@@ -28,35 +28,56 @@ INIT_DISPLAY
                 STA BORDER_CTRL_REG
 
                 ; enable graphics, tiles and sprites display
-                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_Bitmap_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
                 STA MASTER_CTRL_REG_L
                 
                 ; display intro screen
                 ; wait for user to press a key or joystick button
                 
-                ; load tiles
+                ; load tiles @ $B0:0000
                 setaxl
                 LDX #<>TILES
                 LDY #0
                 LDA #$2000 ; 256 * 32 - this is two rows of tiles
                 MVN <`TILES,$B0
 
-                ; load LUT
+                ; load LUT0
                 LDX #<>PALETTE
                 LDY #<>GRPH_LUT0_PTR
                 LDA #1024
                 MVN <`PALETTE,<`GRPH_LUT0_PTR
                 
+                ;load LUT1 - same as LUT0 - this is a bug in Vicky
                 LDX #<>PALETTE
                 LDY #<>GRPH_LUT1_PTR
                 LDA #1024
                 MVN <`PALETTE,<`GRPH_LUT1_PTR
                 
+                
+                LDA #0
+                STA TL0_START_ADDY_H
+                ; set the tilemap window position to 0
+                STA TL0_WINDOW_X_POS_L
+                STA TL0_WINDOW_Y_POS_L
+                ; set the columns to 40
+                LDA #40
+                STA TL0_TOTAL_X_SIZE_L
+                ; set the rows to 30
+                LDA #30
+                STA TL0_TOTAL_Y_SIZE_L
+                
+                ; set the video RAM to B0:2000
+                LDA #$2000
+                STA TL0_START_ADDY_L
+                
                 setas
-                ; enable tiles
-                LDA #TILE_Enable + TILESHEET_256x256_En
+                ; enable tilemap 0
+                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
                 STA @lTL0_CONTROL_REG
                 
+                ; set the stride of tileset0 to 256;
+                LDA #8
+                STA TILESET0_ADDY_CFG
                 ; load tileset
                 JSR LOAD_TILESET
                 
@@ -554,9 +575,9 @@ UPDATE_HOME_TILES
                 LDA #0
                 STA HOME_CYCLE
 
-                LDX #280 ; line 8 in the game board`
-                LDY #7 * 64 ; line 8 in the tileset
-                setdbr $AF
+                LDX #280 ; line 8 in the game board
+                LDY #7 * 80 ; line 8 in the tileset
+                setdbr <`TILE_MAP0
 
         UT_GET_TILE
                 LDA game_board,X
@@ -576,6 +597,7 @@ UPDATE_HOME_TILES
                 STA TILE_MAP0,Y
                 
         UT_DONE
+                INY
                 INY
                 INX
                 CPX #320
@@ -619,8 +641,8 @@ UPDATE_WATER_TILES
                 STA WATER_CYCLE
 
                 LDX #8 * 40 ; line 9 in the game board`
-                LDY #8 * 64 ; line 8 in the tileset
-                setdbr $AF
+                LDY #8 * 80 ; line 8 in the tileset
+                setdbr <`TILE_MAP0
 
         UW_GET_TILE
                 LDA game_board,X
@@ -642,10 +664,11 @@ UPDATE_WATER_TILES
                 
         UW_DONE
                 INY
+                INY
                 setal
                 TYA
-                AND #$3F
-                CMP #40
+                AND #$7F
+                CMP #80
                 BNE WT_NEXT_TILE
                 TYA
                 CLC
@@ -758,12 +781,11 @@ WRITE_HEX
 LOAD_TILESET
                 LDX #0
                 LDY #0
-                setdbr $AF
+                setdbr <`TILE_MAP0
                 setas
     GET_TILE
                 LDA game_board,X
-
-        DOT     CMP #'.'
+                CMP #'.'  ; DOT
                 BNE GRASS
                 LDA #0
                 STA TILE_MAP0,Y
@@ -822,10 +844,14 @@ LOAD_TILESET
                 
     LT_DONE
                 INY
+                ; store the tileset in the next byte
+                LDA #0
+                STA TILE_MAP0,Y
+                INY
                 setal
                 TYA
-                AND #$3F
-                CMP #40
+                AND #$7F
+                CMP #80
                 BNE LT_NEXT_TILE
                 TYA
                 CLC
