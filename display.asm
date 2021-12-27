@@ -55,30 +55,30 @@ INIT_DISPLAY
                 
                 
                 LDA #0
-                STA TL0_START_ADDY_H
+                STA TL1_START_ADDY_H
                 ; set the tilemap window position to 0
                 LDA #0
-                STA TL0_WINDOW_X_POS_L
-                STA TL0_WINDOW_Y_POS_L
+                STA TL1_WINDOW_X_POS_L
+                STA TL1_WINDOW_Y_POS_L
                 ; set the columns to 40
                 LDA #40
-                STA TL0_TOTAL_X_SIZE_L
+                STA TL1_TOTAL_X_SIZE_L
                 ; set the rows to 30
                 LDA #30
-                STA TL0_TOTAL_Y_SIZE_L
+                STA TL1_TOTAL_Y_SIZE_L
                 
                 ; set the video RAM to B0:2000
                 LDA #$2000
-                STA TL0_START_ADDY_L
+                STA TL1_START_ADDY_L
                 
                 setas
                 ; enable tilemap 0
                 LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
-                STA @lTL0_CONTROL_REG
+                STA @lTL1_CONTROL_REG
                 
                 ; set the stride of tileset0 to 256;
                 LDA #8
-                STA TILESET0_ADDY_CFG
+                STA TILESET1_ADDY_CFG
                 ; load tileset
                 JSR LOAD_TILESET
                 
@@ -94,6 +94,8 @@ INIT_DISPLAY
 
 ; ******************************************************************
 ; * We're loading sprites (1024 bytes) from a 256x256 tileset
+; * This is an odd functions, as sprites as 32x32 and the tileset is 
+; * 256 bytes wide.
 ; ******************************************************************
 sprite_line    = $6
 sprite_addr    = $10
@@ -151,8 +153,9 @@ LOAD_SPRITES
                 LDA #0
 
                 STA @lSP00_ADDY_PTR_L,X
-                LDA #SPRITE_Enable
+                LDA #(SPRITE_Enable | SPRITE_DEPTH1)
                 STA @lSP00_CONTROL_REG,X
+                LDA #1
                 STA @lSP00_ADDY_PTR_H,X
                 LDA game_array+6,X ; 0 to 23
                 ASL A
@@ -183,6 +186,8 @@ LOAD_SPRITES
 INIT_PLAYER
                 ; start at position (100,100)
                 setal
+                LDA #(SPRITE_Enable | SPRITE_DEPTH0)
+                STA @lSP15_CONTROL_REG
                 LDA #9 * 32 + 32
                 STA PLAYER_X
                 STA @lSP15_X_POS_L
@@ -633,7 +638,7 @@ EVEN_WTILE_VAL  .byte $4
 ODD_WTILE_VAL   .byte $14
 UPDATE_WATER_TILES
                 .as
-                ; alternate the HOME tiles to imitate wind motion
+                ; alternate the WATER tiles to imitate waves
                 LDA WATER_CYCLE
                 INC A
                 CMP #12 ; only update every N SOF cycle
@@ -641,7 +646,7 @@ UPDATE_WATER_TILES
                 LDA #0
                 STA WATER_CYCLE
 
-                LDX #8 * 40 ; line 9 in the game board`
+                LDX #8 * 40 ; line 9 in the game board
                 LDY #8 * 80 ; line 8 in the tileset
                 setdbr <`TILE_MAP0
 
@@ -867,9 +872,9 @@ LOAD_TILESET
                 RTS
 
 PALETTE
-.binary "assets/simple-tiles.data.pal"
+.binary "assets/fraggy.pal"
 
 * = $170000
 TILES
-.binary "assets/simple-tiles.data"
+.binary "assets/fraggy.bin"
 

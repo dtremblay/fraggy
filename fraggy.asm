@@ -9,11 +9,11 @@
 .include "interrupt_def.asm"
 .include "keyboard_def.asm"
 .include "io_def.asm"
+.include "math_def.asm"
+.include "timer_def.asm"
 .include "base.asm"
 
-GAME_SPRITES    = 15 ; 0 to 14
-PLAYER_SPRITE   = 15
-TOTAL_SPRITES   = 24
+TOTAL_SPRITES   = 26
 TILE_MAP0       = $B02000
 
 ; sprite names
@@ -32,11 +32,13 @@ PLAYER_Y    .word 100
 LIVES       .byte 3
 DEAD        .byte 0
 RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
+BEE_TIMER   .byte 0 ; show the bee for a short period of time.
+SCORE       .word 0 
 
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
-            .word $FFFC, 640-96, 480-96, 0        ; sprite  0 - car front
-            .word $FFFC, 640-64, 480-96, 1        ; sprite  1 - car back
+            .word $FFFC, 640-96, 480-96 , 0        ; sprite  0 - car front
+            .word $FFFC, 640-64, 480-96 , 1        ; sprite  1 - car back
             .word     2, 32    , 480-128, 2        ; sprite  2 - bus back
             .word     2, 64    , 480-128, 3        ; sprite  3 - bus middle
             .word     2, 96    , 480-128, 4        ; sprite  4 - bus front
@@ -102,11 +104,24 @@ GAME_START
             STA @lINT_MASK_REG0
             STA @lINT_MASK_REG1
             STA @lINT_MASK_REG2
+            
+            
+            ; Address SONG
+            JSL VGM_INIT_TIMERS
+            ; load the game over music
+            LDA #`SONG
+            STA CURRENT_POSITION + 2
+            STA SONG_START + 2
+            setal
+            LDA #<>SONG
+            STA SONG_START
+            setas
+            JSL VGM_SET_SONG_POINTERS
                 
             JSR INIT_DISPLAY
             
             ; Enable SOF
-            LDA #~( FNX0_INT00_SOF )
+            LDA #~( FNX0_INT00_SOF | FNX0_INT02_TMR0)
             STA @lINT_MASK_REG0
             ; Enable Keyboard
             LDA #~( FNX1_INT00_KBD )
@@ -118,3 +133,9 @@ GAME_START
 
 .include "interrupt_handler.asm"
 .include "display.asm"
+.include "vgm_player.asm"
+
+SONG
+;.binary "assets/03 Bay Yard (Daytime) (1st Day).vgm"
+;.binary "assets/11 Sarinuka Sands (Daytime) (2nd Day).vgm"
+.binary "assets/03 Forest Path.vgm"

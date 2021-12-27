@@ -32,7 +32,7 @@ IRQ_HANDLER
 ; Start of Frame
                 check_irq_bit INT_PENDING_REG0, FNX0_INT00_SOF, SOF_INTERRUPT
 ; Timer 0
-                ;check_irq_bit INT_PENDING_REG0, FNX0_INT02_TMR0, TIMER0_INTERRUPT
+                check_irq_bit INT_PENDING_REG0, FNX0_INT02_TMR0, TIMER0_INTERRUPT
 ; FDC Interrupt
                 ;check_irq_bit INT_PENDING_REG0, FNX0_INT06_FDC, FDC_INTERRUPT
 ; Mouse IRQ
@@ -127,51 +127,17 @@ SOF_INTERRUPT
                 JSR UPDATE_DISPLAY
                 
                 RTS
-;
-; ///////////////////////////////////////////////////////////////////
-; ///
-; /// Floppy Controller
-; /// Desc: Interrupt for Data Rx/Tx or Process Commencement or Termination
-; ///
-; ///////////////////////////////////////////////////////////////////
-FDC_INTERRUPT   .as
 
-;; PUT YOUR CODE HERE
-                RTS
 ;
 ;
 ; ///////////////////////////////////////////////////////////////////
 ; ///
-; /// Serial Port COM2
-; /// Desc: Interrupt for Data Rx/Tx or Process Commencement or Termination
+; /// Timer0 interrupt
+; /// Desc: Interrupt for playing VGM data
 ; ///
 ; ///////////////////////////////////////////////////////////////////
-COM2_INTERRUPT  .as
-
-;; PUT YOUR CODE HERE
-                RTS
-;
-; ///////////////////////////////////////////////////////////////////
-; ///
-; /// Serial Port COM1
-; /// Desc: Interrupt for Data Rx/Tx or Process Commencement or Termination
-; ///
-; ///////////////////////////////////////////////////////////////////
-COM1_INTERRUPT  .as
-
-;; PUT YOUR CODE HERE
-                RTS
-;
-;
-; ///////////////////////////////////////////////////////////////////
-; ///
-; /// Parallel Port LPT1
-; /// Desc: Interrupt for Data Rx/Tx or Process Commencement or Termination
-; ///
-; ///////////////////////////////////////////////////////////////////
-LPT1_INTERRUPT  .as
-
-;; PUT YOUR CODE HERE
+TIMER0_INTERRUPT  .as
+                JSL VGM_WRITE_REGISTER
                 RTS
 
 NMI_HANDLER
