@@ -22,6 +22,9 @@ INIT_DISPLAY
                 STA BORDER_COLOR_R
                 LDA #0
                 STA BORDER_COLOR_G
+                
+                ; RESET the keyboard handler
+                STZ KEYBOARD_SC_TMP
 
                 ; enable the border
                 LDA #Border_Ctrl_Enable
@@ -34,12 +37,16 @@ INIT_DISPLAY
                 ; display intro screen
                 ; wait for user to press a key or joystick button
                 
+                
+                ; set the stride of tileset0 to 256;
+                LDA #8
+                STA TILESET0_ADDY_CFG
                 ; load tiles @ $B0:0000
-                setaxl
+                setal
                 LDX #<>TILES
-                LDY #0
+                LDY #<>TILE_SET0
                 LDA #$2000 ; 256 * 32 - this is two rows of tiles
-                MVN <`TILES,$B0
+                MVN <`TILES,<`TILE_SET0
 
                 ; load LUT0
                 LDX #<>PALETTE
@@ -53,7 +60,7 @@ INIT_DISPLAY
                 LDA #1024
                 MVN <`PALETTE,<`GRPH_LUT1_PTR
                 
-                
+                ; enable tilemap 1
                 LDA #0
                 STA TL1_START_ADDY_H
                 ; set the tilemap window position to 0
@@ -68,7 +75,7 @@ INIT_DISPLAY
                 STA TL1_TOTAL_Y_SIZE_L
                 
                 ; set the video RAM to B0:2000
-                LDA #$2000
+                LDA #<>TILE_MAP0
                 STA TL1_START_ADDY_L
                 
                 setas
@@ -76,14 +83,13 @@ INIT_DISPLAY
                 LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
                 STA @lTL1_CONTROL_REG
                 
-                ; set the stride of tileset0 to 256;
-                LDA #8
-                STA TILESET1_ADDY_CFG
-                ; load tileset
-                JSR LOAD_TILESET
+                ; transform the gameboard to tilemap
+                JSR TRANSFORM_BOARD_TO_TILEMAP
                 
                 ; render the first frame
                 JSR LOAD_SPRITES
+                ; enable the sprites
+                JSR ENABLE_SPRITES_NPC
                 
                 JSR INIT_PLAYER
                 JSR INIT_NPC
@@ -101,11 +107,10 @@ sprite_line    = $6
 sprite_addr    = $10
 LOAD_SPRITES
                 .as
-                setas
                 LDA #0
                 STA sprite_addr
                 STA sprite_addr + 1
-                LDA #$B1
+                LDA #<`SPRITES
                 STA sprite_addr + 2
                 LDX #0
         NEXT_SPRITE
@@ -117,7 +122,7 @@ LOAD_SPRITES
                 INX
                 setal
                 TXA
-                AND #$1F
+                AND #31
                 BEQ LS_NEXT_LINE
                 
         LS_CONTINUE
@@ -130,7 +135,7 @@ LOAD_SPRITES
                 CLC
                 ADC #4
                 STA sprite_addr + 1
-                AND #$1F
+                AND #31
                 ASL A
                 ASL A
                 ASL A ; multiply by 8
@@ -144,23 +149,32 @@ LOAD_SPRITES
                 BNE NEXT_SPRITE
 
                 LDA #0
-                setaxs
+                RTS
                 
+ENABLE_SPRITES_NPC
+                .as
+                setxs
                 ; now enabled the sprites
                 ; the address of the sprite is based on the game_array
                 LDX #0  ; X increments in steps of 8
-        LSP_LOOP
-                LDA #0
 
-                STA @lSP00_ADDY_PTR_L,X
-                LDA #(SPRITE_Enable | SPRITE_DEPTH1)
-                STA @lSP00_CONTROL_REG,X
+                LDA #0
+                STA @lSP00_CONTROL_REG
+                STA @lSP01_CONTROL_REG
+                STA @lSP02_CONTROL_REG
+                STA @lSP03_CONTROL_REG
+                
+    LSP_LOOP
+                LDA #0
+                STA @lSP04_ADDY_PTR_L,X
+                LDA #(SPRITE_Enable | SPRITE_DEPTH0)
+                STA @lSP04_CONTROL_REG,X
                 LDA #1
-                STA @lSP00_ADDY_PTR_H,X
+                STA @lSP04_ADDY_PTR_H,X
                 LDA game_array+6,X ; 0 to 23
                 ASL A
                 ASL A
-                STA @lSP00_ADDY_PTR_M,X
+                STA @lSP04_ADDY_PTR_M,X
                 
                 TXA
                 CLC
@@ -169,7 +183,6 @@ LOAD_SPRITES
                 CPX #128
                 BNE LSP_LOOP
                 setxl
-                
                 RTS
                 
     LS_NEXT_LINE
@@ -186,15 +199,20 @@ LOAD_SPRITES
 INIT_PLAYER
                 ; start at position (100,100)
                 setal
+                LDA #PLAYER_UP * 1024
+                STA @lSP00_ADDY_PTR_L
                 LDA #(SPRITE_Enable | SPRITE_DEPTH0)
-                STA @lSP15_CONTROL_REG
+                STA @lSP00_CONTROL_REG
                 LDA #9 * 32 + 32
                 STA PLAYER_X
-                STA @lSP15_X_POS_L
+                STA @lSP00_X_POS_L
                 LDA #10 * 32 + 96
                 STA PLAYER_Y
-                STA @lSP15_Y_POS_L
+                STA @lSP00_Y_POS_L
+                
                 setas
+                LDA #1
+                STA @lSP00_ADDY_PTR_H
             
                 RTS
 
@@ -208,9 +226,9 @@ INIT_NPC
                 
         INIT_NPC_LOOP
                 LDA game_array + 2,X ; X POSITION
-                STA @lSP00_X_POS_L,X
+                STA @lSP04_X_POS_L,X
                 LDA game_array + 4,X ; Y POSITION
-                STA @lSP00_Y_POS_L,X
+                STA @lSP04_Y_POS_L,X
                 
                 TXA
                 CLC
@@ -227,7 +245,9 @@ INIT_NPC
 ; ****************************************************
 UPDATE_DISPLAY
                 .as
+                PHB
                 PHA
+                
                 ; check if the player is dead
                 LDA DEAD
                 BEQ NOT_DEAD
@@ -244,14 +264,11 @@ UPDATE_DISPLAY
                 
                 LDA #0
                 STA DEAD
-                
-                ; restart the player at first row
-                LDA #PLAYER_UP * 4
-                STA SP15_ADDY_PTR_M
 
                 JSR INIT_PLAYER
         NO_UPDATE
                 PLA
+                PLB
                 RTS
                 
                 
@@ -289,6 +306,7 @@ UPDATE_DISPLAY
                 setas
                 JSR UPDATE_NPC_POSITIONS
                 JSR COLLISION_CHECK
+                PLB
                 RTS
 
 ; ****************************************************
@@ -319,7 +337,7 @@ UPDATE_NPC_POSITIONS
                 LDA #0
                 
         LESS_RGT_MRG
-                STA @lSP00_X_POS_L,X
+                STA @lSP04_X_POS_L,X
                 STA game_array + 2,X
                 
                 
@@ -348,10 +366,10 @@ PLAYER_MOVE_DOWN
                 
         PMD_DONE
                 STA PLAYER_Y
-                STA SP15_Y_POS_L
+                STA SP00_Y_POS_L
                 setas
                 LDA #PLAYER_DOWN * 4
-                STA SP15_ADDY_PTR_M
+                STA SP00_ADDY_PTR_M
                 setal
                 RTS
                 
@@ -366,10 +384,10 @@ PLAYER_MOVE_UP
                 
         PMU_DONE
                 STA PLAYER_Y
-                STA SP15_Y_POS_L
+                STA SP00_Y_POS_L
                 setas
                 LDA #PLAYER_UP * 4
-                STA SP15_ADDY_PTR_M
+                STA SP00_ADDY_PTR_M
                 setal
                 RTS
                 
@@ -384,10 +402,10 @@ PLAYER_MOVE_RIGHT
                 
         PMR_DONE
                 STA PLAYER_X
-                STA SP15_X_POS_L
+                STA SP00_X_POS_L
                 setas
                 LDA #PLAYER_RIGHT * 4
-                STA SP15_ADDY_PTR_M
+                STA SP00_ADDY_PTR_M
                 setal
                 RTS
                 
@@ -402,10 +420,10 @@ PLAYER_MOVE_LEFT
                 
         PML_DONE
                 STA PLAYER_X
-                STA SP15_X_POS_L
+                STA SP00_X_POS_L
                 setas
                 LDA #PLAYER_LEFT * 4
-                STA SP15_ADDY_PTR_M
+                STA SP00_ADDY_PTR_M
                 setal
                 RTS
                 
@@ -484,7 +502,7 @@ COLLISION_CHECK
                 BCS W_COLLISION
                 
                 STA PLAYER_X
-                STA SP15_X_POS_L
+                STA SP00_X_POS_L
                 setas
                 RTS
                 
@@ -511,7 +529,7 @@ COLLISION_CHECK
                 setas
                 ; show splash sprite at player's location
                 LDA #SPLASH_SPRITE * 4
-                STA SP15_ADDY_PTR_M
+                STA SP00_ADDY_PTR_M
 
                 ; set the player to DEAD
             SET_DEAD
@@ -528,7 +546,7 @@ COLLISION_CHECK
                 setas
                 ; show splash sprite at player's location
                 LDA #SPLATT_SPRITE * 4
-                STA SP15_ADDY_PTR_M
+                STA SP00_ADDY_PTR_M
                 BRA SET_DEAD
                 
                 
@@ -731,7 +749,7 @@ UPDATE_LILLY
                 STA game_array + 14 * 8 + 6
                 ASL A
                 ASL A
-                STA @lSP14_ADDY_PTR_M
+                STA @lSP18_ADDY_PTR_M
                 RTS
                 
         UL_SKIP
@@ -782,11 +800,12 @@ WRITE_HEX
                 RTS
 
 ; *********************************************************
-; * Convert the game_board to a tile set
+; * Convert the game_board to a tile map
 ; *********************************************************
-LOAD_TILESET
+TRANSFORM_BOARD_TO_TILEMAP                
+                ; transform the game board into a tilemap
                 LDX #0
-                LDY #2  ; the tilemap is offset by 1 column
+                LDY #2  ; the tilemap is offset by 1 column, or 2 bytes.
                 setdbr <`TILE_MAP0
                 setas
     GET_TILE

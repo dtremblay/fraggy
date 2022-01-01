@@ -81,7 +81,11 @@ EXIT_IRQ_HANDLE
 KEYBOARD_INTERRUPT
                 .as
                 LDA KBD_INPT_BUF        ; Get Scan Code from KeyBoard
-                STA KEYBOARD_SC_TMP     ; Save Code Immediately
+                EOR KEYBOARD_SC_TMP     ; if the scan code hasn't changed, skip
+                BEQ KBD_SKIP
+                
+                LDA KBD_INPT_BUF
+                STA KEYBOARD_SC_TMP
                 CMP #$11 ; W key
                 BNE CHECK_A
                 LDA #$9E
@@ -110,8 +114,12 @@ KEYBOARD_INTERRUPT
                 
         SKIP_KEY
                 LDA #$9F
+                JMP KBD_SKIP
+                
         KBD_DONE
+
                 JSR UPDATE_DISPLAY
+        KBD_SKIP        
                 RTS
 ;
 ; ///////////////////////////////////////////////////////////////////

@@ -1,7 +1,7 @@
 
 ; 64tass Turbo Assembler Macro V1.55.2425-test listing file
 ; 64tass-1.55.2425-test.exe -D TARGET_SYS= --long-address --intel-hex --m65816 -o fraggy.hex --list fraggy.lst fraggy.asm
-; Mon Dec 27 18:49:58 2021
+; Sat Jan 01 17:23:55 2022
 
 ;Offset	;Hex		;Monitor	;Source
 
@@ -1300,13 +1300,18 @@
 ;******  Return to file: fraggy.asm
 
 =26					TOTAL_SPRITES   = 26
+=$b00000				TILE_SET0       = $B00000
 =$b02000				TILE_MAP0       = $B02000
+=$b10000				SPRITES         = $B10000
 =10					PLAYER_UP       = 10
 =11					PLAYER_LEFT     = 11
 =13					PLAYER_RIGHT    = 13
 =12					PLAYER_DOWN     = 12
 =14					SPLASH_SPRITE   = 14
 =15					SPLATT_SPRITE   = 15
+=16					LILLYPAD_SPRITE = 16 ; lilly pad has 8 sprites
+=24					TONGUE_SPRITE   = 24
+=25					BEE_SPRITE      = 25
 =180					THREE_SECS      = 180
 >160000	64 00				PLAYER_X    .word 100
 >160002	64 00				PLAYER_Y    .word 100
@@ -1316,22 +1321,22 @@
 >160007	00				BEE_TIMER   .byte 0 ; show the bee for a short period of time.
 >160008	00 00				SCORE       .word 0
 .16000a					game_array
->16000a	fc ff 20 02 80 01 00 00		            .word $FFFC, 640-96, 480-96 , 0        ; sprite  0 - car front
->160012	fc ff 40 02 80 01 01 00		            .word $FFFC, 640-64, 480-96 , 1        ; sprite  1 - car back
->16001a	02 00 20 00 60 01 02 00		            .word     2, 32    , 480-128, 2        ; sprite  2 - bus back
->160022	02 00 40 00 60 01 03 00		            .word     2, 64    , 480-128, 3        ; sprite  3 - bus middle
->16002a	02 00 60 00 60 01 04 00		            .word     2, 96    , 480-128, 4        ; sprite  4 - bus front
->160032	fa ff 60 00 40 01 00 00		            .word $FFFA, 96    , 480-160, 0        ; sprite  5 - car front
->16003a	fa ff 80 00 40 01 01 00		            .word $FFFA, 128   , 480-160, 1        ; sprite  6 - car back
->160042	01 00 c0 00 20 01 08 00		            .word     1, 192   , 288    , 8        ; sprite  7 - oldie front
->16004a	01 00 e0 00 20 01 09 00		            .word     1, 224   , 288    , 9        ; sprite  8 - oldie back
->160052	fb ff 40 01 a0 00 05 00		            .word $FFFB, 320   , 160    , 5        ; sprite  9 - log 1
->16005a	fb ff 60 01 a0 00 06 00		            .word $FFFB, 352   , 160    , 6        ; sprite 10 - log 2
->160062	fb ff 80 01 a0 00 07 00		            .word $FFFB, 384   , 160    , 7        ; sprite 11 - log 3
->16006a	02 00 a0 01 c0 00 05 00		            .word     2, 416   , 192    , 5        ; sprite 12 - log 1
->160072	02 00 c0 01 c0 00 07 00		            .word     2, 448   , 192    , 7        ; sprite 13 - log 3
->16007a	fe ff 00 02 e0 00 10 00		            .word $FFFE, 512   , 224    ,16        ; sprite 15 - lilypad
->160082	00 00 00 00 00 00 0a 00		            .word     0, 0     , 0      ,PLAYER_UP ; - player sprite
+>16000a	fc ff 20 02 80 01 00 00		            .word $FFFC, 640-96, 480-96 , 0              ; sprite  0 - car front
+>160012	fc ff 40 02 80 01 01 00		            .word $FFFC, 640-64, 480-96 , 1              ; sprite  1 - car back
+>16001a	02 00 20 00 60 01 02 00		            .word     2, 32    , 480-128, 2              ; sprite  2 - bus back
+>160022	02 00 40 00 60 01 03 00		            .word     2, 64    , 480-128, 3              ; sprite  3 - bus middle
+>16002a	02 00 60 00 60 01 04 00		            .word     2, 96    , 480-128, 4              ; sprite  4 - bus front
+>160032	fa ff 60 00 40 01 00 00		            .word $FFFA, 96    , 480-160, 0              ; sprite  5 - car front
+>16003a	fa ff 80 00 40 01 01 00		            .word $FFFA, 128   , 480-160, 1              ; sprite  6 - car back
+>160042	01 00 c0 00 20 01 08 00		            .word     1, 192   , 288    , 8              ; sprite  7 - oldie back
+>16004a	01 00 e0 00 20 01 09 00		            .word     1, 224   , 288    , 9              ; sprite  8 - oldie front
+>160052	fb ff 40 01 a0 00 05 00		            .word $FFFB, 320   , 160    , 5              ; sprite  9 - log 1
+>16005a	fb ff 60 01 a0 00 06 00		            .word $FFFB, 352   , 160    , 6              ; sprite 10 - log 2
+>160062	fb ff 80 01 a0 00 07 00		            .word $FFFB, 384   , 160    , 7              ; sprite 11 - log 3
+>16006a	02 00 a0 01 c0 00 05 00		            .word     2, 416   , 192    , 5              ; sprite 12 - log 1
+>160072	02 00 c0 01 c0 00 07 00		            .word     2, 448   , 192    , 7              ; sprite 13 - log 3
+>16007a	fe ff 00 02 e0 00 10 00		            .word $FFFE, 512   , 224    ,LILLYPAD_SPRITE ; sprite 15 - lilypad
+>160082	00 00 00 00 00 00 0a 00		            .word     0, 0     , 0      ,PLAYER_UP       ; player sprite
 .16008a					game_board
 >16008a	2e 2e 2e 2e 2e 2e 2e 2e		            .text "........................................" ;1 - not shown
 >160092	2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e
@@ -1443,7 +1448,7 @@
 .160569	85 84		sta $84		            STA SONG_START
 .16056b	e2 20		sep #$20	                SEP #$20        ; set A short
 .16056d	22 30 85 17	jsl $178530	            JSL VGM_SET_SONG_POINTERS
-.160571	20 15 06	jsr $160615	            JSR INIT_DISPLAY
+.160571	20 21 06	jsr $160621	            JSR INIT_DISPLAY
 .160574	a9 fa		lda #$fa	            LDA #~( FNX0_INT00_SOF | FNX0_INT02_TMR0)
 .160576	8f 4c 01 00	sta $00014c	            STA @lINT_MASK_REG0
 .16057a	a9 fe		lda #$fe	            LDA #~( FNX1_INT00_KBD )
@@ -1472,14 +1477,14 @@
 .16059b	c9 01		cmp #$01	                CMP #FNX0_INT00_SOF
 .16059d	d0 06		bne $1605a5	                BNE END_CHECK
 .16059f	8d 40 01	sta $0140	                STA INT_PENDING_REG0
-.1605a2	20 07 06	jsr $160607	                JSR SOF_INTERRUPT
+.1605a2	20 13 06	jsr $160613	                JSR SOF_INTERRUPT
 .1605a5					END_CHECK
 .1605a5	ad 40 01	lda $0140	                LDA INT_PENDING_REG0
 .1605a8	29 04		and #$04	                AND #FNX0_INT02_TMR0
 .1605aa	c9 04		cmp #$04	                CMP #FNX0_INT02_TMR0
 .1605ac	d0 06		bne $1605b4	                BNE END_CHECK
 .1605ae	8d 40 01	sta $0140	                STA INT_PENDING_REG0
-.1605b1	20 0f 06	jsr $16060f	                JSR TIMER0_INTERRUPT
+.1605b1	20 1b 06	jsr $16061b	                JSR TIMER0_INTERRUPT
 .1605b4					END_CHECK
 .1605b4					CHECK_PENDING_REG1
 .1605b4	e2 20		sep #$20	                SEP #$20        ; set A short
@@ -1500,725 +1505,743 @@
 .1605d1	6b		rtl		                RTL
 .1605d2					KEYBOARD_INTERRUPT
 .1605d2	af 60 10 af	lda $af1060	                LDA KBD_INPT_BUF        ; Get Scan Code from KeyBoard
-.1605d6	8d 88 0f	sta $0f88	                STA KEYBOARD_SC_TMP     ; Save Code Immediately
-.1605d9	c9 11		cmp #$11	                CMP #$11 ; W key
-.1605db	d0 04		bne $1605e1	                BNE CHECK_A
-.1605dd	a9 9e		lda #$9e	                LDA #$9E
-.1605df	80 22		bra $160603	                BRA KBD_DONE
-.1605e1	c9 1e		cmp #$1e	        CHECK_A CMP #$1E
-.1605e3	d0 04		bne $1605e9	                BNE CHECK_S
-.1605e5	a9 9b		lda #$9b	                LDA #$9B
-.1605e7	80 1a		bra $160603	                BRA KBD_DONE
-.1605e9	c9 1f		cmp #$1f	        CHECK_S CMP #$1F
-.1605eb	d0 04		bne $1605f1	                BNE CHECK_D
-.1605ed	a9 9d		lda #$9d	                LDA #$9D
-.1605ef	80 12		bra $160603	                BRA KBD_DONE
-.1605f1	c9 20		cmp #$20	        CHECK_D CMP #$20
-.1605f3	d0 04		bne $1605f9	                BNE CHECK_SPACE
-.1605f5	a9 97		lda #$97	                LDA #$97
-.1605f7	80 0a		bra $160603	                BRA KBD_DONE
-.1605f9					        CHECK_SPACE
-.1605f9	c9 39		cmp #$39	                CMP #$39
-.1605fb	d0 04		bne $160601	                BNE SKIP_KEY
-.1605fd	a9 1f		lda #$1f	                LDA #$1F
-.1605ff	80 02		bra $160603	                BRA KBD_DONE
-.160601					        SKIP_KEY
-.160601	a9 9f		lda #$9f	                LDA #$9F
-.160603					        KBD_DONE
-.160603	20 7a 07	jsr $16077a	                JSR UPDATE_DISPLAY
-.160606	60		rts		                RTS
-.160607					SOF_INTERRUPT
-.160607	af 00 e8 af	lda $afe800	                LDA JOYSTICK0
-.16060b	20 7a 07	jsr $16077a	                JSR UPDATE_DISPLAY
-.16060e	60		rts		                RTS
-.16060f					TIMER0_INTERRUPT
-.16060f	22 00 80 17	jsl $178000	                JSL VGM_WRITE_REGISTER
-.160613	60		rts		                RTS
-.160614					NMI_HANDLER
-.160614	6b		rtl		                RTL
+.1605d6	4d 88 0f	eor $0f88	                EOR KEYBOARD_SC_TMP     ; if the scan code hasn't changed, skip
+.1605d9	f0 37		beq $160612	                BEQ KBD_SKIP
+.1605db	af 60 10 af	lda $af1060	                LDA KBD_INPT_BUF
+.1605df	8d 88 0f	sta $0f88	                STA KEYBOARD_SC_TMP
+.1605e2	c9 11		cmp #$11	                CMP #$11 ; W key
+.1605e4	d0 04		bne $1605ea	                BNE CHECK_A
+.1605e6	a9 9e		lda #$9e	                LDA #$9E
+.1605e8	80 25		bra $16060f	                BRA KBD_DONE
+.1605ea	c9 1e		cmp #$1e	        CHECK_A CMP #$1E
+.1605ec	d0 04		bne $1605f2	                BNE CHECK_S
+.1605ee	a9 9b		lda #$9b	                LDA #$9B
+.1605f0	80 1d		bra $16060f	                BRA KBD_DONE
+.1605f2	c9 1f		cmp #$1f	        CHECK_S CMP #$1F
+.1605f4	d0 04		bne $1605fa	                BNE CHECK_D
+.1605f6	a9 9d		lda #$9d	                LDA #$9D
+.1605f8	80 15		bra $16060f	                BRA KBD_DONE
+.1605fa	c9 20		cmp #$20	        CHECK_D CMP #$20
+.1605fc	d0 04		bne $160602	                BNE CHECK_SPACE
+.1605fe	a9 97		lda #$97	                LDA #$97
+.160600	80 0d		bra $16060f	                BRA KBD_DONE
+.160602					        CHECK_SPACE
+.160602	c9 39		cmp #$39	                CMP #$39
+.160604	d0 04		bne $16060a	                BNE SKIP_KEY
+.160606	a9 1f		lda #$1f	                LDA #$1F
+.160608	80 05		bra $16060f	                BRA KBD_DONE
+.16060a					        SKIP_KEY
+.16060a	a9 9f		lda #$9f	                LDA #$9F
+.16060c	4c 12 06	jmp $160612	                JMP KBD_SKIP
+.16060f					        KBD_DONE
+.16060f	20 aa 07	jsr $1607aa	                JSR UPDATE_DISPLAY
+.160612					        KBD_SKIP
+.160612	60		rts		                RTS
+.160613					SOF_INTERRUPT
+.160613	af 00 e8 af	lda $afe800	                LDA JOYSTICK0
+.160617	20 aa 07	jsr $1607aa	                JSR UPDATE_DISPLAY
+.16061a	60		rts		                RTS
+.16061b					TIMER0_INTERRUPT
+.16061b	22 00 80 17	jsl $178000	                JSL VGM_WRITE_REGISTER
+.16061f	60		rts		                RTS
+.160620					NMI_HANDLER
+.160620	6b		rtl		                RTL
 
 ;******  Return to file: fraggy.asm
 
 
 ;******  Processing file: display.asm
 
-.160615					INIT_DISPLAY
-.160615	a9 80		lda #$80	                LDA #128
-.160617	85 11		sta $11		                STA COLS_PER_LINE
-.160619	a9 40		lda #$40	                LDA #64
-.16061b	85 15		sta $15		                STA LINES_MAX
-.16061d	a9 50		lda #$50	                LDA #80
-.16061f	85 0f		sta $0f		                STA COLS_VISIBLE
-.160621	a9 3c		lda #$3c	                LDA #60
-.160623	85 13		sta $13		                STA LINES_VISIBLE
-.160625	a9 20		lda #$20	                LDA #32
-.160627	8f 08 00 af	sta $af0008	                STA BORDER_X_SIZE
-.16062b	8f 09 00 af	sta $af0009	                STA BORDER_Y_SIZE
-.16062f	e2 20		sep #$20	                SEP #$20        ; set A short
-.160631	a9 20		lda #$20	                LDA #$20
-.160633	8f 05 00 af	sta $af0005	                STA BORDER_COLOR_B
-.160637	8f 07 00 af	sta $af0007	                STA BORDER_COLOR_R
-.16063b	a9 00		lda #$00	                LDA #0
-.16063d	8f 06 00 af	sta $af0006	                STA BORDER_COLOR_G
-.160641	a9 01		lda #$01	                LDA #Border_Ctrl_Enable
-.160643	8f 04 00 af	sta $af0004	                STA BORDER_CTRL_REG
-.160647	a9 34		lda #$34	                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
-.160649	8f 00 00 af	sta $af0000	                STA MASTER_CTRL_REG_L
-.16064d	c2 30		rep #$30	                REP #$30        ; set A&X long
-.16064f	a2 00 00	ldx #$0000	                LDX #<>TILES
-.160652	a0 00 00	ldy #$0000	                LDY #0
-.160655	a9 00 20	lda #$2000	                LDA #$2000 ; 256 * 32 - this is two rows of tiles
-.160658	54 b0 17	mvn #$17,#$b0	                MVN <`TILES,$B0
-.16065b	a2 82 0b	ldx #$0b82	                LDX #<>PALETTE
-.16065e	a0 00 20	ldy #$2000	                LDY #<>GRPH_LUT0_PTR
-.160661	a9 00 04	lda #$0400	                LDA #1024
-.160664	54 af 16	mvn #$16,#$af	                MVN <`PALETTE,<`GRPH_LUT0_PTR
-.160667	a2 82 0b	ldx #$0b82	                LDX #<>PALETTE
-.16066a	a0 00 24	ldy #$2400	                LDY #<>GRPH_LUT1_PTR
-.16066d	a9 00 04	lda #$0400	                LDA #1024
-.160670	54 af 16	mvn #$16,#$af	                MVN <`PALETTE,<`GRPH_LUT1_PTR
-.160673	a9 00 00	lda #$0000	                LDA #0
-.160676	8f 0f 02 af	sta $af020f	                STA TL1_START_ADDY_H
-.16067a	a9 00 00	lda #$0000	                LDA #0
-.16067d	8f 14 02 af	sta $af0214	                STA TL1_WINDOW_X_POS_L
-.160681	8f 16 02 af	sta $af0216	                STA TL1_WINDOW_Y_POS_L
-.160685	a9 28 00	lda #$0028	                LDA #40
-.160688	8f 10 02 af	sta $af0210	                STA TL1_TOTAL_X_SIZE_L
-.16068c	a9 1e 00	lda #$001e	                LDA #30
-.16068f	8f 12 02 af	sta $af0212	                STA TL1_TOTAL_Y_SIZE_L
-.160693	a9 00 20	lda #$2000	                LDA #$2000
-.160696	8f 0d 02 af	sta $af020d	                STA TL1_START_ADDY_L
-.16069a	e2 20		sep #$20	                SEP #$20        ; set A short
-.16069c	a9 01		lda #$01	                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
-.16069e	8f 0c 02 af	sta $af020c	                STA @lTL1_CONTROL_REG
-.1606a2	a9 08		lda #$08	                LDA #8
-.1606a4	8f 87 02 af	sta $af0287	                STA TILESET1_ADDY_CFG
-.1606a8	20 f2 0a	jsr $160af2	                JSR LOAD_TILESET
-.1606ab	20 ba 06	jsr $1606ba	                JSR LOAD_SPRITES
-.1606ae	20 35 07	jsr $160735	                JSR INIT_PLAYER
-.1606b1	20 57 07	jsr $160757	                JSR INIT_NPC
-.1606b4	a9 9f		lda #$9f	                LDA #$9F ; - joystick in initial state
-.1606b6	20 7a 07	jsr $16077a	                JSR UPDATE_DISPLAY
-.1606b9	60		rts		                RTS
+.160621					INIT_DISPLAY
+.160621	a9 80		lda #$80	                LDA #128
+.160623	85 11		sta $11		                STA COLS_PER_LINE
+.160625	a9 40		lda #$40	                LDA #64
+.160627	85 15		sta $15		                STA LINES_MAX
+.160629	a9 50		lda #$50	                LDA #80
+.16062b	85 0f		sta $0f		                STA COLS_VISIBLE
+.16062d	a9 3c		lda #$3c	                LDA #60
+.16062f	85 13		sta $13		                STA LINES_VISIBLE
+.160631	a9 20		lda #$20	                LDA #32
+.160633	8f 08 00 af	sta $af0008	                STA BORDER_X_SIZE
+.160637	8f 09 00 af	sta $af0009	                STA BORDER_Y_SIZE
+.16063b	e2 20		sep #$20	                SEP #$20        ; set A short
+.16063d	a9 20		lda #$20	                LDA #$20
+.16063f	8f 05 00 af	sta $af0005	                STA BORDER_COLOR_B
+.160643	8f 07 00 af	sta $af0007	                STA BORDER_COLOR_R
+.160647	a9 00		lda #$00	                LDA #0
+.160649	8f 06 00 af	sta $af0006	                STA BORDER_COLOR_G
+.16064d	9c 88 0f	stz $0f88	                STZ KEYBOARD_SC_TMP
+.160650	a9 01		lda #$01	                LDA #Border_Ctrl_Enable
+.160652	8f 04 00 af	sta $af0004	                STA BORDER_CTRL_REG
+.160656	a9 34		lda #$34	                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+.160658	8f 00 00 af	sta $af0000	                STA MASTER_CTRL_REG_L
+.16065c	a9 08		lda #$08	                LDA #8
+.16065e	8f 83 02 af	sta $af0283	                STA TILESET0_ADDY_CFG
+.160662	c2 20		rep #$20	                REP #$20        ; set A long
+.160664	a2 00 00	ldx #$0000	                LDX #<>TILES
+.160667	a0 00 00	ldy #$0000	                LDY #<>TILE_SET0
+.16066a	a9 00 20	lda #$2000	                LDA #$2000 ; 256 * 32 - this is two rows of tiles
+.16066d	54 b0 17	mvn #$17,#$b0	                MVN <`TILES,<`TILE_SET0
+.160670	a2 af 0b	ldx #$0baf	                LDX #<>PALETTE
+.160673	a0 00 20	ldy #$2000	                LDY #<>GRPH_LUT0_PTR
+.160676	a9 00 04	lda #$0400	                LDA #1024
+.160679	54 af 16	mvn #$16,#$af	                MVN <`PALETTE,<`GRPH_LUT0_PTR
+.16067c	a2 af 0b	ldx #$0baf	                LDX #<>PALETTE
+.16067f	a0 00 24	ldy #$2400	                LDY #<>GRPH_LUT1_PTR
+.160682	a9 00 04	lda #$0400	                LDA #1024
+.160685	54 af 16	mvn #$16,#$af	                MVN <`PALETTE,<`GRPH_LUT1_PTR
+.160688	a9 00 00	lda #$0000	                LDA #0
+.16068b	8f 0f 02 af	sta $af020f	                STA TL1_START_ADDY_H
+.16068f	a9 00 00	lda #$0000	                LDA #0
+.160692	8f 14 02 af	sta $af0214	                STA TL1_WINDOW_X_POS_L
+.160696	8f 16 02 af	sta $af0216	                STA TL1_WINDOW_Y_POS_L
+.16069a	a9 28 00	lda #$0028	                LDA #40
+.16069d	8f 10 02 af	sta $af0210	                STA TL1_TOTAL_X_SIZE_L
+.1606a1	a9 1e 00	lda #$001e	                LDA #30
+.1606a4	8f 12 02 af	sta $af0212	                STA TL1_TOTAL_Y_SIZE_L
+.1606a8	a9 00 20	lda #$2000	                LDA #<>TILE_MAP0
+.1606ab	8f 0d 02 af	sta $af020d	                STA TL1_START_ADDY_L
+.1606af	e2 20		sep #$20	                SEP #$20        ; set A short
+.1606b1	a9 01		lda #$01	                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
+.1606b3	8f 0c 02 af	sta $af020c	                STA @lTL1_CONTROL_REG
+.1606b7	20 1f 0b	jsr $160b1f	                JSR TRANSFORM_BOARD_TO_TILEMAP
+.1606ba	20 cc 06	jsr $1606cc	                JSR LOAD_SPRITES
+.1606bd	20 12 07	jsr $160712	                JSR ENABLE_SPRITES_NPC
+.1606c0	20 58 07	jsr $160758	                JSR INIT_PLAYER
+.1606c3	20 87 07	jsr $160787	                JSR INIT_NPC
+.1606c6	a9 9f		lda #$9f	                LDA #$9F ; - joystick in initial state
+.1606c8	20 aa 07	jsr $1607aa	                JSR UPDATE_DISPLAY
+.1606cb	60		rts		                RTS
 =$6					sprite_line    = $6
 =$10					sprite_addr    = $10
-.1606ba					LOAD_SPRITES
-.1606ba	e2 20		sep #$20	                SEP #$20        ; set A short
-.1606bc	a9 00		lda #$00	                LDA #0
-.1606be	85 10		sta $10		                STA sprite_addr
-.1606c0	85 11		sta $11		                STA sprite_addr + 1
-.1606c2	a9 b1		lda #$b1	                LDA #$B1
-.1606c4	85 12		sta $12		                STA sprite_addr + 2
-.1606c6	a2 00 00	ldx #$0000	                LDX #0
-.1606c9					        NEXT_SPRITE
-.1606c9	a0 00 00	ldy #$0000	                LDY #0
-.1606cc					        LS_LOOP
-.1606cc	bf 00 20 17	lda $172000,x	                LDA TILES + 256 * 32,X
-.1606d0	97 10		sta [$10],y	                STA [sprite_addr],Y
-.1606d2	e8		inx		                INX
-.1606d3	c2 20		rep #$20	                REP #$20        ; set A long
-.1606d5	8a		txa		                TXA
-.1606d6	29 1f 00	and #$001f	                AND #$1F
-.1606d9	f0 52		beq $16072d	                BEQ LS_NEXT_LINE
-.1606db					        LS_CONTINUE
-.1606db	e2 20		sep #$20	                SEP #$20        ; set A short
-.1606dd	c8		iny		                INY
-.1606de	c0 00 04	cpy #$0400	                CPY #1024
-.1606e1	d0 e9		bne $1606cc	                BNE LS_LOOP
-.1606e3	a5 11		lda $11		                LDA sprite_addr + 1
-.1606e5	18		clc		                CLC
-.1606e6	69 04		adc #$04	                ADC #4
-.1606e8	85 11		sta $11		                STA sprite_addr + 1
-.1606ea	29 1f		and #$1f	                AND #$1F
-.1606ec	0a		asl a		                ASL A
-.1606ed	0a		asl a		                ASL A
-.1606ee	0a		asl a		                ASL A ; multiply by 8
-.1606ef	85 06		sta $06		                STA sprite_line
-.1606f1	a5 11		lda $11		                LDA sprite_addr + 1
-.1606f3	29 e0		and #$e0	                AND #$E0
-.1606f5	85 07		sta $07		                STA sprite_line + 1
-.1606f7	a6 06		ldx $06		                LDX sprite_line
-.1606f9	a5 11		lda $11		                LDA sprite_addr + 1
-.1606fb	c9 68		cmp #$68	                CMP #4 * TOTAL_SPRITES
-.1606fd	d0 ca		bne $1606c9	                BNE NEXT_SPRITE
-.1606ff	a9 00		lda #$00	                LDA #0
-.160701	e2 30		sep #$30	                SEP #$30        ; set A&X short
-.160703	a2 00		ldx #$00	                LDX #0  ; X increments in steps of 8
-.160705					        LSP_LOOP
-.160705	a9 00		lda #$00	                LDA #0
-.160707	9f 01 0c af	sta $af0c01,x	                STA @lSP00_ADDY_PTR_L,X
-.16070b	a9 11		lda #$11	                LDA #(SPRITE_Enable | SPRITE_DEPTH1)
-.16070d	9f 00 0c af	sta $af0c00,x	                STA @lSP00_CONTROL_REG,X
-.160711	a9 01		lda #$01	                LDA #1
-.160713	9f 03 0c af	sta $af0c03,x	                STA @lSP00_ADDY_PTR_H,X
-.160717	bf 10 00 16	lda $160010,x	                LDA game_array+6,X ; 0 to 23
-.16071b	0a		asl a		                ASL A
-.16071c	0a		asl a		                ASL A
-.16071d	9f 02 0c af	sta $af0c02,x	                STA @lSP00_ADDY_PTR_M,X
-.160721	8a		txa		                TXA
-.160722	18		clc		                CLC
-.160723	69 08		adc #$08	                ADC #8
-.160725	aa		tax		                TAX
-.160726	e0 80		cpx #$80	                CPX #128
-.160728	d0 db		bne $160705	                BNE LSP_LOOP
-.16072a	c2 10		rep #$10	                REP #$10        ; set X long
-.16072c	60		rts		                RTS
-.16072d					    LS_NEXT_LINE
-.16072d	8a		txa		                TXA
-.16072e	18		clc		                CLC
-.16072f	69 e0 00	adc #$00e0	                ADC #256-32 ; go to the next line, for this sprite
-.160732	aa		tax		                TAX
-.160733	80 a6		bra $1606db	                BRA LS_CONTINUE
-.160735					INIT_PLAYER
-.160735	c2 20		rep #$20	                REP #$20        ; set A long
-.160737	a9 01 00	lda #$0001	                LDA #(SPRITE_Enable | SPRITE_DEPTH0)
-.16073a	8f 78 0c af	sta $af0c78	                STA @lSP15_CONTROL_REG
-.16073e	a9 40 01	lda #$0140	                LDA #9 * 32 + 32
-.160741	8f 00 00 16	sta $160000	                STA PLAYER_X
-.160745	8f 7c 0c af	sta $af0c7c	                STA @lSP15_X_POS_L
-.160749	a9 a0 01	lda #$01a0	                LDA #10 * 32 + 96
-.16074c	8f 02 00 16	sta $160002	                STA PLAYER_Y
-.160750	8f 7e 0c af	sta $af0c7e	                STA @lSP15_Y_POS_L
-.160754	e2 20		sep #$20	                SEP #$20        ; set A short
-.160756	60		rts		                RTS
-.160757					INIT_NPC
-.160757	c2 20		rep #$20	                REP #$20        ; set A long
-.160759	a2 00 00	ldx #$0000	                LDX #0
-.16075c					        INIT_NPC_LOOP
-.16075c	bf 0c 00 16	lda $16000c,x	                LDA game_array + 2,X ; X POSITION
-.160760	9f 04 0c af	sta $af0c04,x	                STA @lSP00_X_POS_L,X
-.160764	bf 0e 00 16	lda $16000e,x	                LDA game_array + 4,X ; Y POSITION
-.160768	9f 06 0c af	sta $af0c06,x	                STA @lSP00_Y_POS_L,X
-.16076c	8a		txa		                TXA
-.16076d	18		clc		                CLC
-.16076e	69 08 00	adc #$0008	                ADC #8
-.160771	aa		tax		                TAX
-.160772	e0 78 00	cpx #$0078	                CPX #120
-.160775	d0 e5		bne $16075c	                BNE INIT_NPC_LOOP
-.160777	e2 20		sep #$20	                SEP #$20        ; set A short
-.160779	60		rts		                RTS
-.16077a					UPDATE_DISPLAY
-.16077a	48		pha		                PHA
-.16077b	af 05 00 16	lda $160005	                LDA DEAD
-.16077f	f0 25		beq $1607a6	                BEQ NOT_DEAD
-.160781	af 06 00 16	lda $160006	                LDA RESET_BOARD
-.160785	3a		dec a		                DEC A
-.160786	8f 06 00 16	sta $160006	                STA RESET_BOARD
-.16078a	d0 18		bne $1607a4	                BNE NO_UPDATE
-.16078c	af 04 00 16	lda $160004	                LDA LIVES ;
-.160790	3a		dec a		                DEC A
-.160791	8f 04 00 16	sta $160004	                STA LIVES
-.160795	a9 00		lda #$00	                LDA #0
-.160797	8f 05 00 16	sta $160005	                STA DEAD
-.16079b	a9 28		lda #$28	                LDA #PLAYER_UP * 4
-.16079d	8f 7a 0c af	sta $af0c7a	                STA SP15_ADDY_PTR_M
-.1607a1	20 35 07	jsr $160735	                JSR INIT_PLAYER
-.1607a4					        NO_UPDATE
-.1607a4	68		pla		                PLA
-.1607a5	60		rts		                RTS
-.1607a6					    NOT_DEAD
-.1607a6	20 9a 09	jsr $16099a	                JSR UPDATE_HOME_TILES
-.1607a9	20 04 0a	jsr $160a04	                JSR UPDATE_WATER_TILES
-.1607ac	20 7f 0a	jsr $160a7f	                JSR UPDATE_LILLY
-.1607af	68		pla		                PLA
-.1607b0	c2 20		rep #$20	                REP #$20        ; set A long
-.1607b2					        JOY_UP
-.1607b2	89 01 00	bit #$0001	                BIT #1 ; up
-.1607b5	d0 05		bne $1607bc	                BNE JOY_DOWN
-.1607b7	20 3e 08	jsr $16083e	                JSR PLAYER_MOVE_UP
-.1607ba	80 1e		bra $1607da	                BRA JOY_DONE
-.1607bc					        JOY_DOWN
-.1607bc	89 02 00	bit #$0002	                BIT #2 ; down
-.1607bf	d0 05		bne $1607c6	                BNE JOY_LEFT
-.1607c1	20 1b 08	jsr $16081b	                JSR PLAYER_MOVE_DOWN
-.1607c4	80 14		bra $1607da	                BRA JOY_DONE
-.1607c6					        JOY_LEFT
-.1607c6	89 04 00	bit #$0004	                BIT #4
-.1607c9	d0 05		bne $1607d0	                BNE JOY_RIGHT
-.1607cb	20 84 08	jsr $160884	                JSR PLAYER_MOVE_LEFT
-.1607ce	80 0a		bra $1607da	                BRA JOY_DONE
-.1607d0					        JOY_RIGHT
-.1607d0	89 08 00	bit #$0008	                BIT #8
-.1607d3	d0 05		bne $1607da	                BNE JOY_DONE
-.1607d5	20 61 08	jsr $160861	                JSR PLAYER_MOVE_RIGHT
-.1607d8	80 00		bra $1607da	                BRA JOY_DONE
-.1607da					        JOY_DONE
-.1607da	e2 20		sep #$20	                SEP #$20        ; set A short
-.1607dc	20 e3 07	jsr $1607e3	                JSR UPDATE_NPC_POSITIONS
-.1607df	20 a7 08	jsr $1608a7	                JSR COLLISION_CHECK
-.1607e2	60		rts		                RTS
-.1607e3					UPDATE_NPC_POSITIONS
-.1607e3	c2 20		rep #$20	                REP #$20        ; set A long
-.1607e5	a2 00 00	ldx #$0000	                LDX #0
-.1607e8					        UNPC_LOOP
-.1607e8	bf 0c 00 16	lda $16000c,x	                LDA game_array + 2,X ; X POSITION
-.1607ec	18		clc		                CLC
-.1607ed	7f 0a 00 16	adc $16000a,x	                ADC game_array,X ; add the speed
-.1607f1	10 0a		bpl $1607fd	                BPL GRT_LFT_MRG
-.1607f3	a9 7c 02	lda #$027c	                LDA #640-4 ; right edge
-.1607f6	18		clc		                CLC
-.1607f7	7f 0a 00 16	adc $16000a,x	                ADC game_array,X ; add the speed
-.1607fb	80 08		bra $160805	                BRA LESS_RGT_MRG
-.1607fd					        GRT_LFT_MRG
-.1607fd	c9 7c 02	cmp #$027c	                CMP #640 - 4
-.160800	90 03		bcc $160805	                BCC LESS_RGT_MRG
-.160802	a9 00 00	lda #$0000	                LDA #0
-.160805					        LESS_RGT_MRG
-.160805	9f 04 0c af	sta $af0c04,x	                STA @lSP00_X_POS_L,X
-.160809	9f 0c 00 16	sta $16000c,x	                STA game_array + 2,X
-.16080d	8a		txa		                TXA
-.16080e	18		clc		                CLC
-.16080f	69 08 00	adc #$0008	                ADC #8
-.160812	aa		tax		                TAX
-.160813	e0 78 00	cpx #$0078	                CPX #120
-.160816	d0 d0		bne $1607e8	                BNE UNPC_LOOP
-.160818	e2 20		sep #$20	                SEP #$20        ; set A short
-.16081a	60		rts		                RTS
-.16081b					PLAYER_MOVE_DOWN
-.16081b	af 02 00 16	lda $160002	                LDA PLAYER_Y
-.16081f	18		clc		                CLC
-.160820	69 20 00	adc #$0020	                ADC #32
-.160823	c9 a0 01	cmp #$01a0	                CMP #480 - 64
-.160826	90 03		bcc $16082b	                BCC PMD_DONE
-.160828	a9 a0 01	lda #$01a0	                LDA #480 - 64 ; the lowest position on screen
-.16082b					        PMD_DONE
-.16082b	8f 02 00 16	sta $160002	                STA PLAYER_Y
-.16082f	8f 7e 0c af	sta $af0c7e	                STA SP15_Y_POS_L
-.160833	e2 20		sep #$20	                SEP #$20        ; set A short
-.160835	a9 30		lda #$30	                LDA #PLAYER_DOWN * 4
-.160837	8f 7a 0c af	sta $af0c7a	                STA SP15_ADDY_PTR_M
-.16083b	c2 20		rep #$20	                REP #$20        ; set A long
-.16083d	60		rts		                RTS
-.16083e					PLAYER_MOVE_UP
-.16083e	af 02 00 16	lda $160002	                LDA PLAYER_Y
-.160842	38		sec		                SEC
-.160843	e9 20 00	sbc #$0020	                SBC #32
-.160846	c9 80 00	cmp #$0080	                CMP #128
-.160849	b0 03		bcs $16084e	                BCS PMU_DONE
-.16084b	a9 80 00	lda #$0080	                LDA #128
-.16084e					        PMU_DONE
-.16084e	8f 02 00 16	sta $160002	                STA PLAYER_Y
-.160852	8f 7e 0c af	sta $af0c7e	                STA SP15_Y_POS_L
-.160856	e2 20		sep #$20	                SEP #$20        ; set A short
-.160858	a9 28		lda #$28	                LDA #PLAYER_UP * 4
-.16085a	8f 7a 0c af	sta $af0c7a	                STA SP15_ADDY_PTR_M
-.16085e	c2 20		rep #$20	                REP #$20        ; set A long
-.160860	60		rts		                RTS
-.160861					PLAYER_MOVE_RIGHT
-.160861	af 00 00 16	lda $160000	                LDA PLAYER_X
-.160865	18		clc		                CLC
-.160866	69 20 00	adc #$0020	                ADC #32
-.160869	c9 60 02	cmp #$0260	                CMP #640 - 32
-.16086c	90 03		bcc $160871	                BCC PMR_DONE
-.16086e	a9 60 02	lda #$0260	                LDA #640 - 32 ; the lowest position on screen
-.160871					        PMR_DONE
-.160871	8f 00 00 16	sta $160000	                STA PLAYER_X
-.160875	8f 7c 0c af	sta $af0c7c	                STA SP15_X_POS_L
-.160879	e2 20		sep #$20	                SEP #$20        ; set A short
-.16087b	a9 34		lda #$34	                LDA #PLAYER_RIGHT * 4
-.16087d	8f 7a 0c af	sta $af0c7a	                STA SP15_ADDY_PTR_M
-.160881	c2 20		rep #$20	                REP #$20        ; set A long
-.160883	60		rts		                RTS
-.160884					PLAYER_MOVE_LEFT
-.160884	af 00 00 16	lda $160000	                LDA PLAYER_X
-.160888	38		sec		                SEC
-.160889	e9 20 00	sbc #$0020	                SBC #32
-.16088c	c9 40 00	cmp #$0040	                CMP #64
-.16088f	b0 03		bcs $160894	                BCS PML_DONE
-.160891	a9 40 00	lda #$0040	                LDA #64
-.160894					        PML_DONE
-.160894	8f 00 00 16	sta $160000	                STA PLAYER_X
-.160898	8f 7c 0c af	sta $af0c7c	                STA SP15_X_POS_L
-.16089c	e2 20		sep #$20	                SEP #$20        ; set A short
-.16089e	a9 2c		lda #$2c	                LDA #PLAYER_LEFT * 4
-.1608a0	8f 7a 0c af	sta $af0c7a	                STA SP15_ADDY_PTR_M
-.1608a4	c2 20		rep #$20	                REP #$20        ; set A long
-.1608a6	60		rts		                RTS
-.1608a7					COLLISION_CHECK
-.1608a7	c2 20		rep #$20	                REP #$20        ; set A long
-.1608a9	af 02 00 16	lda $160002	                LDA PLAYER_Y
-.1608ad	c9 00 01	cmp #$0100	                CMP #256 ; mid-screen
-.1608b0	90 06		bcc $1608b8	                BCC WATER_COLLISION
-.1608b2	20 58 09	jsr $160958	                JSR STREET_COLLISION
-.1608b5	e2 20		sep #$20	                SEP #$20        ; set A short
-.1608b7	60		rts		                RTS
-.1608b8					        WATER_COLLISION
-.1608b8	c9 00 01	cmp #$0100	                CMP #256
-.1608bb	b0 43		bcs $160900	                BCS CCW_DONE
-.1608bd	c9 a0 00	cmp #$00a0	                CMP #160
-.1608c0	90 5f		bcc $160921	                BCC HOME_LINE
-.1608c2	a2 00 00	ldx #$0000	                LDX #0
-.1608c5					        NEXT_WATER_ROW
-.1608c5	bf 0e 00 16	lda $16000e,x	                LDA game_array+4,X  ; read the Y position
-.1608c9	cf 02 00 16	cmp $160002	                CMP PLAYER_Y
-.1608cd	d0 24		bne $1608f3	                BNE CCW_CONTINUE
-.1608cf	af 00 00 16	lda $160000	                LDA PLAYER_X
-.1608d3	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
-.1608d7	f0 2a		beq $160903	                BEQ FLOAT
-.1608d9	90 0f		bcc $1608ea	                BCC CHECK_RIGHT_BOUND_W
-.1608db					        CHECK_LEFT_BOUND_W
-.1608db	bf 0c 00 16	lda $16000c,x	                LDA game_array+2,X
-.1608df	69 20 00	adc #$0020	                ADC #32
-.1608e2	cf 00 00 16	cmp $160000	                CMP PLAYER_X
-.1608e6	b0 1b		bcs $160903	                BCS FLOAT
-.1608e8	80 09		bra $1608f3	                BRA CCW_CONTINUE
-.1608ea					        CHECK_RIGHT_BOUND_W
-.1608ea	69 20 00	adc #$0020	                ADC #32
-.1608ed	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
-.1608f1	b0 10		bcs $160903	                BCS FLOAT
-.1608f3					        CCW_CONTINUE
-.1608f3	8a		txa		                TXA
-.1608f4	18		clc		                CLC
-.1608f5	69 08 00	adc #$0008	                ADC #8
-.1608f8	aa		tax		                TAX
-.1608f9	e0 78 00	cpx #$0078	                CPX #8*16-8
-.1608fc	d0 c7		bne $1608c5	                BNE NEXT_WATER_ROW
-.1608fe	80 39		bra $160939	                BRA W_COLLISION
-.160900					        CCW_DONE
-.160900	e2 20		sep #$20	                SEP #$20        ; set A short
-.160902	60		rts		                RTS
-.160903					        FLOAT
-.160903	18		clc		                CLC
-.160904	af 00 00 16	lda $160000	                LDA PLAYER_X
-.160908	7f 0a 00 16	adc $16000a,x	                ADC game_array,X
-.16090c	c9 20 00	cmp #$0020	                CMP #32
-.16090f	90 28		bcc $160939	                BCC W_COLLISION
-.160911	c9 60 02	cmp #$0260	                CMP #640-32
-.160914	b0 23		bcs $160939	                BCS W_COLLISION
-.160916	8f 00 00 16	sta $160000	                STA PLAYER_X
-.16091a	8f 7c 0c af	sta $af0c7c	                STA SP15_X_POS_L
-.16091e	e2 20		sep #$20	                SEP #$20        ; set A short
-.160920	60		rts		                RTS
-.160921					        HOME_LINE
-.160921	af 00 00 16	lda $160000	                LDA PLAYER_X
-.160925	4a		lsr a		                LSR
-.160926	4a		lsr a		                LSR
-.160927	4a		lsr a		                LSR
-.160928	4a		lsr a		                LSR ; divide by 16
-.160929	aa		tax		                TAX
-.16092a	e2 20		sep #$20	                SEP #$20        ; set A short
-.16092c	bf a2 01 16	lda $1601a2,x	                LDA game_board + 280,X
-.160930	29 ff		and #$ff	                AND #$FF
-.160932	c9 48		cmp #$48	                CMP #'H'
-.160934	d0 18		bne $16094e	                BNE S_COLLISION
-.160936	e2 20		sep #$20	                SEP #$20        ; set A short
-.160938	60		rts		                RTS
-.160939					        W_COLLISION
-.160939	e2 20		sep #$20	                SEP #$20        ; set A short
-.16093b	a9 38		lda #$38	                LDA #SPLASH_SPRITE * 4
-.16093d	8f 7a 0c af	sta $af0c7a	                STA SP15_ADDY_PTR_M
-.160941					            SET_DEAD
-.160941	a9 01		lda #$01	                LDA #1
-.160943	8f 05 00 16	sta $160005	                STA DEAD
-.160947	a9 b4		lda #$b4	                LDA #THREE_SECS
-.160949	8f 06 00 16	sta $160006	                STA RESET_BOARD
+.1606cc					LOAD_SPRITES
+.1606cc	a9 00		lda #$00	                LDA #0
+.1606ce	85 10		sta $10		                STA sprite_addr
+.1606d0	85 11		sta $11		                STA sprite_addr + 1
+.1606d2	a9 b1		lda #$b1	                LDA #<`SPRITES
+.1606d4	85 12		sta $12		                STA sprite_addr + 2
+.1606d6	a2 00 00	ldx #$0000	                LDX #0
+.1606d9					        NEXT_SPRITE
+.1606d9	a0 00 00	ldy #$0000	                LDY #0
+.1606dc					        LS_LOOP
+.1606dc	bf 00 20 17	lda $172000,x	                LDA TILES + 256 * 32,X
+.1606e0	97 10		sta [$10],y	                STA [sprite_addr],Y
+.1606e2	e8		inx		                INX
+.1606e3	c2 20		rep #$20	                REP #$20        ; set A long
+.1606e5	8a		txa		                TXA
+.1606e6	29 1f 00	and #$001f	                AND #31
+.1606e9	f0 65		beq $160750	                BEQ LS_NEXT_LINE
+.1606eb					        LS_CONTINUE
+.1606eb	e2 20		sep #$20	                SEP #$20        ; set A short
+.1606ed	c8		iny		                INY
+.1606ee	c0 00 04	cpy #$0400	                CPY #1024
+.1606f1	d0 e9		bne $1606dc	                BNE LS_LOOP
+.1606f3	a5 11		lda $11		                LDA sprite_addr + 1
+.1606f5	18		clc		                CLC
+.1606f6	69 04		adc #$04	                ADC #4
+.1606f8	85 11		sta $11		                STA sprite_addr + 1
+.1606fa	29 1f		and #$1f	                AND #31
+.1606fc	0a		asl a		                ASL A
+.1606fd	0a		asl a		                ASL A
+.1606fe	0a		asl a		                ASL A ; multiply by 8
+.1606ff	85 06		sta $06		                STA sprite_line
+.160701	a5 11		lda $11		                LDA sprite_addr + 1
+.160703	29 e0		and #$e0	                AND #$E0
+.160705	85 07		sta $07		                STA sprite_line + 1
+.160707	a6 06		ldx $06		                LDX sprite_line
+.160709	a5 11		lda $11		                LDA sprite_addr + 1
+.16070b	c9 68		cmp #$68	                CMP #4 * TOTAL_SPRITES
+.16070d	d0 ca		bne $1606d9	                BNE NEXT_SPRITE
+.16070f	a9 00		lda #$00	                LDA #0
+.160711	60		rts		                RTS
+.160712					ENABLE_SPRITES_NPC
+.160712	e2 10		sep #$10	                SEP #$10        ; set X short
+.160714	a2 00		ldx #$00	                LDX #0  ; X increments in steps of 8
+.160716	a9 00		lda #$00	                LDA #0
+.160718	8f 00 0c af	sta $af0c00	                STA @lSP00_CONTROL_REG
+.16071c	8f 08 0c af	sta $af0c08	                STA @lSP01_CONTROL_REG
+.160720	8f 10 0c af	sta $af0c10	                STA @lSP02_CONTROL_REG
+.160724	8f 18 0c af	sta $af0c18	                STA @lSP03_CONTROL_REG
+.160728					    LSP_LOOP
+.160728	a9 00		lda #$00	                LDA #0
+.16072a	9f 21 0c af	sta $af0c21,x	                STA @lSP04_ADDY_PTR_L,X
+.16072e	a9 01		lda #$01	                LDA #(SPRITE_Enable | SPRITE_DEPTH0)
+.160730	9f 20 0c af	sta $af0c20,x	                STA @lSP04_CONTROL_REG,X
+.160734	a9 01		lda #$01	                LDA #1
+.160736	9f 23 0c af	sta $af0c23,x	                STA @lSP04_ADDY_PTR_H,X
+.16073a	bf 10 00 16	lda $160010,x	                LDA game_array+6,X ; 0 to 23
+.16073e	0a		asl a		                ASL A
+.16073f	0a		asl a		                ASL A
+.160740	9f 22 0c af	sta $af0c22,x	                STA @lSP04_ADDY_PTR_M,X
+.160744	8a		txa		                TXA
+.160745	18		clc		                CLC
+.160746	69 08		adc #$08	                ADC #8
+.160748	aa		tax		                TAX
+.160749	e0 80		cpx #$80	                CPX #128
+.16074b	d0 db		bne $160728	                BNE LSP_LOOP
+.16074d	c2 10		rep #$10	                REP #$10        ; set X long
+.16074f	60		rts		                RTS
+.160750					    LS_NEXT_LINE
+.160750	8a		txa		                TXA
+.160751	18		clc		                CLC
+.160752	69 e0 00	adc #$00e0	                ADC #256-32 ; go to the next line, for this sprite
+.160755	aa		tax		                TAX
+.160756	80 93		bra $1606eb	                BRA LS_CONTINUE
+.160758					INIT_PLAYER
+.160758	c2 20		rep #$20	                REP #$20        ; set A long
+.16075a	a9 00 28	lda #$2800	                LDA #PLAYER_UP * 1024
+.16075d	8f 01 0c af	sta $af0c01	                STA @lSP00_ADDY_PTR_L
+.160761	a9 01 00	lda #$0001	                LDA #(SPRITE_Enable | SPRITE_DEPTH0)
+.160764	8f 00 0c af	sta $af0c00	                STA @lSP00_CONTROL_REG
+.160768	a9 40 01	lda #$0140	                LDA #9 * 32 + 32
+.16076b	8f 00 00 16	sta $160000	                STA PLAYER_X
+.16076f	8f 04 0c af	sta $af0c04	                STA @lSP00_X_POS_L
+.160773	a9 a0 01	lda #$01a0	                LDA #10 * 32 + 96
+.160776	8f 02 00 16	sta $160002	                STA PLAYER_Y
+.16077a	8f 06 0c af	sta $af0c06	                STA @lSP00_Y_POS_L
+.16077e	e2 20		sep #$20	                SEP #$20        ; set A short
+.160780	a9 01		lda #$01	                LDA #1
+.160782	8f 03 0c af	sta $af0c03	                STA @lSP00_ADDY_PTR_H
+.160786	60		rts		                RTS
+.160787					INIT_NPC
+.160787	c2 20		rep #$20	                REP #$20        ; set A long
+.160789	a2 00 00	ldx #$0000	                LDX #0
+.16078c					        INIT_NPC_LOOP
+.16078c	bf 0c 00 16	lda $16000c,x	                LDA game_array + 2,X ; X POSITION
+.160790	9f 24 0c af	sta $af0c24,x	                STA @lSP04_X_POS_L,X
+.160794	bf 0e 00 16	lda $16000e,x	                LDA game_array + 4,X ; Y POSITION
+.160798	9f 26 0c af	sta $af0c26,x	                STA @lSP04_Y_POS_L,X
+.16079c	8a		txa		                TXA
+.16079d	18		clc		                CLC
+.16079e	69 08 00	adc #$0008	                ADC #8
+.1607a1	aa		tax		                TAX
+.1607a2	e0 78 00	cpx #$0078	                CPX #120
+.1607a5	d0 e5		bne $16078c	                BNE INIT_NPC_LOOP
+.1607a7	e2 20		sep #$20	                SEP #$20        ; set A short
+.1607a9	60		rts		                RTS
+.1607aa					UPDATE_DISPLAY
+.1607aa	8b		phb		                PHB
+.1607ab	48		pha		                PHA
+.1607ac	af 05 00 16	lda $160005	                LDA DEAD
+.1607b0	f0 20		beq $1607d2	                BEQ NOT_DEAD
+.1607b2	af 06 00 16	lda $160006	                LDA RESET_BOARD
+.1607b6	3a		dec a		                DEC A
+.1607b7	8f 06 00 16	sta $160006	                STA RESET_BOARD
+.1607bb	d0 12		bne $1607cf	                BNE NO_UPDATE
+.1607bd	af 04 00 16	lda $160004	                LDA LIVES ;
+.1607c1	3a		dec a		                DEC A
+.1607c2	8f 04 00 16	sta $160004	                STA LIVES
+.1607c6	a9 00		lda #$00	                LDA #0
+.1607c8	8f 05 00 16	sta $160005	                STA DEAD
+.1607cc	20 58 07	jsr $160758	                JSR INIT_PLAYER
+.1607cf					        NO_UPDATE
+.1607cf	68		pla		                PLA
+.1607d0	ab		plb		                PLB
+.1607d1	60		rts		                RTS
+.1607d2					    NOT_DEAD
+.1607d2	20 c7 09	jsr $1609c7	                JSR UPDATE_HOME_TILES
+.1607d5	20 31 0a	jsr $160a31	                JSR UPDATE_WATER_TILES
+.1607d8	20 ac 0a	jsr $160aac	                JSR UPDATE_LILLY
+.1607db	68		pla		                PLA
+.1607dc	c2 20		rep #$20	                REP #$20        ; set A long
+.1607de					        JOY_UP
+.1607de	89 01 00	bit #$0001	                BIT #1 ; up
+.1607e1	d0 05		bne $1607e8	                BNE JOY_DOWN
+.1607e3	20 6b 08	jsr $16086b	                JSR PLAYER_MOVE_UP
+.1607e6	80 1e		bra $160806	                BRA JOY_DONE
+.1607e8					        JOY_DOWN
+.1607e8	89 02 00	bit #$0002	                BIT #2 ; down
+.1607eb	d0 05		bne $1607f2	                BNE JOY_LEFT
+.1607ed	20 48 08	jsr $160848	                JSR PLAYER_MOVE_DOWN
+.1607f0	80 14		bra $160806	                BRA JOY_DONE
+.1607f2					        JOY_LEFT
+.1607f2	89 04 00	bit #$0004	                BIT #4
+.1607f5	d0 05		bne $1607fc	                BNE JOY_RIGHT
+.1607f7	20 b1 08	jsr $1608b1	                JSR PLAYER_MOVE_LEFT
+.1607fa	80 0a		bra $160806	                BRA JOY_DONE
+.1607fc					        JOY_RIGHT
+.1607fc	89 08 00	bit #$0008	                BIT #8
+.1607ff	d0 05		bne $160806	                BNE JOY_DONE
+.160801	20 8e 08	jsr $16088e	                JSR PLAYER_MOVE_RIGHT
+.160804	80 00		bra $160806	                BRA JOY_DONE
+.160806					        JOY_DONE
+.160806	e2 20		sep #$20	                SEP #$20        ; set A short
+.160808	20 10 08	jsr $160810	                JSR UPDATE_NPC_POSITIONS
+.16080b	20 d4 08	jsr $1608d4	                JSR COLLISION_CHECK
+.16080e	ab		plb		                PLB
+.16080f	60		rts		                RTS
+.160810					UPDATE_NPC_POSITIONS
+.160810	c2 20		rep #$20	                REP #$20        ; set A long
+.160812	a2 00 00	ldx #$0000	                LDX #0
+.160815					        UNPC_LOOP
+.160815	bf 0c 00 16	lda $16000c,x	                LDA game_array + 2,X ; X POSITION
+.160819	18		clc		                CLC
+.16081a	7f 0a 00 16	adc $16000a,x	                ADC game_array,X ; add the speed
+.16081e	10 0a		bpl $16082a	                BPL GRT_LFT_MRG
+.160820	a9 7c 02	lda #$027c	                LDA #640-4 ; right edge
+.160823	18		clc		                CLC
+.160824	7f 0a 00 16	adc $16000a,x	                ADC game_array,X ; add the speed
+.160828	80 08		bra $160832	                BRA LESS_RGT_MRG
+.16082a					        GRT_LFT_MRG
+.16082a	c9 7c 02	cmp #$027c	                CMP #640 - 4
+.16082d	90 03		bcc $160832	                BCC LESS_RGT_MRG
+.16082f	a9 00 00	lda #$0000	                LDA #0
+.160832					        LESS_RGT_MRG
+.160832	9f 24 0c af	sta $af0c24,x	                STA @lSP04_X_POS_L,X
+.160836	9f 0c 00 16	sta $16000c,x	                STA game_array + 2,X
+.16083a	8a		txa		                TXA
+.16083b	18		clc		                CLC
+.16083c	69 08 00	adc #$0008	                ADC #8
+.16083f	aa		tax		                TAX
+.160840	e0 78 00	cpx #$0078	                CPX #120
+.160843	d0 d0		bne $160815	                BNE UNPC_LOOP
+.160845	e2 20		sep #$20	                SEP #$20        ; set A short
+.160847	60		rts		                RTS
+.160848					PLAYER_MOVE_DOWN
+.160848	af 02 00 16	lda $160002	                LDA PLAYER_Y
+.16084c	18		clc		                CLC
+.16084d	69 20 00	adc #$0020	                ADC #32
+.160850	c9 a0 01	cmp #$01a0	                CMP #480 - 64
+.160853	90 03		bcc $160858	                BCC PMD_DONE
+.160855	a9 a0 01	lda #$01a0	                LDA #480 - 64 ; the lowest position on screen
+.160858					        PMD_DONE
+.160858	8f 02 00 16	sta $160002	                STA PLAYER_Y
+.16085c	8f 06 0c af	sta $af0c06	                STA SP00_Y_POS_L
+.160860	e2 20		sep #$20	                SEP #$20        ; set A short
+.160862	a9 30		lda #$30	                LDA #PLAYER_DOWN * 4
+.160864	8f 02 0c af	sta $af0c02	                STA SP00_ADDY_PTR_M
+.160868	c2 20		rep #$20	                REP #$20        ; set A long
+.16086a	60		rts		                RTS
+.16086b					PLAYER_MOVE_UP
+.16086b	af 02 00 16	lda $160002	                LDA PLAYER_Y
+.16086f	38		sec		                SEC
+.160870	e9 20 00	sbc #$0020	                SBC #32
+.160873	c9 80 00	cmp #$0080	                CMP #128
+.160876	b0 03		bcs $16087b	                BCS PMU_DONE
+.160878	a9 80 00	lda #$0080	                LDA #128
+.16087b					        PMU_DONE
+.16087b	8f 02 00 16	sta $160002	                STA PLAYER_Y
+.16087f	8f 06 0c af	sta $af0c06	                STA SP00_Y_POS_L
+.160883	e2 20		sep #$20	                SEP #$20        ; set A short
+.160885	a9 28		lda #$28	                LDA #PLAYER_UP * 4
+.160887	8f 02 0c af	sta $af0c02	                STA SP00_ADDY_PTR_M
+.16088b	c2 20		rep #$20	                REP #$20        ; set A long
+.16088d	60		rts		                RTS
+.16088e					PLAYER_MOVE_RIGHT
+.16088e	af 00 00 16	lda $160000	                LDA PLAYER_X
+.160892	18		clc		                CLC
+.160893	69 20 00	adc #$0020	                ADC #32
+.160896	c9 60 02	cmp #$0260	                CMP #640 - 32
+.160899	90 03		bcc $16089e	                BCC PMR_DONE
+.16089b	a9 60 02	lda #$0260	                LDA #640 - 32 ; the lowest position on screen
+.16089e					        PMR_DONE
+.16089e	8f 00 00 16	sta $160000	                STA PLAYER_X
+.1608a2	8f 04 0c af	sta $af0c04	                STA SP00_X_POS_L
+.1608a6	e2 20		sep #$20	                SEP #$20        ; set A short
+.1608a8	a9 34		lda #$34	                LDA #PLAYER_RIGHT * 4
+.1608aa	8f 02 0c af	sta $af0c02	                STA SP00_ADDY_PTR_M
+.1608ae	c2 20		rep #$20	                REP #$20        ; set A long
+.1608b0	60		rts		                RTS
+.1608b1					PLAYER_MOVE_LEFT
+.1608b1	af 00 00 16	lda $160000	                LDA PLAYER_X
+.1608b5	38		sec		                SEC
+.1608b6	e9 20 00	sbc #$0020	                SBC #32
+.1608b9	c9 40 00	cmp #$0040	                CMP #64
+.1608bc	b0 03		bcs $1608c1	                BCS PML_DONE
+.1608be	a9 40 00	lda #$0040	                LDA #64
+.1608c1					        PML_DONE
+.1608c1	8f 00 00 16	sta $160000	                STA PLAYER_X
+.1608c5	8f 04 0c af	sta $af0c04	                STA SP00_X_POS_L
+.1608c9	e2 20		sep #$20	                SEP #$20        ; set A short
+.1608cb	a9 2c		lda #$2c	                LDA #PLAYER_LEFT * 4
+.1608cd	8f 02 0c af	sta $af0c02	                STA SP00_ADDY_PTR_M
+.1608d1	c2 20		rep #$20	                REP #$20        ; set A long
+.1608d3	60		rts		                RTS
+.1608d4					COLLISION_CHECK
+.1608d4	c2 20		rep #$20	                REP #$20        ; set A long
+.1608d6	af 02 00 16	lda $160002	                LDA PLAYER_Y
+.1608da	c9 00 01	cmp #$0100	                CMP #256 ; mid-screen
+.1608dd	90 06		bcc $1608e5	                BCC WATER_COLLISION
+.1608df	20 85 09	jsr $160985	                JSR STREET_COLLISION
+.1608e2	e2 20		sep #$20	                SEP #$20        ; set A short
+.1608e4	60		rts		                RTS
+.1608e5					        WATER_COLLISION
+.1608e5	c9 00 01	cmp #$0100	                CMP #256
+.1608e8	b0 43		bcs $16092d	                BCS CCW_DONE
+.1608ea	c9 a0 00	cmp #$00a0	                CMP #160
+.1608ed	90 5f		bcc $16094e	                BCC HOME_LINE
+.1608ef	a2 00 00	ldx #$0000	                LDX #0
+.1608f2					        NEXT_WATER_ROW
+.1608f2	bf 0e 00 16	lda $16000e,x	                LDA game_array+4,X  ; read the Y position
+.1608f6	cf 02 00 16	cmp $160002	                CMP PLAYER_Y
+.1608fa	d0 24		bne $160920	                BNE CCW_CONTINUE
+.1608fc	af 00 00 16	lda $160000	                LDA PLAYER_X
+.160900	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
+.160904	f0 2a		beq $160930	                BEQ FLOAT
+.160906	90 0f		bcc $160917	                BCC CHECK_RIGHT_BOUND_W
+.160908					        CHECK_LEFT_BOUND_W
+.160908	bf 0c 00 16	lda $16000c,x	                LDA game_array+2,X
+.16090c	69 20 00	adc #$0020	                ADC #32
+.16090f	cf 00 00 16	cmp $160000	                CMP PLAYER_X
+.160913	b0 1b		bcs $160930	                BCS FLOAT
+.160915	80 09		bra $160920	                BRA CCW_CONTINUE
+.160917					        CHECK_RIGHT_BOUND_W
+.160917	69 20 00	adc #$0020	                ADC #32
+.16091a	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
+.16091e	b0 10		bcs $160930	                BCS FLOAT
+.160920					        CCW_CONTINUE
+.160920	8a		txa		                TXA
+.160921	18		clc		                CLC
+.160922	69 08 00	adc #$0008	                ADC #8
+.160925	aa		tax		                TAX
+.160926	e0 78 00	cpx #$0078	                CPX #8*16-8
+.160929	d0 c7		bne $1608f2	                BNE NEXT_WATER_ROW
+.16092b	80 39		bra $160966	                BRA W_COLLISION
+.16092d					        CCW_DONE
+.16092d	e2 20		sep #$20	                SEP #$20        ; set A short
+.16092f	60		rts		                RTS
+.160930					        FLOAT
+.160930	18		clc		                CLC
+.160931	af 00 00 16	lda $160000	                LDA PLAYER_X
+.160935	7f 0a 00 16	adc $16000a,x	                ADC game_array,X
+.160939	c9 20 00	cmp #$0020	                CMP #32
+.16093c	90 28		bcc $160966	                BCC W_COLLISION
+.16093e	c9 60 02	cmp #$0260	                CMP #640-32
+.160941	b0 23		bcs $160966	                BCS W_COLLISION
+.160943	8f 00 00 16	sta $160000	                STA PLAYER_X
+.160947	8f 04 0c af	sta $af0c04	                STA SP00_X_POS_L
+.16094b	e2 20		sep #$20	                SEP #$20        ; set A short
 .16094d	60		rts		                RTS
-.16094e					        S_COLLISION
-.16094e	e2 20		sep #$20	                SEP #$20        ; set A short
-.160950	a9 3c		lda #$3c	                LDA #SPLATT_SPRITE * 4
-.160952	8f 7a 0c af	sta $af0c7a	                STA SP15_ADDY_PTR_M
-.160956	80 e9		bra $160941	                BRA SET_DEAD
-.160958					STREET_COLLISION
-.160958	a2 00 00	ldx #$0000	                LDX #0
-.16095b					        NEXT_STREET_ROW
-.16095b	bf 0e 00 16	lda $16000e,x	                LDA game_array+4,X  ; read the Y position
-.16095f	cf 02 00 16	cmp $160002	                CMP PLAYER_Y
-.160963	d0 24		bne $160989	                BNE CCS_CONTINUE
-.160965	af 00 00 16	lda $160000	                LDA PLAYER_X
-.160969	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
-.16096d	f0 df		beq $16094e	                BEQ S_COLLISION
-.16096f	90 0f		bcc $160980	                BCC CHECK_RIGHT_BOUND
-.160971					        CHECK_LEFT_BOUND
-.160971	bf 0c 00 16	lda $16000c,x	                LDA game_array+2,X
-.160975	69 20 00	adc #$0020	                ADC #32
-.160978	cf 00 00 16	cmp $160000	                CMP PLAYER_X
-.16097c	b0 d0		bcs $16094e	                BCS S_COLLISION
-.16097e	80 09		bra $160989	                BRA CCS_CONTINUE
-.160980					        CHECK_RIGHT_BOUND
-.160980	69 20 00	adc #$0020	                ADC #32
-.160983	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
-.160987	b0 c5		bcs $16094e	                BCS S_COLLISION
-.160989					        CCS_CONTINUE
-.160989	8a		txa		                TXA
-.16098a	18		clc		                CLC
-.16098b	69 08 00	adc #$0008	                ADC #8
-.16098e	aa		tax		                TAX
-.16098f	e0 78 00	cpx #$0078	                CPX #8*16-8
-.160992	d0 c7		bne $16095b	                BNE NEXT_STREET_ROW
-.160994					        CC_DONE
-.160994	e2 20		sep #$20	                SEP #$20        ; set A short
-.160996	60		rts		                RTS
->160997	00				HOME_CYCLE      .byte 0
->160998	12				EVEN_TILE_VAL   .byte $12
->160999	13				ODD_TILE_VAL    .byte $13
-.16099a					UPDATE_HOME_TILES
-.16099a	af 97 09 16	lda $160997	                LDA HOME_CYCLE
-.16099e	1a		inc a		                INC A
-.16099f	c9 0f		cmp #$0f	                CMP #15 ; only update every N SOF cycle
-.1609a1	d0 59		bne $1609fc	                BNE UT_SKIP
-.1609a3	a9 00		lda #$00	                LDA #0
-.1609a5	8f 97 09 16	sta $160997	                STA HOME_CYCLE
-.1609a9	a2 18 01	ldx #$0118	                LDX #280 ; line 8 in the game board
-.1609ac	a0 30 02	ldy #$0230	                LDY #7 * 80 ; line 8 in the tileset
-.1609af	48		pha		                PHA             ; begin setdbr macro
-.1609b0	08		php		                PHP
-.1609b1	e2 20		sep #$20	                SEP #$20        ; set A short
-.1609b3	a9 b0		lda #$b0	                LDA #<`TILE_MAP0
-.1609b5	48		pha		                PHA
-.1609b6	ab		plb		                PLB
-.1609b7	28		plp		                PLP
-.1609b8	68		pla		                PLA             ; end setdbr macro
-.1609b9					        UT_GET_TILE
-.1609b9	bf 8a 00 16	lda $16008a,x	                LDA game_board,X
-.1609bd	c9 48		cmp #$48	                CMP #'H'
-.1609bf	d0 15		bne $1609d6	                BNE UT_DONE
-.1609c1	8a		txa		                TXA
-.1609c2	29 01		and #$01	                AND #1
-.1609c4	f0 09		beq $1609cf	                BEQ UT_EVEN_TILE
-.1609c6	af 98 09 16	lda $160998	                LDA EVEN_TILE_VAL
-.1609ca	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.1609cd	80 07		bra $1609d6	                BRA UT_DONE
-.1609cf					        UT_EVEN_TILE
-.1609cf	af 99 09 16	lda $160999	                LDA ODD_TILE_VAL
-.1609d3	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.1609d6					        UT_DONE
-.1609d6	c8		iny		                INY
-.1609d7	c8		iny		                INY
-.1609d8	e8		inx		                INX
-.1609d9	e0 40 01	cpx #$0140	                CPX #320
-.1609dc	d0 db		bne $1609b9	                BNE UT_GET_TILE
-.1609de	af 98 09 16	lda $160998	                LDA EVEN_TILE_VAL
-.1609e2	c9 12		cmp #$12	                CMP #$12
-.1609e4	f0 0b		beq $1609f1	                BEQ ALT_ODD
-.1609e6	8f 99 09 16	sta $160999	                STA ODD_TILE_VAL
-.1609ea	a9 12		lda #$12	                LDA #$12
-.1609ec	8f 98 09 16	sta $160998	                STA EVEN_TILE_VAL
-.1609f0	60		rts		                RTS
-.1609f1					        ALT_ODD
-.1609f1	8f 99 09 16	sta $160999	                STA ODD_TILE_VAL
-.1609f5	a9 13		lda #$13	                LDA #$13
-.1609f7	8f 98 09 16	sta $160998	                STA EVEN_TILE_VAL
-.1609fb	60		rts		                RTS
-.1609fc					    UT_SKIP
-.1609fc	8f 97 09 16	sta $160997	                STA HOME_CYCLE
-.160a00	60		rts		                RTS
->160a01	00				WATER_CYCLE     .byte 0
->160a02	04				EVEN_WTILE_VAL  .byte $4
->160a03	14				ODD_WTILE_VAL   .byte $14
-.160a04					UPDATE_WATER_TILES
-.160a04	af 01 0a 16	lda $160a01	                LDA WATER_CYCLE
-.160a08	1a		inc a		                INC A
-.160a09	c9 0c		cmp #$0c	                CMP #12 ; only update every N SOF cycle
-.160a0b	d0 6c		bne $160a79	                BNE UW_SKIP
-.160a0d	a9 00		lda #$00	                LDA #0
-.160a0f	8f 01 0a 16	sta $160a01	                STA WATER_CYCLE
-.160a13	a2 40 01	ldx #$0140	                LDX #8 * 40 ; line 9 in the game board
-.160a16	a0 80 02	ldy #$0280	                LDY #8 * 80 ; line 8 in the tileset
-.160a19	48		pha		                PHA             ; begin setdbr macro
-.160a1a	08		php		                PHP
-.160a1b	e2 20		sep #$20	                SEP #$20        ; set A short
-.160a1d	a9 b0		lda #$b0	                LDA #<`TILE_MAP0
-.160a1f	48		pha		                PHA
-.160a20	ab		plb		                PLB
-.160a21	28		plp		                PLP
-.160a22	68		pla		                PLA             ; end setdbr macro
-.160a23					        UW_GET_TILE
-.160a23	bf 8a 00 16	lda $16008a,x	                LDA game_board,X
-.160a27	c9 57		cmp #$57	                CMP #'W'
-.160a29	d0 15		bne $160a40	                BNE UW_DONE
-.160a2b	8a		txa		                TXA
-.160a2c	29 01		and #$01	                AND #1
-.160a2e	f0 09		beq $160a39	                BEQ UW_EVEN_TILE
-.160a30	af 02 0a 16	lda $160a02	                LDA EVEN_WTILE_VAL
-.160a34	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160a37	80 07		bra $160a40	                BRA UW_DONE
-.160a39					        UW_EVEN_TILE
-.160a39	af 03 0a 16	lda $160a03	                LDA ODD_WTILE_VAL
-.160a3d	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160a40					        UW_DONE
-.160a40	c8		iny		                INY
-.160a41	c8		iny		                INY
-.160a42	c2 20		rep #$20	                REP #$20        ; set A long
-.160a44	98		tya		                TYA
-.160a45	29 4f 00	and #$004f	                AND #$4F
-.160a48	c9 50 00	cmp #$0050	                CMP #80
-.160a4b	d0 06		bne $160a53	                BNE WT_NEXT_TILE
-.160a4d	98		tya		                TYA
-.160a4e	18		clc		                CLC
-.160a4f	69 18 00	adc #$0018	                ADC #24
-.160a52	a8		tay		                TAY
-.160a53					    WT_NEXT_TILE
-.160a53	e2 20		sep #$20	                SEP #$20        ; set A short
-.160a55	e8		inx		                INX
-.160a56	e0 30 02	cpx #$0230	                CPX #14 * 40
-.160a59	d0 c8		bne $160a23	                BNE UW_GET_TILE
-.160a5b	af 02 0a 16	lda $160a02	                LDA EVEN_WTILE_VAL
-.160a5f	c9 04		cmp #$04	                CMP #4
-.160a61	f0 0b		beq $160a6e	                BEQ W_ALT_ODD
-.160a63	8f 03 0a 16	sta $160a03	                STA ODD_WTILE_VAL
-.160a67	a9 04		lda #$04	                LDA #$4
-.160a69	8f 02 0a 16	sta $160a02	                STA EVEN_WTILE_VAL
-.160a6d	60		rts		                RTS
-.160a6e					        W_ALT_ODD
-.160a6e	8f 03 0a 16	sta $160a03	                STA ODD_WTILE_VAL
-.160a72	a9 14		lda #$14	                LDA #$14
-.160a74	8f 02 0a 16	sta $160a02	                STA EVEN_WTILE_VAL
-.160a78	60		rts		                RTS
-.160a79					    UW_SKIP
-.160a79	8f 01 0a 16	sta $160a01	                STA WATER_CYCLE
-.160a7d	60		rts		                RTS
->160a7e	00				LILLY_CYCLE     .byte 0
-.160a7f					UPDATE_LILLY
-.160a7f	af 7e 0a 16	lda $160a7e	                LDA LILLY_CYCLE
-.160a83	1a		inc a		                INC A
-.160a84	c9 0a		cmp #$0a	                CMP #10 ; only update every N SOF cycle
-.160a86	d0 1c		bne $160aa4	                BNE UL_SKIP
-.160a88	a9 00		lda #$00	                LDA #0
-.160a8a	8f 7e 0a 16	sta $160a7e	                STA LILLY_CYCLE
-.160a8e	af 80 00 16	lda $160080	                LDA game_array + 14 * 8 + 6
-.160a92	1a		inc a		                INC A
-.160a93	c9 18		cmp #$18	                CMP #24
-.160a95	d0 02		bne $160a99	                BNE STORE_LILLY
-.160a97	a9 10		lda #$10	                LDA #16
-.160a99					        STORE_LILLY
-.160a99	8f 80 00 16	sta $160080	                STA game_array + 14 * 8 + 6
-.160a9d	0a		asl a		                ASL A
-.160a9e	0a		asl a		                ASL A
-.160a9f	8f 72 0c af	sta $af0c72	                STA @lSP14_ADDY_PTR_M
-.160aa3	60		rts		                RTS
-.160aa4					        UL_SKIP
-.160aa4	8f 7e 0a 16	sta $160a7e	                STA LILLY_CYCLE
-.160aa8	60		rts		                RTS
->160aa9	30 31 32 33 34 35 36 37		HEX_MAP         .text '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
->160ab1	38 39 41 42 43 44 45 46
->160ab9	00				LOW_NIBBLE      .byte 0
->160aba	00				HIGH_NIBBLE     .byte 0
-.160abb					WRITE_HEX
-.160abb	48		pha		        PHA
-.160abc	da		phx		            PHX
-.160abd	5a		phy		                PHY
-.160abe	48		pha		                PHA
-.160abf	29 f0		and #$f0	                    AND #$F0
-.160ac1	4a		lsr a		                    lsr A
-.160ac2	4a		lsr a		                    lsr A
-.160ac3	4a		lsr a		                    lsr A
-.160ac4	4a		lsr a		                    lsr A
-.160ac5	e2 10		sep #$10	                SEP #$10        ; set X short
-.160ac7	aa		tax		                    TAX
-.160ac8	bf a9 0a 16	lda $160aa9,x	                    LDA HEX_MAP,X
-.160acc	8f b9 0a 16	sta $160ab9	                    STA @lLOW_NIBBLE
-.160ad0	68		pla		                PLA
-.160ad1	29 0f		and #$0f	                AND #$0F
-.160ad3	aa		tax		                TAX
-.160ad4	bf a9 0a 16	lda $160aa9,x	                LDA HEX_MAP,X
-.160ad8	8f ba 0a 16	sta $160aba	                STA @lHIGH_NIBBLE
-.160adc	c2 30		rep #$30	                REP #$30        ; set A&X long
-.160ade	7a		ply		                PLY
-.160adf	af b9 0a 16	lda $160ab9	                LDA @lLOW_NIBBLE
-.160ae3	97 0c		sta [$0c],y	                STA [SCREENBEGIN], Y
-.160ae5	a9 10 10	lda #$1010	                LDA #$1010
-.160ae8	bb		tyx		                TYX
-.160ae9	9f 00 c0 af	sta $afc000,x	                STA @lCS_COLOR_MEM_PTR, X
-.160aed	e2 20		sep #$20	                SEP #$20        ; set A short
-.160aef	fa		plx		            PLX
-.160af0	68		pla		        PLA
-.160af1	60		rts		                RTS
-.160af2					LOAD_TILESET
-.160af2	a2 00 00	ldx #$0000	                LDX #0
-.160af5	a0 02 00	ldy #$0002	                LDY #2  ; the tilemap is offset by 1 column
-.160af8	48		pha		                PHA             ; begin setdbr macro
-.160af9	08		php		                PHP
-.160afa	e2 20		sep #$20	                SEP #$20        ; set A short
-.160afc	a9 b0		lda #$b0	                LDA #<`TILE_MAP0
-.160afe	48		pha		                PHA
-.160aff	ab		plb		                PLB
-.160b00	28		plp		                PLP
-.160b01	68		pla		                PLA             ; end setdbr macro
-.160b02	e2 20		sep #$20	                SEP #$20        ; set A short
-.160b04					    GET_TILE
-.160b04	bf 8a 00 16	lda $16008a,x	                LDA game_board,X
-.160b08	c9 2e		cmp #$2e	                CMP #'.'  ; DOT
-.160b0a	d0 07		bne $160b13	                BNE GRASS
-.160b0c	a9 00		lda #$00	                LDA #0
-.160b0e	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b11	80 4e		bra $160b61	                BRA LT_DONE
-.160b13					        GRASS
-.160b13	c9 47		cmp #$47	                CMP #'G'
-.160b15	d0 07		bne $160b1e	                BNE HOME
-.160b17	a9 02		lda #$02	                LDA #2
-.160b19	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b1c	80 43		bra $160b61	                BRA LT_DONE
-.160b1e					        HOME
-.160b1e	c9 48		cmp #$48	                CMP #'H'
-.160b20	d0 13		bne $160b35	                BNE WATER
-.160b22	8a		txa		                TXA
-.160b23	29 01		and #$01	                AND #1
-.160b25	f0 07		beq $160b2e	                BEQ EVEN_TILE
-.160b27	a9 13		lda #$13	                LDA #$13
-.160b29	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b2c	80 33		bra $160b61	                BRA LT_DONE
-.160b2e					            EVEN_TILE
-.160b2e	a9 12		lda #$12	                LDA #$12
-.160b30	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b33	80 2c		bra $160b61	                BRA LT_DONE
-.160b35					        WATER
-.160b35	c9 57		cmp #$57	                CMP #'W'
-.160b37	d0 07		bne $160b40	                BNE CONCRETE
-.160b39	a9 04		lda #$04	                LDA #4
+.16094e					        HOME_LINE
+.16094e	af 00 00 16	lda $160000	                LDA PLAYER_X
+.160952	4a		lsr a		                LSR
+.160953	4a		lsr a		                LSR
+.160954	4a		lsr a		                LSR
+.160955	4a		lsr a		                LSR ; divide by 16
+.160956	aa		tax		                TAX
+.160957	e2 20		sep #$20	                SEP #$20        ; set A short
+.160959	bf a2 01 16	lda $1601a2,x	                LDA game_board + 280,X
+.16095d	29 ff		and #$ff	                AND #$FF
+.16095f	c9 48		cmp #$48	                CMP #'H'
+.160961	d0 18		bne $16097b	                BNE S_COLLISION
+.160963	e2 20		sep #$20	                SEP #$20        ; set A short
+.160965	60		rts		                RTS
+.160966					        W_COLLISION
+.160966	e2 20		sep #$20	                SEP #$20        ; set A short
+.160968	a9 38		lda #$38	                LDA #SPLASH_SPRITE * 4
+.16096a	8f 02 0c af	sta $af0c02	                STA SP00_ADDY_PTR_M
+.16096e					            SET_DEAD
+.16096e	a9 01		lda #$01	                LDA #1
+.160970	8f 05 00 16	sta $160005	                STA DEAD
+.160974	a9 b4		lda #$b4	                LDA #THREE_SECS
+.160976	8f 06 00 16	sta $160006	                STA RESET_BOARD
+.16097a	60		rts		                RTS
+.16097b					        S_COLLISION
+.16097b	e2 20		sep #$20	                SEP #$20        ; set A short
+.16097d	a9 3c		lda #$3c	                LDA #SPLATT_SPRITE * 4
+.16097f	8f 02 0c af	sta $af0c02	                STA SP00_ADDY_PTR_M
+.160983	80 e9		bra $16096e	                BRA SET_DEAD
+.160985					STREET_COLLISION
+.160985	a2 00 00	ldx #$0000	                LDX #0
+.160988					        NEXT_STREET_ROW
+.160988	bf 0e 00 16	lda $16000e,x	                LDA game_array+4,X  ; read the Y position
+.16098c	cf 02 00 16	cmp $160002	                CMP PLAYER_Y
+.160990	d0 24		bne $1609b6	                BNE CCS_CONTINUE
+.160992	af 00 00 16	lda $160000	                LDA PLAYER_X
+.160996	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
+.16099a	f0 df		beq $16097b	                BEQ S_COLLISION
+.16099c	90 0f		bcc $1609ad	                BCC CHECK_RIGHT_BOUND
+.16099e					        CHECK_LEFT_BOUND
+.16099e	bf 0c 00 16	lda $16000c,x	                LDA game_array+2,X
+.1609a2	69 20 00	adc #$0020	                ADC #32
+.1609a5	cf 00 00 16	cmp $160000	                CMP PLAYER_X
+.1609a9	b0 d0		bcs $16097b	                BCS S_COLLISION
+.1609ab	80 09		bra $1609b6	                BRA CCS_CONTINUE
+.1609ad					        CHECK_RIGHT_BOUND
+.1609ad	69 20 00	adc #$0020	                ADC #32
+.1609b0	df 0c 00 16	cmp $16000c,x	                CMP game_array+2,X  ; read the X position
+.1609b4	b0 c5		bcs $16097b	                BCS S_COLLISION
+.1609b6					        CCS_CONTINUE
+.1609b6	8a		txa		                TXA
+.1609b7	18		clc		                CLC
+.1609b8	69 08 00	adc #$0008	                ADC #8
+.1609bb	aa		tax		                TAX
+.1609bc	e0 78 00	cpx #$0078	                CPX #8*16-8
+.1609bf	d0 c7		bne $160988	                BNE NEXT_STREET_ROW
+.1609c1					        CC_DONE
+.1609c1	e2 20		sep #$20	                SEP #$20        ; set A short
+.1609c3	60		rts		                RTS
+>1609c4	00				HOME_CYCLE      .byte 0
+>1609c5	12				EVEN_TILE_VAL   .byte $12
+>1609c6	13				ODD_TILE_VAL    .byte $13
+.1609c7					UPDATE_HOME_TILES
+.1609c7	af c4 09 16	lda $1609c4	                LDA HOME_CYCLE
+.1609cb	1a		inc a		                INC A
+.1609cc	c9 0f		cmp #$0f	                CMP #15 ; only update every N SOF cycle
+.1609ce	d0 59		bne $160a29	                BNE UT_SKIP
+.1609d0	a9 00		lda #$00	                LDA #0
+.1609d2	8f c4 09 16	sta $1609c4	                STA HOME_CYCLE
+.1609d6	a2 18 01	ldx #$0118	                LDX #280 ; line 8 in the game board
+.1609d9	a0 30 02	ldy #$0230	                LDY #7 * 80 ; line 8 in the tileset
+.1609dc	48		pha		                PHA             ; begin setdbr macro
+.1609dd	08		php		                PHP
+.1609de	e2 20		sep #$20	                SEP #$20        ; set A short
+.1609e0	a9 b0		lda #$b0	                LDA #<`TILE_MAP0
+.1609e2	48		pha		                PHA
+.1609e3	ab		plb		                PLB
+.1609e4	28		plp		                PLP
+.1609e5	68		pla		                PLA             ; end setdbr macro
+.1609e6					        UT_GET_TILE
+.1609e6	bf 8a 00 16	lda $16008a,x	                LDA game_board,X
+.1609ea	c9 48		cmp #$48	                CMP #'H'
+.1609ec	d0 15		bne $160a03	                BNE UT_DONE
+.1609ee	8a		txa		                TXA
+.1609ef	29 01		and #$01	                AND #1
+.1609f1	f0 09		beq $1609fc	                BEQ UT_EVEN_TILE
+.1609f3	af c5 09 16	lda $1609c5	                LDA EVEN_TILE_VAL
+.1609f7	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.1609fa	80 07		bra $160a03	                BRA UT_DONE
+.1609fc					        UT_EVEN_TILE
+.1609fc	af c6 09 16	lda $1609c6	                LDA ODD_TILE_VAL
+.160a00	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160a03					        UT_DONE
+.160a03	c8		iny		                INY
+.160a04	c8		iny		                INY
+.160a05	e8		inx		                INX
+.160a06	e0 40 01	cpx #$0140	                CPX #320
+.160a09	d0 db		bne $1609e6	                BNE UT_GET_TILE
+.160a0b	af c5 09 16	lda $1609c5	                LDA EVEN_TILE_VAL
+.160a0f	c9 12		cmp #$12	                CMP #$12
+.160a11	f0 0b		beq $160a1e	                BEQ ALT_ODD
+.160a13	8f c6 09 16	sta $1609c6	                STA ODD_TILE_VAL
+.160a17	a9 12		lda #$12	                LDA #$12
+.160a19	8f c5 09 16	sta $1609c5	                STA EVEN_TILE_VAL
+.160a1d	60		rts		                RTS
+.160a1e					        ALT_ODD
+.160a1e	8f c6 09 16	sta $1609c6	                STA ODD_TILE_VAL
+.160a22	a9 13		lda #$13	                LDA #$13
+.160a24	8f c5 09 16	sta $1609c5	                STA EVEN_TILE_VAL
+.160a28	60		rts		                RTS
+.160a29					    UT_SKIP
+.160a29	8f c4 09 16	sta $1609c4	                STA HOME_CYCLE
+.160a2d	60		rts		                RTS
+>160a2e	00				WATER_CYCLE     .byte 0
+>160a2f	04				EVEN_WTILE_VAL  .byte $4
+>160a30	14				ODD_WTILE_VAL   .byte $14
+.160a31					UPDATE_WATER_TILES
+.160a31	af 2e 0a 16	lda $160a2e	                LDA WATER_CYCLE
+.160a35	1a		inc a		                INC A
+.160a36	c9 0c		cmp #$0c	                CMP #12 ; only update every N SOF cycle
+.160a38	d0 6c		bne $160aa6	                BNE UW_SKIP
+.160a3a	a9 00		lda #$00	                LDA #0
+.160a3c	8f 2e 0a 16	sta $160a2e	                STA WATER_CYCLE
+.160a40	a2 40 01	ldx #$0140	                LDX #8 * 40 ; line 9 in the game board
+.160a43	a0 80 02	ldy #$0280	                LDY #8 * 80 ; line 8 in the tileset
+.160a46	48		pha		                PHA             ; begin setdbr macro
+.160a47	08		php		                PHP
+.160a48	e2 20		sep #$20	                SEP #$20        ; set A short
+.160a4a	a9 b0		lda #$b0	                LDA #<`TILE_MAP0
+.160a4c	48		pha		                PHA
+.160a4d	ab		plb		                PLB
+.160a4e	28		plp		                PLP
+.160a4f	68		pla		                PLA             ; end setdbr macro
+.160a50					        UW_GET_TILE
+.160a50	bf 8a 00 16	lda $16008a,x	                LDA game_board,X
+.160a54	c9 57		cmp #$57	                CMP #'W'
+.160a56	d0 15		bne $160a6d	                BNE UW_DONE
+.160a58	8a		txa		                TXA
+.160a59	29 01		and #$01	                AND #1
+.160a5b	f0 09		beq $160a66	                BEQ UW_EVEN_TILE
+.160a5d	af 2f 0a 16	lda $160a2f	                LDA EVEN_WTILE_VAL
+.160a61	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160a64	80 07		bra $160a6d	                BRA UW_DONE
+.160a66					        UW_EVEN_TILE
+.160a66	af 30 0a 16	lda $160a30	                LDA ODD_WTILE_VAL
+.160a6a	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160a6d					        UW_DONE
+.160a6d	c8		iny		                INY
+.160a6e	c8		iny		                INY
+.160a6f	c2 20		rep #$20	                REP #$20        ; set A long
+.160a71	98		tya		                TYA
+.160a72	29 4f 00	and #$004f	                AND #$4F
+.160a75	c9 50 00	cmp #$0050	                CMP #80
+.160a78	d0 06		bne $160a80	                BNE WT_NEXT_TILE
+.160a7a	98		tya		                TYA
+.160a7b	18		clc		                CLC
+.160a7c	69 18 00	adc #$0018	                ADC #24
+.160a7f	a8		tay		                TAY
+.160a80					    WT_NEXT_TILE
+.160a80	e2 20		sep #$20	                SEP #$20        ; set A short
+.160a82	e8		inx		                INX
+.160a83	e0 30 02	cpx #$0230	                CPX #14 * 40
+.160a86	d0 c8		bne $160a50	                BNE UW_GET_TILE
+.160a88	af 2f 0a 16	lda $160a2f	                LDA EVEN_WTILE_VAL
+.160a8c	c9 04		cmp #$04	                CMP #4
+.160a8e	f0 0b		beq $160a9b	                BEQ W_ALT_ODD
+.160a90	8f 30 0a 16	sta $160a30	                STA ODD_WTILE_VAL
+.160a94	a9 04		lda #$04	                LDA #$4
+.160a96	8f 2f 0a 16	sta $160a2f	                STA EVEN_WTILE_VAL
+.160a9a	60		rts		                RTS
+.160a9b					        W_ALT_ODD
+.160a9b	8f 30 0a 16	sta $160a30	                STA ODD_WTILE_VAL
+.160a9f	a9 14		lda #$14	                LDA #$14
+.160aa1	8f 2f 0a 16	sta $160a2f	                STA EVEN_WTILE_VAL
+.160aa5	60		rts		                RTS
+.160aa6					    UW_SKIP
+.160aa6	8f 2e 0a 16	sta $160a2e	                STA WATER_CYCLE
+.160aaa	60		rts		                RTS
+>160aab	00				LILLY_CYCLE     .byte 0
+.160aac					UPDATE_LILLY
+.160aac	af ab 0a 16	lda $160aab	                LDA LILLY_CYCLE
+.160ab0	1a		inc a		                INC A
+.160ab1	c9 0a		cmp #$0a	                CMP #10 ; only update every N SOF cycle
+.160ab3	d0 1c		bne $160ad1	                BNE UL_SKIP
+.160ab5	a9 00		lda #$00	                LDA #0
+.160ab7	8f ab 0a 16	sta $160aab	                STA LILLY_CYCLE
+.160abb	af 80 00 16	lda $160080	                LDA game_array + 14 * 8 + 6
+.160abf	1a		inc a		                INC A
+.160ac0	c9 18		cmp #$18	                CMP #24
+.160ac2	d0 02		bne $160ac6	                BNE STORE_LILLY
+.160ac4	a9 10		lda #$10	                LDA #16
+.160ac6					        STORE_LILLY
+.160ac6	8f 80 00 16	sta $160080	                STA game_array + 14 * 8 + 6
+.160aca	0a		asl a		                ASL A
+.160acb	0a		asl a		                ASL A
+.160acc	8f 92 0c af	sta $af0c92	                STA @lSP18_ADDY_PTR_M
+.160ad0	60		rts		                RTS
+.160ad1					        UL_SKIP
+.160ad1	8f ab 0a 16	sta $160aab	                STA LILLY_CYCLE
+.160ad5	60		rts		                RTS
+>160ad6	30 31 32 33 34 35 36 37		HEX_MAP         .text '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+>160ade	38 39 41 42 43 44 45 46
+>160ae6	00				LOW_NIBBLE      .byte 0
+>160ae7	00				HIGH_NIBBLE     .byte 0
+.160ae8					WRITE_HEX
+.160ae8	48		pha		        PHA
+.160ae9	da		phx		            PHX
+.160aea	5a		phy		                PHY
+.160aeb	48		pha		                PHA
+.160aec	29 f0		and #$f0	                    AND #$F0
+.160aee	4a		lsr a		                    lsr A
+.160aef	4a		lsr a		                    lsr A
+.160af0	4a		lsr a		                    lsr A
+.160af1	4a		lsr a		                    lsr A
+.160af2	e2 10		sep #$10	                SEP #$10        ; set X short
+.160af4	aa		tax		                    TAX
+.160af5	bf d6 0a 16	lda $160ad6,x	                    LDA HEX_MAP,X
+.160af9	8f e6 0a 16	sta $160ae6	                    STA @lLOW_NIBBLE
+.160afd	68		pla		                PLA
+.160afe	29 0f		and #$0f	                AND #$0F
+.160b00	aa		tax		                TAX
+.160b01	bf d6 0a 16	lda $160ad6,x	                LDA HEX_MAP,X
+.160b05	8f e7 0a 16	sta $160ae7	                STA @lHIGH_NIBBLE
+.160b09	c2 30		rep #$30	                REP #$30        ; set A&X long
+.160b0b	7a		ply		                PLY
+.160b0c	af e6 0a 16	lda $160ae6	                LDA @lLOW_NIBBLE
+.160b10	97 0c		sta [$0c],y	                STA [SCREENBEGIN], Y
+.160b12	a9 10 10	lda #$1010	                LDA #$1010
+.160b15	bb		tyx		                TYX
+.160b16	9f 00 c0 af	sta $afc000,x	                STA @lCS_COLOR_MEM_PTR, X
+.160b1a	e2 20		sep #$20	                SEP #$20        ; set A short
+.160b1c	fa		plx		            PLX
+.160b1d	68		pla		        PLA
+.160b1e	60		rts		                RTS
+.160b1f					TRANSFORM_BOARD_TO_TILEMAP
+.160b1f	a2 00 00	ldx #$0000	                LDX #0
+.160b22	a0 02 00	ldy #$0002	                LDY #2  ; the tilemap is offset by 1 column, or 2 bytes.
+.160b25	48		pha		                PHA             ; begin setdbr macro
+.160b26	08		php		                PHP
+.160b27	e2 20		sep #$20	                SEP #$20        ; set A short
+.160b29	a9 b0		lda #$b0	                LDA #<`TILE_MAP0
+.160b2b	48		pha		                PHA
+.160b2c	ab		plb		                PLB
+.160b2d	28		plp		                PLP
+.160b2e	68		pla		                PLA             ; end setdbr macro
+.160b2f	e2 20		sep #$20	                SEP #$20        ; set A short
+.160b31					    GET_TILE
+.160b31	bf 8a 00 16	lda $16008a,x	                LDA game_board,X
+.160b35	c9 2e		cmp #$2e	                CMP #'.'  ; DOT
+.160b37	d0 07		bne $160b40	                BNE GRASS
+.160b39	a9 00		lda #$00	                LDA #0
 .160b3b	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b3e	80 21		bra $160b61	                BRA LT_DONE
-.160b40					        CONCRETE
-.160b40	c9 43		cmp #$43	                CMP #'C'
-.160b42	d0 07		bne $160b4b	                BNE ASHPHALT
-.160b44	a9 01		lda #$01	                LDA #1
+.160b3e	80 4e		bra $160b8e	                BRA LT_DONE
+.160b40					        GRASS
+.160b40	c9 47		cmp #$47	                CMP #'G'
+.160b42	d0 07		bne $160b4b	                BNE HOME
+.160b44	a9 02		lda #$02	                LDA #2
 .160b46	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b49	80 16		bra $160b61	                BRA LT_DONE
-.160b4b					        ASHPHALT
-.160b4b	c9 41		cmp #$41	                CMP #'A'
-.160b4d	d0 07		bne $160b56	                BNE DIRT
-.160b4f	a9 05		lda #$05	                LDA #5
-.160b51	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b54	80 0b		bra $160b61	                BRA LT_DONE
-.160b56					        DIRT
-.160b56	c9 44		cmp #$44	                CMP #'D'
-.160b58	d0 07		bne $160b61	                BNE LT_DONE
-.160b5a	a9 03		lda #$03	                LDA #3
-.160b5c	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b5f	80 00		bra $160b61	                BRA LT_DONE
-.160b61					    LT_DONE
-.160b61	c8		iny		                INY
-.160b62	a9 00		lda #$00	                LDA #0
-.160b64	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
-.160b67	c8		iny		                INY
-.160b68	c2 20		rep #$20	                REP #$20        ; set A long
-.160b6a	98		tya		                TYA
-.160b6b	29 4f 00	and #$004f	                AND #$4F
-.160b6e	c9 50 00	cmp #$0050	                CMP #80
-.160b71	d0 06		bne $160b79	                BNE LT_NEXT_TILE
-.160b73	98		tya		                TYA
-.160b74	18		clc		                CLC
-.160b75	69 18 00	adc #$0018	                ADC #24
-.160b78	a8		tay		                TAY
-.160b79					    LT_NEXT_TILE
-.160b79	e2 20		sep #$20	                SEP #$20        ; set A short
-.160b7b	e8		inx		                INX
-.160b7c	e0 b0 04	cpx #$04b0	                CPX #(640/16) * (480 / 16)
-.160b7f	d0 83		bne $160b04	                BNE GET_TILE
-.160b81	60		rts		                RTS
-.160b82					PALETTE
->160b82	00 00 00 00 ff ff ff 00		.binary "assets/fraggy.pal"
->160b8a	99 99 99 00 66 66 66 00 cc cc cc 00 00 cc 99 00
->160b9a	00 33 66 00 ff 99 33 00 33 33 33 00 ff 00 00 00
->160baa	33 00 ff 00 00 66 ff 00 00 99 33 00 66 cc ff 00
->160bba	33 66 ff 00 33 ff ff 00 33 66 00 00 00 66 33 00
->160bca	00 ff ff 00 00 cc 33 00 66 ff ff 00 66 99 00 00
->160bda	00 33 ff 00 00 cc ff 00 33 00 99 00 33 33 ff 00
->160bea	33 66 99 00 00 99 ff 00 ff cc 33 00 ff cc 99 00
->160bfa	00 66 99 00 33 00 cc 00 cc 33 00 00 ff 33 00 00
->160c0a	66 ff 99 00 33 cc 99 00 00 00 00 00 00 00 00 00
->160c1a	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+.160b49	80 43		bra $160b8e	                BRA LT_DONE
+.160b4b					        HOME
+.160b4b	c9 48		cmp #$48	                CMP #'H'
+.160b4d	d0 13		bne $160b62	                BNE WATER
+.160b4f	8a		txa		                TXA
+.160b50	29 01		and #$01	                AND #1
+.160b52	f0 07		beq $160b5b	                BEQ EVEN_TILE
+.160b54	a9 13		lda #$13	                LDA #$13
+.160b56	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160b59	80 33		bra $160b8e	                BRA LT_DONE
+.160b5b					            EVEN_TILE
+.160b5b	a9 12		lda #$12	                LDA #$12
+.160b5d	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160b60	80 2c		bra $160b8e	                BRA LT_DONE
+.160b62					        WATER
+.160b62	c9 57		cmp #$57	                CMP #'W'
+.160b64	d0 07		bne $160b6d	                BNE CONCRETE
+.160b66	a9 04		lda #$04	                LDA #4
+.160b68	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160b6b	80 21		bra $160b8e	                BRA LT_DONE
+.160b6d					        CONCRETE
+.160b6d	c9 43		cmp #$43	                CMP #'C'
+.160b6f	d0 07		bne $160b78	                BNE ASHPHALT
+.160b71	a9 01		lda #$01	                LDA #1
+.160b73	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160b76	80 16		bra $160b8e	                BRA LT_DONE
+.160b78					        ASHPHALT
+.160b78	c9 41		cmp #$41	                CMP #'A'
+.160b7a	d0 07		bne $160b83	                BNE DIRT
+.160b7c	a9 05		lda #$05	                LDA #5
+.160b7e	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160b81	80 0b		bra $160b8e	                BRA LT_DONE
+.160b83					        DIRT
+.160b83	c9 44		cmp #$44	                CMP #'D'
+.160b85	d0 07		bne $160b8e	                BNE LT_DONE
+.160b87	a9 03		lda #$03	                LDA #3
+.160b89	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160b8c	80 00		bra $160b8e	                BRA LT_DONE
+.160b8e					    LT_DONE
+.160b8e	c8		iny		                INY
+.160b8f	a9 00		lda #$00	                LDA #0
+.160b91	99 00 20	sta $b02000,y	                STA TILE_MAP0,Y
+.160b94	c8		iny		                INY
+.160b95	c2 20		rep #$20	                REP #$20        ; set A long
+.160b97	98		tya		                TYA
+.160b98	29 4f 00	and #$004f	                AND #$4F
+.160b9b	c9 50 00	cmp #$0050	                CMP #80
+.160b9e	d0 06		bne $160ba6	                BNE LT_NEXT_TILE
+.160ba0	98		tya		                TYA
+.160ba1	18		clc		                CLC
+.160ba2	69 18 00	adc #$0018	                ADC #24
+.160ba5	a8		tay		                TAY
+.160ba6					    LT_NEXT_TILE
+.160ba6	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ba8	e8		inx		                INX
+.160ba9	e0 b0 04	cpx #$04b0	                CPX #(640/16) * (480 / 16)
+.160bac	d0 83		bne $160b31	                BNE GET_TILE
+.160bae	60		rts		                RTS
+.160baf					PALETTE
+>160baf	00 00 00 00 ff ff ff 00		.binary "assets/fraggy.pal"
+>160bb7	99 99 99 00 66 66 66 00 cc cc cc 00 00 cc 99 00
+>160bc7	00 33 66 00 ff 99 33 00 33 33 33 00 ff 00 00 00
+>160bd7	33 00 ff 00 00 66 ff 00 00 99 33 00 66 cc ff 00
+>160be7	33 66 ff 00 33 ff ff 00 33 66 00 00 00 66 33 00
+>160bf7	00 ff ff 00 00 cc 33 00 66 ff ff 00 66 99 00 00
+>160c07	00 33 ff 00 00 cc ff 00 33 00 99 00 33 33 ff 00
+>160c17	33 66 99 00 00 99 ff 00 ff cc 33 00 ff cc 99 00
+>160c27	00 66 99 00 33 00 cc 00 cc 33 00 00 ff 33 00 00
+>160c37	66 ff 99 00 33 cc 99 00 00 00 00 00 00 00 00 00
+>160c47	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 ;	...repeated 53 times (848 bytes)...
->160f7a	00 00 00 00 00 00 00 00
+>160fa7	00 00 00 00 00 00 00 00
 .170000					TILES
 >170000	00 00 00 00 00 00 00 00		.binary "assets/fraggy.bin"
 >170008	00 00 00 00 00 00 00 00 02 02 02 02 02 02 02 03
