@@ -109,7 +109,7 @@ KEYBOARD_INTERRUPT
         CHECK_SPACE
                 CMP #$39
                 BNE SKIP_KEY
-                LDA #$1F
+                LDA #$8F
                 BRA KBD_DONE
                 
         SKIP_KEY
@@ -117,7 +117,6 @@ KEYBOARD_INTERRUPT
                 JMP KBD_SKIP
                 
         KBD_DONE
-
                 JSR UPDATE_DISPLAY
         KBD_SKIP        
                 RTS
@@ -132,6 +131,15 @@ SOF_INTERRUPT
 
                 .as
                 LDA JOYSTICK0
+                AND #$DF
+                EOR JOYSTICK_SC_TMP
+                BEQ SOF_CONTINUE
+                LDA JOYSTICK0
+                STA JOYSTICK_SC_TMP
+                BRA SOF_DISPLAY
+        SOF_CONTINUE
+                LDA #$DF
+        SOF_DISPLAY
                 JSR UPDATE_DISPLAY
                 
                 RTS

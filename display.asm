@@ -271,13 +271,28 @@ UPDATE_DISPLAY
                 PLB
                 RTS
                 
-                
     NOT_DEAD
                 JSR UPDATE_HOME_TILES
                 JSR UPDATE_WATER_TILES
                 JSR UPDATE_LILLY
+                
+                ; check if the frog's tongue is out
+                LDA TONGUE_POS
+                BEQ SKIP_TONGUE_UPDATE
+                JSR UPDATE_TONGUE
+                PLA
+                BRA JOY_DONE
+                
+        SKIP_TONGUE_UPDATE
                 PLA
                 setal
+                
+        JOY_FIRE
+                BIT #$10 ; fire
+                BNE JOY_UP
+                JSR FLICK_TONGUE
+                BRA JOY_DONE
+                
         JOY_UP
                 BIT #1 ; up
                 BNE JOY_DOWN
@@ -291,13 +306,13 @@ UPDATE_DISPLAY
                 BRA JOY_DONE
                 
         JOY_LEFT
-                BIT #4
+                BIT #4 ; left
                 BNE JOY_RIGHT
                 JSR PLAYER_MOVE_LEFT
                 BRA JOY_DONE
                 
         JOY_RIGHT 
-                BIT #8
+                BIT #8 ; right
                 BNE JOY_DONE
                 JSR PLAYER_MOVE_RIGHT
                 BRA JOY_DONE
@@ -374,6 +389,7 @@ PLAYER_MOVE_DOWN
                 RTS
                 
 PLAYER_MOVE_UP
+                .al
                 LDA PLAYER_Y
                 SEC
                 SBC #32
@@ -392,6 +408,7 @@ PLAYER_MOVE_UP
                 RTS
                 
 PLAYER_MOVE_RIGHT
+                .al
                 LDA PLAYER_X
                 CLC
                 ADC #32
@@ -410,6 +427,7 @@ PLAYER_MOVE_RIGHT
                 RTS
                 
 PLAYER_MOVE_LEFT
+                .al
                 LDA PLAYER_X
                 SEC
                 SBC #32
@@ -427,6 +445,74 @@ PLAYER_MOVE_LEFT
                 setal
                 RTS
                 
+INITIAL_DIST    = 4
+FLICK_TONGUE
+                .al
+                ; turn the frog to UP position
+                LDA #PLAYER_UP * 1024
+                STA SP00_ADDY_PTR_L
+                
+                ; enable the sprite
+                LDA #TONGUE_SPRITE * 1024
+                STA SP01_ADDY_PTR_L
+                
+                ; X position is the same as the player
+                LDA PLAYER_X
+                STA SP01_X_POS_L
+                
+                ; store the animation position
+                LDA #INITIAL_DIST
+                STA TONGUE_POS
+                
+                ; Y position is specified by the TONGUE_POS away from the player
+                LDA PLAYER_Y
+                SBC TONGUE_POS
+                STA SP01_Y_POS_L
+                
+                setas
+                LDA #1
+                STA SP01_CONTROL_REG
+                STA SP01_ADDY_PTR_H
+                
+                setal
+                RTS
+                
+UPDATE_TONGUE
+                .as
+                PHB
+                setdbr <`TONGUE_CTR
+                INC TONGUE_CTR
+                LDA TONGUE_CTR
+                BIT #7  ; only move the tongue every 16 SOF
+                BNE TONGUE_DONE
+
+                CMP #$20
+                BGE RETRACT_TONGUE
+                
+                ASL TONGUE_POS
+                BRA MOVE_TONGUE
+        RETRACT_TONGUE
+                LSR TONGUE_POS
+        MOVE_TONGUE
+                setal
+                LDA PLAYER_Y
+                SBC TONGUE_POS
+                STA SP01_Y_POS_L
+                setas
+                
+                LDA TONGUE_POS
+                CMP #2
+                BNE TONGUE_DONE
+                STZ TONGUE_POS
+                STZ TONGUE_CTR
+                ; disable the sprite
+                LDA #0
+                STA SP01_CONTROL_REG
+                
+    TONGUE_DONE
+                PLB
+                RTS
+                
 ; *****************************************************************
 ; * Compare the location of each sprite with the player's position
 ; * Sprites are 32 x 32 so the math is pretty simple.
@@ -435,6 +521,8 @@ PLAYER_MOVE_LEFT
 ; *****************************************************************
 COLLISION_CHECK
                 .as
+                PHB
+                setdbr <`TONGUE_CTR
                 setal
                 LDA PLAYER_Y
                 CMP #256 ; mid-screen
@@ -442,6 +530,7 @@ COLLISION_CHECK
                 BCC WATER_COLLISION
                 JSR STREET_COLLISION
                 setas
+                PLB
                 RTS
                 
         WATER_COLLISION
@@ -591,6 +680,7 @@ EVEN_TILE_VAL   .byte $12
 ODD_TILE_VAL    .byte $13
 UPDATE_HOME_TILES
                 .as
+                PHB
                 ; alternate the HOME tiles to imitate wind motion
                 LDA HOME_CYCLE
                 INC A
@@ -635,6 +725,7 @@ UPDATE_HOME_TILES
                 STA ODD_TILE_VAL
                 LDA #$12
                 STA EVEN_TILE_VAL
+                PLB
                 RTS
                 
         ALT_ODD
@@ -642,11 +733,12 @@ UPDATE_HOME_TILES
                 STA ODD_TILE_VAL
                 LDA #$13
                 STA EVEN_TILE_VAL
-
+                PLB
                 RTS
                 
     UT_SKIP
                 STA HOME_CYCLE
+                PLB
                 RTS
 
 
@@ -656,6 +748,7 @@ EVEN_WTILE_VAL  .byte $4
 ODD_WTILE_VAL   .byte $14
 UPDATE_WATER_TILES
                 .as
+                PHB
                 ; alternate the WATER tiles to imitate waves
                 LDA WATER_CYCLE
                 INC A
@@ -714,6 +807,7 @@ UPDATE_WATER_TILES
                 STA ODD_WTILE_VAL
                 LDA #$4
                 STA EVEN_WTILE_VAL
+                PLB
                 RTS
                 
         W_ALT_ODD
@@ -721,11 +815,12 @@ UPDATE_WATER_TILES
                 STA ODD_WTILE_VAL
                 LDA #$14
                 STA EVEN_WTILE_VAL
-
+                PLB
                 RTS
                 
     UW_SKIP
                 STA WATER_CYCLE
+                PLB
                 RTS
             
 LILLY_CYCLE     .byte 0

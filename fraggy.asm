@@ -15,10 +15,11 @@
 .include "timer_def.asm"
 .include "base.asm"
 
-TOTAL_SPRITES   = 26
+TOTAL_SPRITES   = 27
 TILE_SET0       = $B00000
 TILE_MAP0       = $B02000
 SPRITES         = $B10000
+JOYSTICK_SC_TMP = $000F89
 
 ; sprite names
 PLAYER_UP       = 10
@@ -41,6 +42,8 @@ DEAD        .byte 0
 RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
 BEE_TIMER   .byte 0 ; show the bee for a short period of time.
 SCORE       .word 0 
+TONGUE_POS  .word 0
+TONGUE_CTR  .byte 0
 
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
@@ -112,7 +115,6 @@ GAME_START
             STA @lINT_MASK_REG1
             STA @lINT_MASK_REG2
             
-            
             ; Address SONG
             JSL VGM_INIT_TIMERS
             ; load the game over music
@@ -122,9 +124,20 @@ GAME_START
             setal
             LDA #<>SONG
             STA SONG_START
+            
+            ; initialize variables
+            LDA #0
+            STA SCORE
+            
             setas
+            STA TONGUE_POS
+            STA BEE_TIMER
+            STA DEAD
+            
+            LDA #3
+            STA LIVES
+            
             JSL VGM_SET_SONG_POINTERS
-                
             JSR INIT_DISPLAY
             
             ; Enable SOF
