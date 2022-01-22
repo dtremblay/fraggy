@@ -586,7 +586,7 @@ COLLISION_CHECK
                 CLC
                 LDA PLAYER_X
                 ADC game_array,X
-                CMP #32
+                CMP #64
                 BCC W_COLLISION
                 CMP #640-32
                 BCS W_COLLISION
@@ -605,12 +605,14 @@ COLLISION_CHECK
                 LSR
                 LSR ; divide by 16
                 TAX
-                setas
                 LDA game_board + 280,X
                 AND #$FF
                 CMP #'H'
-                BNE S_COLLISION
-                
+                BEQ HL_DONE
+                PLB
+                BRA S_COLLISION
+        
+        HL_DONE
                 setas
                 PLB
                 RTS
@@ -626,7 +628,7 @@ COLLISION_CHECK
                 ; set the player to DEAD
             SET_DEAD
                 LDA #1
-                STA DEAD
+                STA @lDEAD
                 LDA #THREE_SECS
                 STA RESET_BOARD
                 PLB
