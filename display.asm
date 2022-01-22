@@ -634,7 +634,7 @@ COLLISION_CHECK
                 
         S_COLLISION
                 .al
-                
+                PHB
                 setas
                 ; show splash sprite at player's location
                 LDA #SPLATT_SPRITE * 4
