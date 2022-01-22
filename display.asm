@@ -577,6 +577,7 @@ COLLISION_CHECK
                 
         CCW_DONE
                 setas
+                PLB
                 RTS
                 
         FLOAT
@@ -593,6 +594,7 @@ COLLISION_CHECK
                 STA PLAYER_X
                 STA SP00_X_POS_L
                 setas
+                PLB
                 RTS
                 
         HOME_LINE
@@ -610,6 +612,7 @@ COLLISION_CHECK
                 BNE S_COLLISION
                 
                 setas
+                PLB
                 RTS
                 
         W_COLLISION
@@ -626,7 +629,7 @@ COLLISION_CHECK
                 STA DEAD
                 LDA #THREE_SECS
                 STA RESET_BOARD
-                
+                PLB
                 RTS
                 
         S_COLLISION
