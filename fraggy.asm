@@ -1,4 +1,5 @@
 ; *************************************************************************
+; *************************************************************************
 ; * Attempt at a copy-cat game like Frogger
 ; * Tileset is stored in "game_board".
 ; * Sprites 0 to 3 are reserved for player animations.
@@ -18,6 +19,7 @@
 TOTAL_SPRITES   = 27
 TILE_SET0       = $B00000
 TILE_MAP0       = $B02000
+TILE_MAP1       = $B02960
 SPRITES         = $B10000
 JOYSTICK_SC_TMP = $000F89
 
@@ -32,18 +34,32 @@ LILLYPAD_SPRITE = 16 ; lilly pad has 8 sprites
 TONGUE_SPRITE   = 24
 BEE_SPRITE      = 25
 THREE_SECS      = 180
+; numbers are displayed with tiles
+TILE_HEART      = 16
+TILE_0          = 20
+TILE_1          = 21
+TILE_2          = 22
+TILE_3          = 23
+TILE_4          = 24
+TILE_5          = 25
+TILE_6          = 26
+TILE_7          = 27
+TILE_8          = 28
+TILE_9          = 29
 
 * = $160000
 
 PLAYER_X    .word 100
 PLAYER_Y    .word 100
 LIVES       .byte 3
+GAME_OVER   .byte 0
 DEAD        .byte 0
 RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
 BEE_TIMER   .byte 0 ; show the bee for a short period of time.
 SCORE       .word 0 
 TONGUE_POS  .word 0
 TONGUE_CTR  .byte 0
+PL_MOVE_UP  .byte 0
 
 ; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
 ; I've added 'dirty' tiles here to test the machine and FoenixIDE rendering of tiles in the border
@@ -78,6 +94,38 @@ game_board
             .text "........................................" ;28
             .text "............AAA........................." ;29
             .text ".............AAA........................" ;30
+            
+game_over_board 
+            .text "........................................" ;1 - not shown
+            .text "........................................" ;2 - not shown
+            .text "........................................" ;3
+            .text "........................................" ;4 ; display score and remaining lives here?
+            .text "........................................" ;5
+            .text "........................................" ;6
+            .text "........................................" ;7
+            .text "........................................" ;8
+            .text "........................................" ;9
+            .text "........................................" ;10
+            .text "........................................" ;11
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;12
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;13
+            .text "..AA................................AA.." ;14
+            .text "..AA................................AA.." ;15
+            .text "..AA................................AA.." ;16
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;18
+            .text "........................................" ;19
+            .text "........................................" ;20
+            .text "........................................" ;21
+            .text "........................................" ;22
+            .text "........................................" ;23
+            .text "........................................" ;24
+            .text "........................................" ;25
+            .text "........................................" ;26
+            .text "........................................" ;27
+            .text "........................................" ;28
+            .text "........................................" ;29
+            .text "........................................" ;30
 
 GAME_START
             setas
@@ -109,10 +157,12 @@ GAME_START
             ; initialize variables
             LDA #0
             STA SCORE
+            STA MOUSE_PTR_CTRL_REG_L ; disable the mouse pointer
             
             setas
             STA TONGUE_POS
             STA BEE_TIMER
+            STA GAME_OVER
             STA DEAD
             
             LDA #3

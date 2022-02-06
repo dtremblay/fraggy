@@ -73,15 +73,44 @@ INIT_DISPLAY
                 ; set the rows to 30
                 LDA #30
                 STA TL1_TOTAL_Y_SIZE_L
-                
                 ; set the video RAM to B0:2000
-                LDA #<>TILE_MAP0
+                LDA #<>TILE_MAP1
                 STA TL1_START_ADDY_L
                 
+                
+                ; enable tilemap 0 - display the GAME OVER message
+                LDA #0
+                STA TL0_START_ADDY_H
+                ; set the tilemap window position to 0
+                LDA #0
+                STA TL0_WINDOW_X_POS_L
+                STA TL0_WINDOW_Y_POS_L
+                ; set the columns to 40
+                LDA #40
+                STA TL0_TOTAL_X_SIZE_L
+                ; set the rows to 30
+                LDA #30
+                STA TL0_TOTAL_Y_SIZE_L
+                ; set the video RAM to B0:2000
+                LDA #<>TILE_MAP0
+                STA TL0_START_ADDY_L
+                
+                LDA #0
+                STA SCORE
+                
                 setas
-                ; enable tilemap 0
+                ; enable tilemap 1
                 LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
                 STA @lTL1_CONTROL_REG
+                
+                ; disable tilemap 0
+                LDA #0
+                STA @lTL0_CONTROL_REG
+                STA GAME_OVER
+                STA DEAD
+                
+                LDA #3
+                STA LIVES
                 
                 ; transform the gameboard to tilemap
                 JSR TRANSFORM_BOARD_TO_TILEMAP
@@ -93,6 +122,7 @@ INIT_DISPLAY
                 
                 JSR INIT_PLAYER
                 JSR INIT_NPC
+                JSR SHOW_SCORE_BOARD
                 
                 LDA #$9F ; - joystick in initial state
                 JSR UPDATE_DISPLAY
@@ -240,13 +270,62 @@ INIT_NPC
                 setas
                 RTS
 
+; display the game over/title screen 
+; show the game over tilemap
+GAME_OVER_DRAW
+                .as
+
+                ; enable tilemap 0
+                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
+                STA @lTL0_CONTROL_REG
+                
+                ; disable tilemap 1
+                LDA #0
+                STA @lTL1_CONTROL_REG
+                
+                ; disable sprites
+                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+                STA MASTER_CTRL_REG_L
+                
+                setdbr <`TILE_MAP0
+                
+                ; draw two lines of hearts
+                LDA #40
+                TAX
+                LDY #0
+        GO_LINE
+                LDA #TILE_HEART
+                STA TILE_MAP0 + 10*40*2+0,Y
+                LDA #TILE_HEART
+                STA TILE_MAP0 + 20*40*2+0,Y
+                INY
+                LDA #0
+                STA TILE_MAP0 + 10*40*2+1,Y
+                STA TILE_MAP0 + 20*40*2+1,Y
+                INY
+                DEX
+                BNE GO_LINE
+                
+                ; check if the fire button was pressed to restart the game
+                PLA
+                BIT #$10 ; fire
+                BNE GO_DONE
+                
+                JSR INIT_DISPLAY
+        GO_DONE
+                PLB
+                RTS
+                
 ; ****************************************************
-; * A contains the joystick byte
+; * A contains the joystick byte - keyboard AWSD mimicks joystick
 ; ****************************************************
 UPDATE_DISPLAY
                 .as
                 PHB
                 PHA
+                
+                LDA GAME_OVER
+                BNE GAME_OVER_DRAW
                 
                 ; check if the player is dead
                 LDA DEAD
@@ -258,18 +337,27 @@ UPDATE_DISPLAY
                 STA RESET_BOARD
                 BNE NO_UPDATE
                 
-                LDA LIVES ; 
+                LDA LIVES 
                 DEC A
                 STA LIVES 
+                BNE RESET_FROM_DEAD
                 
+                ; set the GAME_OVER
+                LDA #1
+                STA GAME_OVER
+                BRA NO_UPDATE
+                
+        RESET_FROM_DEAD
                 LDA #0
                 STA DEAD
+                JSR SHOW_SCORE_BOARD
 
                 JSR INIT_PLAYER
         NO_UPDATE
                 PLA
                 PLB
                 RTS
+                
                 
     NOT_DEAD
                 JSR UPDATE_HOME_TILES
@@ -297,6 +385,8 @@ UPDATE_DISPLAY
                 BIT #1 ; up
                 BNE JOY_DOWN
                 JSR PLAYER_MOVE_UP
+                LDA #1
+                STA PL_MOVE_UP
                 BRA JOY_DONE
                 
         JOY_DOWN
@@ -321,6 +411,44 @@ UPDATE_DISPLAY
                 setas
                 JSR UPDATE_NPC_POSITIONS
                 JSR COLLISION_CHECK
+                ; if the player has moved up without collision, add 10 points.
+                LDA PL_MOVE_UP
+                BEQ UD_DONE
+                
+                LDA DEAD  ; if the player is dead, score doesn't increase...
+                BNE UD_DONE
+                setal
+                
+                LDA PLAYER_Y
+                TAY
+                SED
+                
+                LDA SCORE
+                
+                ; check if the player got HOME!
+                CPY #128
+                BEQ ADD_200
+                
+                ; add 10 to the score in BCD
+                CLC
+                ADC #10
+                BRA SCORE_CONTINUE
+                
+        ADD_200
+                CLC
+                ADC #$200
+                ; set the crown here and restart the player on the first line
+                
+        SCORE_CONTINUE
+                STA SCORE
+                CLD
+                ; reset the score flag
+                LDA #0
+                STA PL_MOVE_UP
+                setas
+                JSR SHOW_SCORE_BOARD
+                
+        UD_DONE
                 PLB
                 RTS
 
@@ -696,7 +824,7 @@ UPDATE_HOME_TILES
 
                 LDX #280 ; line 8 in the game board
                 LDY #7 * 80 ; line 8 in the tileset
-                setdbr <`TILE_MAP0
+                setdbr <`TILE_MAP1
 
         UT_GET_TILE
                 LDA game_board,X
@@ -708,12 +836,12 @@ UPDATE_HOME_TILES
                 BEQ UT_EVEN_TILE
                 LDA EVEN_TILE_VAL
                 
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA UT_DONE
                 
         UT_EVEN_TILE
                 LDA ODD_TILE_VAL
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 
         UT_DONE
                 INY
@@ -750,7 +878,7 @@ UPDATE_HOME_TILES
 
 WATER_CYCLE     .byte 0
 EVEN_WTILE_VAL  .byte $4
-ODD_WTILE_VAL   .byte $14
+ODD_WTILE_VAL   .byte $5
 UPDATE_WATER_TILES
                 .as
                 PHB
@@ -764,7 +892,7 @@ UPDATE_WATER_TILES
 
                 LDX #8 * 40 ; line 9 in the game board
                 LDY #8 * 80 ; line 8 in the tileset
-                setdbr <`TILE_MAP0
+                setdbr <`TILE_MAP1
 
         UW_GET_TILE
                 LDA game_board,X
@@ -777,12 +905,12 @@ UPDATE_WATER_TILES
                 BEQ UW_EVEN_TILE
                 LDA EVEN_WTILE_VAL
                 
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA UW_DONE
                 
         UW_EVEN_TILE
                 LDA ODD_WTILE_VAL
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 
         UW_DONE
                 INY
@@ -818,7 +946,7 @@ UPDATE_WATER_TILES
         W_ALT_ODD
                 ; A is 4
                 STA ODD_WTILE_VAL
-                LDA #$14
+                LDA #$5
                 STA EVEN_WTILE_VAL
                 PLB
                 RTS
@@ -906,21 +1034,21 @@ TRANSFORM_BOARD_TO_TILEMAP
                 ; transform the game board into a tilemap
                 LDX #0
                 LDY #2  ; the tilemap is offset by 1 column, or 2 bytes.
-                setdbr <`TILE_MAP0
+                setdbr <`TILE_MAP1
                 setas
     GET_TILE
                 LDA game_board,X
                 CMP #'.'  ; DOT
                 BNE GRASS
                 LDA #0
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA LT_DONE
                 
         GRASS
                 CMP #'G'
                 BNE HOME
                 LDA #2
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA LT_DONE
                 
         HOME
@@ -931,47 +1059,47 @@ TRANSFORM_BOARD_TO_TILEMAP
                 AND #1
                 BEQ EVEN_TILE
                 LDA #$13
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA LT_DONE
                 
             EVEN_TILE
                 LDA #$12
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA LT_DONE
              
         WATER
                 CMP #'W'
                 BNE CONCRETE
                 LDA #4
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA LT_DONE
                 
         CONCRETE
                 CMP #'C'
                 BNE ASHPHALT
                 LDA #1
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA LT_DONE
                 
         ASHPHALT
                 CMP #'A'
                 BNE DIRT
-                LDA #5
-                STA TILE_MAP0,Y
+                LDA #6
+                STA TILE_MAP1,Y
                 BRA LT_DONE
                 
         DIRT
                 CMP #'D'
                 BNE LT_DONE
                 LDA #3
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 BRA LT_DONE
                 
     LT_DONE
                 INY
                 ; store the tileset in the next byte
                 LDA #0
-                STA TILE_MAP0,Y
+                STA TILE_MAP1,Y
                 INY
                 setal
                 TYA
@@ -990,6 +1118,68 @@ TRANSFORM_BOARD_TO_TILEMAP
                 BNE GET_TILE
                 RTS
 
+; display the number of lives remaining
+; display the current player score
+; display the high score
+SHOW_SCORE_BOARD 
+                .as
+                PHB
+                setdbr <`TILE_MAP1
+                LDA #0
+                LDX #6
+        HEART_CLEAR_LOOP
+                STA TILE_MAP1 + 165,X ; descending loop offset by 1
+                DEX
+                BNE HEART_CLEAR_LOOP
+                
+                ; now draw the hearts
+                LDA LIVES
+                BEQ SSB_SCORE
+                LDY #0
+                TAX
+        SHOW_HEART
+                LDA #TILE_HEART
+                STA TILE_MAP1 + 166,Y
+                INY
+                INY
+                DEX
+                BNE SHOW_HEART
+                
+                ; draw the score - each byte is 2 digits BCD 00 to 99
+                ; not really elegant...
+        SSB_SCORE
+                LDA SCORE + 1 ; the high byte
+                LSR ; get the high nibble
+                LSR A
+                LSR A
+                LSR A
+                CLC 
+                ADC #TILE_0 ; tiles are offset at 20
+                STA TILE_MAP1 + 230
+               
+                LDA SCORE + 1 ; the low nibble
+                AND #$F
+                CLC
+                ADC #TILE_0 ; tiles are offset at 20
+                STA TILE_MAP1 + 232
+                
+                LDA SCORE
+                LSR ; get the high nibble
+                LSR A
+                LSR A
+                LSR A
+                CLC 
+                ADC #TILE_0 ; tiles are offset at 20
+                STA TILE_MAP1 + 234
+                
+                LDA SCORE ; the low nibble
+                AND #$F
+                CLC
+                ADC #TILE_0 ; tiles are offset at 20
+                STA TILE_MAP1 + 236
+        
+                PLB
+                RTS
 PALETTE
 .binary "assets/fraggy.pal"
 
