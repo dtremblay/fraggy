@@ -1,26 +1,15 @@
 INIT_DISPLAY
                 .as
-                ; set the display size - 128 x 64
-                LDA #128
-                STA COLS_PER_LINE
-                LDA #64
-                STA LINES_MAX
 
                 ; set the visible display size - 80 x 60
-                LDA #80
-                STA COLS_VISIBLE
-                LDA #60
-                STA LINES_VISIBLE
-                LDA #32
+                LDA #$20
                 STA BORDER_X_SIZE
+                LDA #0
                 STA BORDER_Y_SIZE
 
-                ; set the border to purple
-                setas
-                LDA #$20
+                ; set the border to black
                 STA BORDER_COLOR_B
                 STA BORDER_COLOR_R
-                LDA #0
                 STA BORDER_COLOR_G
                 
                 ; RESET the keyboard handler
@@ -108,6 +97,7 @@ INIT_DISPLAY
                 STA @lTL0_CONTROL_REG
                 STA GAME_OVER
                 STA DEAD
+                STA PL_MOVE_UP
                 
                 LDA #3
                 STA LIVES
@@ -187,7 +177,7 @@ ENABLE_SPRITES_NPC
                 ; now enabled the sprites
                 ; the address of the sprite is based on the game_array
                 LDX #0  ; X increments in steps of 8
-
+                LDY #0
                 LDA #0
                 STA @lSP00_CONTROL_REG
                 STA @lSP01_CONTROL_REG
@@ -210,7 +200,8 @@ ENABLE_SPRITES_NPC
                 CLC
                 ADC #8
                 TAX
-                CPX #128
+                INY
+                CPY #18
                 BNE LSP_LOOP
                 setxl
                 RTS
@@ -236,7 +227,7 @@ INIT_PLAYER
                 LDA #9 * 32 + 32
                 STA PLAYER_X
                 STA @lSP00_X_POS_L
-                LDA #10 * 32 + 96
+                LDA #480
                 STA PLAYER_Y
                 STA @lSP00_Y_POS_L
                 
@@ -253,6 +244,7 @@ INIT_NPC
                 .as
                 setal
                 LDX #0
+                LDY #0
                 
         INIT_NPC_LOOP
                 LDA game_array + 2,X ; X POSITION
@@ -264,7 +256,8 @@ INIT_NPC
                 CLC
                 ADC #8
                 TAX
-                CPX #120
+                INY 
+                CPY #18
                 BNE INIT_NPC_LOOP
                 
                 setas
@@ -289,22 +282,45 @@ GAME_OVER_DRAW
                 
                 setdbr <`TILE_MAP0
                 
-                ; draw two lines of hearts
-                LDA #40
-                TAX
-                LDY #0
-        GO_LINE
-                LDA #TILE_HEART
-                STA TILE_MAP0 + 10*40*2+0,Y
-                LDA #TILE_HEART
-                STA TILE_MAP0 + 20*40*2+0,Y
-                INY
+                ; transform the game board into a tilemap
+                LDX #0
+                LDY #2  ; the tilemap is offset by 1 column, or 2 bytes.
+                setas
+    GOD_GET_TILE
+                LDA game_over_board,X
+                CMP #'.'  ; DOT
+                BNE GOD_ASHPHALT
                 LDA #0
-                STA TILE_MAP0 + 10*40*2+1,Y
-                STA TILE_MAP0 + 20*40*2+1,Y
+                STA TILE_MAP0,Y
+                BRA GOD_DONE
+                
+        GOD_ASHPHALT
+                CMP #'A'
+                BNE GO_DONE
+                LDA #1
+                STA TILE_MAP0,Y
+                
+    GOD_DONE
                 INY
-                DEX
-                BNE GO_LINE
+                ; store the tileset in the next byte
+                LDA #0
+                STA TILE_MAP0,Y
+                INY
+                setal
+                TYA
+                AND #$4F
+                CMP #80
+                BNE GOD_NEXT_TILE
+                TYA
+                CLC
+                ADC #24
+                TAY
+                
+    GOD_NEXT_TILE
+                setas
+                INX
+                CPX #(640/16) * (480 / 16)
+                BNE GOD_GET_TILE
                 
                 ; check if the fire button was pressed to restart the game
                 PLA
@@ -350,6 +366,7 @@ UPDATE_DISPLAY
         RESET_FROM_DEAD
                 LDA #0
                 STA DEAD
+                STA PL_MOVE_UP
                 JSR SHOW_SCORE_BOARD
 
                 JSR INIT_PLAYER
@@ -422,24 +439,11 @@ UPDATE_DISPLAY
                 LDA PLAYER_Y
                 TAY
                 SED
-                
                 LDA SCORE
-                
-                ; check if the player got HOME!
-                CPY #128
-                BEQ ADD_200
                 
                 ; add 10 to the score in BCD
                 CLC
                 ADC #10
-                BRA SCORE_CONTINUE
-                
-        ADD_200
-                CLC
-                ADC #$200
-                ; set the crown here and restart the player on the first line
-                
-        SCORE_CONTINUE
                 STA SCORE
                 CLD
                 ; reset the score flag
@@ -459,6 +463,7 @@ UPDATE_NPC_POSITIONS
                 .as
                 setal
                 LDX #0
+                LDY #0
                 
         UNPC_LOOP
                 LDA game_array + 2,X ; X POSITION
@@ -488,7 +493,8 @@ UPDATE_NPC_POSITIONS
                 CLC
                 ADC #8
                 TAX
-                CPX #120
+                INY
+                CPY #18
                 BNE UNPC_LOOP
                 
                 setas
@@ -503,9 +509,9 @@ PLAYER_MOVE_DOWN
                 CLC
                 ADC #32
                 ; check for collisions and out of screen
-                CMP #480 - 64
+                CMP #480
                 BCC PMD_DONE
-                LDA #480 - 64 ; the lowest position on screen
+                LDA #480 ; the lowest position on screen
                 
         PMD_DONE
                 STA PLAYER_Y
@@ -653,7 +659,7 @@ COLLISION_CHECK
                 setdbr <`TONGUE_CTR
                 setal
                 LDA PLAYER_Y
-                CMP #256 ; mid-screen
+                CMP #288 ; mid-screen
                 
                 BCC WATER_COLLISION
                 JSR STREET_COLLISION
@@ -664,7 +670,7 @@ COLLISION_CHECK
         WATER_COLLISION
                 .al
         ; here do the water collision routine
-                CMP #256
+                CMP #288
                 BCS CCW_DONE
                 
                 CMP #160
@@ -741,7 +747,34 @@ COLLISION_CHECK
                 BRA S_COLLISION
         
         HL_DONE
+                .al
+                ; add 200 to the score in BCD
+                SED
+                LDA SCORE
+                CLC
+                ADC #$200
+                STA SCORE
+                CLD
+                LDA #0
+                
                 setas
+                TXA
+                ASL A
+                TAX
+                
+                ; use the player's X position to redecorate the home line
+                LDA #14
+                STA TILE_MAP1 + 12 * 40 , X
+                LDA #15
+                STA TILE_MAP1 + 12 * 40 + 2, X
+                LDA #30
+                STA TILE_MAP1 + 14 * 40, X
+                LDA #31
+                STA TILE_MAP1 + 14 * 40 + 2, X
+                
+                ; set the crown here and restart the player on the first line
+                JSR INIT_PLAYER
+                
                 PLB
                 RTS
                 
@@ -890,8 +923,8 @@ UPDATE_WATER_TILES
                 LDA #0
                 STA WATER_CYCLE
 
-                LDX #8 * 40 ; line 9 in the game board
-                LDY #8 * 80 ; line 8 in the tileset
+                LDX #4 * 40 ; line 9 in the game board
+                LDY #4 * 80 + 2; line 8 in the tileset
                 setdbr <`TILE_MAP1
 
         UW_GET_TILE
@@ -929,7 +962,7 @@ UPDATE_WATER_TILES
                 setas
                 
                 INX
-                CPX #14 * 40
+                CPX #16 * 40
                 BNE UW_GET_TILE
                 
                 ; alternate the tiles
@@ -957,6 +990,8 @@ UPDATE_WATER_TILES
                 RTS
             
 LILLY_CYCLE     .byte 0
+
+; find all the lillies in the game array and make them rotate
 UPDATE_LILLY
                 .as
                 ; alternate the HOME tiles to imitate wind motion
@@ -1033,10 +1068,10 @@ WRITE_HEX
 TRANSFORM_BOARD_TO_TILEMAP                
                 ; transform the game board into a tilemap
                 LDX #0
-                LDY #2  ; the tilemap is offset by 1 column, or 2 bytes.
+                LDY #2 ; the tilemap is offset by 1 column, or 2 bytes.
                 setdbr <`TILE_MAP1
                 setas
-    GET_TILE
+    TBT_GET_TILE
                 LDA game_board,X
                 CMP #'.'  ; DOT
                 BNE GRASS
@@ -1076,15 +1111,22 @@ TRANSFORM_BOARD_TO_TILEMAP
                 
         CONCRETE
                 CMP #'C'
-                BNE ASHPHALT
+                BNE ASHPHALT1
                 LDA #1
                 STA TILE_MAP1,Y
                 BRA LT_DONE
                 
-        ASHPHALT
+        ASHPHALT1
                 CMP #'A'
-                BNE DIRT
+                BNE ASHPHALT2
                 LDA #6
+                STA TILE_MAP1,Y
+                BRA LT_DONE
+                
+        ASHPHALT2
+                CMP #'B'
+                BNE DIRT
+                LDA #7
                 STA TILE_MAP1,Y
                 BRA LT_DONE
                 
@@ -1115,7 +1157,9 @@ TRANSFORM_BOARD_TO_TILEMAP
                 setas
                 INX
                 CPX #(640/16) * (480 / 16)
-                BNE GET_TILE
+                BEQ LT_EXIT
+                JMP TBT_GET_TILE
+        LT_EXIT
                 RTS
 
 ; display the number of lives remaining

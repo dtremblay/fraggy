@@ -65,35 +65,35 @@ PL_MOVE_UP  .byte 0
 ; I've added 'dirty' tiles here to test the machine and FoenixIDE rendering of tiles in the border
 game_board 
             .text "........................................" ;1 - not shown
-            .text ".....A.............AA..................." ;2 - not shown
+            .text "........................................" ;2 - not shown
             .text "........................................" ;3
-            .text "........................................" ;4 ; display score and remaining lives here?
-            .text "........................................" ;5
-            .text "........................................" ;6
-            .text "..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.." ;7
-            .text "..GGGGHHHHHHGGGGHHHHHHGGGGGGHHHHHHGGGG.." ;8
+            .text "..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.." ;4 ; display score and remaining lives here?
+            .text "..GGWWWWGGGWWWWGGGWWWWGGGWWWWGGGWWWWGG.." ;5
+            .text "..GGWGGWGGGWGGWGGGWGGWGGGWGGWGGGWGGWGG.." ;6
+            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;7
+            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;8
             .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;9
             .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;10
             .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;11
             .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;12
             .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;13
             .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;14
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;15
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;16
-            .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;18
+            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;15
+            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;16
+            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;17
+            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;18
             .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;19
-            .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;20
+            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;20
             .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;21
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;22
-            .text ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;24
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;25
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;26
-            .text "........................................" ;27
-            .text "........................................" ;28
-            .text "............AAA........................." ;29
-            .text ".............AAA........................" ;30
+            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;22  - I'm testing the margins/borders odd behaviour
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
+            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;24
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;25
+            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;26
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;27
+            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;28
+            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;29
+            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;30
             
 game_over_board 
             .text "........................................" ;1 - not shown
@@ -193,15 +193,18 @@ SONG
 
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
-            .word $FFFC, 640-96, 480-96 , 0              ; sprite  0 - car front
-            .word $FFFC, 640-64, 480-96 , 1              ; sprite  1 - car back
-            .word     2, 32    , 480-128, 2              ; sprite  2 - bus back
-            .word     2, 64    , 480-128, 3              ; sprite  3 - bus middle
-            .word     2, 96    , 480-128, 4              ; sprite  4 - bus front
-            .word $FFFA, 96    , 480-160, 0              ; sprite  5 - car front
-            .word $FFFA, 128   , 480-160, 1              ; sprite  6 - car back
-            .word     1, 192   , 288    , 8              ; sprite  7 - oldie back
-            .word     1, 224   , 288    , 9              ; sprite  8 - oldie front
+            .word $FFFC, 640-96, 14*32 , 0              ; sprite  0 - car front
+            .word $FFFC, 640-64, 14*32 , 1              ; sprite  1 - car back
+            .word     2, 32    , 13*32 , 2              ; sprite  2 - bus back
+            .word     2, 64    , 13*32 , 3              ; sprite  3 - bus middle
+            .word     2, 96    , 13*32 , 4              ; sprite  4 - bus front
+            .word $FFFA, 96    , 12*32 , 0              ; sprite  5 - car front
+            .word $FFFA, 128   , 12*32 , 1              ; sprite  6 - car back
+            .word     1, 192   , 11*32 , 8              ; sprite  7 - oldie back
+            .word     1, 224   , 11*32 , 9              ; sprite  8 - oldie front
+            .word $FFFC, 320-96, 10*32 , 0              ; sprite  0 - car front
+            .word $FFFC, 320-64, 10*32 , 1              ; sprite  1 - car back
+            ; line 9 *32 is safe
             .word $FFFB, 320   , 160    , 5              ; sprite  9 - log 1
             .word $FFFB, 352   , 160    , 6              ; sprite 10 - log 2
             .word $FFFB, 384   , 160    , 7              ; sprite 11 - log 3
@@ -209,4 +212,4 @@ game_array  ; the array treats each sprite in order
             .word     2, 448   , 192    , 7              ; sprite 13 - log 3
             .word $FFFE, 512   , 224    ,LILLYPAD_SPRITE ; sprite 15 - lilypad
             
-            .word     0, 0     , 0      ,PLAYER_UP       ; player sprite
+            ;.word     0, 0     , 0      ,PLAYER_UP       ; player sprite
