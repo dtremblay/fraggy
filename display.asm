@@ -26,29 +26,9 @@ INIT_DISPLAY
                 ; display intro screen
                 ; wait for user to press a key or joystick button
                 
+                JSR LOAD_ASSETS
                 
-                ; set the stride of tileset0 to 256;
-                LDA #8
-                STA TILESET0_ADDY_CFG
-                ; load tiles @ $B0:0000
                 setal
-                LDX #<>TILES
-                LDY #<>TILE_SET0
-                LDA #$2000 ; 256 * 32 - this is two rows of tiles
-                MVN <`TILES,<`TILE_SET0
-
-                ; load LUT0
-                LDX #<>PALETTE
-                LDY #<>GRPH_LUT0_PTR
-                LDA #1024
-                MVN <`PALETTE,<`GRPH_LUT0_PTR
-                
-                ;load LUT1 - same as LUT0 - this is a bug in Vicky
-                LDX #<>PALETTE
-                LDY #<>GRPH_LUT1_PTR
-                LDA #1024
-                MVN <`PALETTE,<`GRPH_LUT1_PTR
-                
                 ; enable tilemap 1
                 LDA #0
                 STA TL1_START_ADDY_H
@@ -63,9 +43,8 @@ INIT_DISPLAY
                 LDA #30
                 STA TL1_TOTAL_Y_SIZE_L
                 ; set the video RAM to B0:2000
-                LDA #<>TILE_MAP1
+                LDA #<>VTILE_MAP1
                 STA TL1_START_ADDY_L
-                
                 
                 ; enable tilemap 0 - display the GAME OVER message
                 LDA #0
@@ -81,7 +60,7 @@ INIT_DISPLAY
                 LDA #30
                 STA TL0_TOTAL_Y_SIZE_L
                 ; set the video RAM to B0:2000
-                LDA #<>TILE_MAP0
+                LDA #<>VTILE_MAP0
                 STA TL0_START_ADDY_L
                 
                 LDA #0
@@ -102,11 +81,6 @@ INIT_DISPLAY
                 LDA #3
                 STA LIVES
                 
-                ; transform the gameboard to tilemap
-                JSR TRANSFORM_BOARD_TO_TILEMAP
-                
-                ; render the first frame
-                JSR LOAD_SPRITES
                 ; enable the sprites
                 JSR ENABLE_SPRITES_NPC
                 
@@ -116,59 +90,6 @@ INIT_DISPLAY
                 
                 LDA #$9F ; - joystick in initial state
                 JSR UPDATE_DISPLAY
-                RTS
-
-; ******************************************************************
-; * We're loading sprites (1024 bytes) from a 256x256 tileset
-; * This is an odd functions, as sprites as 32x32 and the tileset is 
-; * 256 bytes wide.
-; ******************************************************************
-sprite_line    = $6
-sprite_addr    = $10
-LOAD_SPRITES
-                .as
-                LDA #0
-                STA sprite_addr
-                STA sprite_addr + 1
-                LDA #<`SPRITES
-                STA sprite_addr + 2
-                LDX #0
-        NEXT_SPRITE
-                LDY #0
-                
-        LS_LOOP
-                LDA TILES + 256 * 32,X
-                STA [sprite_addr],Y 
-                INX
-                setal
-                TXA
-                AND #31
-                BEQ LS_NEXT_LINE
-                
-        LS_CONTINUE
-                setas
-                INY
-                CPY #1024
-                BNE LS_LOOP
-                
-                LDA sprite_addr + 1
-                CLC
-                ADC #4
-                STA sprite_addr + 1
-                AND #31
-                ASL A
-                ASL A
-                ASL A ; multiply by 8
-                STA sprite_line
-                LDA sprite_addr + 1
-                AND #$E0
-                STA sprite_line + 1
-                LDX sprite_line
-                LDA sprite_addr + 1
-                CMP #4 * TOTAL_SPRITES
-                BNE NEXT_SPRITE
-
-                LDA #0
                 RTS
                 
 ENABLE_SPRITES_NPC
@@ -187,7 +108,7 @@ ENABLE_SPRITES_NPC
     LSP_LOOP
                 LDA #0
                 STA @lSP04_ADDY_PTR_L,X
-                LDA #(SPRITE_Enable | SPRITE_DEPTH0)
+                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT1)
                 STA @lSP04_CONTROL_REG,X
                 LDA #1
                 STA @lSP04_ADDY_PTR_H,X
@@ -206,14 +127,6 @@ ENABLE_SPRITES_NPC
                 setxl
                 RTS
                 
-    LS_NEXT_LINE
-                .al
-                TXA
-                CLC
-                ADC #256-32 ; go to the next line, for this sprite
-                TAX
-                BRA LS_CONTINUE
-                
 ; *************************************************************
 ; * Initialize player position
 ; *************************************************************
@@ -222,7 +135,7 @@ INIT_PLAYER
                 setal
                 LDA #PLAYER_UP * 1024
                 STA @lSP00_ADDY_PTR_L
-                LDA #(SPRITE_Enable | SPRITE_DEPTH0)
+                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT1)
                 STA @lSP00_CONTROL_REG
                 LDA #9 * 32 + 32
                 STA PLAYER_X
@@ -280,7 +193,7 @@ GAME_OVER_DRAW
                 LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
                 STA MASTER_CTRL_REG_L
                 
-                setdbr <`TILE_MAP0
+                setdbr <`VTILE_MAP0
                 
                 ; transform the game board into a tilemap
                 LDX #0
@@ -291,20 +204,20 @@ GAME_OVER_DRAW
                 CMP #'.'  ; DOT
                 BNE GOD_ASHPHALT
                 LDA #0
-                STA TILE_MAP0,Y
+                STA VTILE_MAP0,Y
                 BRA GOD_DONE
                 
         GOD_ASHPHALT
                 CMP #'A'
                 BNE GO_DONE
                 LDA #1
-                STA TILE_MAP0,Y
+                STA VTILE_MAP0,Y
                 
     GOD_DONE
                 INY
                 ; store the tileset in the next byte
                 LDA #0
-                STA TILE_MAP0,Y
+                STA VTILE_MAP0,Y
                 INY
                 setal
                 TYA
@@ -764,13 +677,13 @@ COLLISION_CHECK
                 
                 ; use the player's X position to redecorate the home line
                 LDA #14
-                STA TILE_MAP1 + 12 * 40 , X
+                STA VTILE_MAP1 + 12 * 40 , X
                 LDA #15
-                STA TILE_MAP1 + 12 * 40 + 2, X
+                STA VTILE_MAP1 + 12 * 40 + 2, X
                 LDA #30
-                STA TILE_MAP1 + 14 * 40, X
+                STA VTILE_MAP1 + 14 * 40, X
                 LDA #31
-                STA TILE_MAP1 + 14 * 40 + 2, X
+                STA VTILE_MAP1 + 14 * 40 + 2, X
                 
                 ; set the crown here and restart the player on the first line
                 JSR INIT_PLAYER
@@ -857,7 +770,7 @@ UPDATE_HOME_TILES
 
                 LDX #280 ; line 8 in the game board
                 LDY #7 * 80 ; line 8 in the tileset
-                setdbr <`TILE_MAP1
+                setdbr <`VTILE_MAP1
 
         UT_GET_TILE
                 LDA game_board,X
@@ -869,12 +782,12 @@ UPDATE_HOME_TILES
                 BEQ UT_EVEN_TILE
                 LDA EVEN_TILE_VAL
                 
-                STA TILE_MAP1,Y
+                STA VTILE_MAP1,Y
                 BRA UT_DONE
                 
         UT_EVEN_TILE
                 LDA ODD_TILE_VAL
-                STA TILE_MAP1,Y
+                STA VTILE_MAP1,Y
                 
         UT_DONE
                 INY
@@ -925,7 +838,7 @@ UPDATE_WATER_TILES
 
                 LDX #4 * 40 ; line 9 in the game board
                 LDY #4 * 80 + 2; line 8 in the tileset
-                setdbr <`TILE_MAP1
+                setdbr <`VTILE_MAP1
 
         UW_GET_TILE
                 LDA game_board,X
@@ -938,12 +851,12 @@ UPDATE_WATER_TILES
                 BEQ UW_EVEN_TILE
                 LDA EVEN_WTILE_VAL
                 
-                STA TILE_MAP1,Y
+                STA VTILE_MAP1,Y
                 BRA UW_DONE
                 
         UW_EVEN_TILE
                 LDA ODD_WTILE_VAL
-                STA TILE_MAP1,Y
+                STA VTILE_MAP1,Y
                 
         UW_DONE
                 INY
@@ -1062,117 +975,17 @@ WRITE_HEX
         PLA
                 RTS
 
-; *********************************************************
-; * Convert the game_board to a tile map
-; *********************************************************
-TRANSFORM_BOARD_TO_TILEMAP                
-                ; transform the game board into a tilemap
-                LDX #0
-                LDY #2 ; the tilemap is offset by 1 column, or 2 bytes.
-                setdbr <`TILE_MAP1
-                setas
-    TBT_GET_TILE
-                LDA game_board,X
-                CMP #'.'  ; DOT
-                BNE GRASS
-                LDA #0
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-        GRASS
-                CMP #'G'
-                BNE HOME
-                LDA #2
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-        HOME
-                CMP #'H'
-                BNE WATER
-                
-                TXA
-                AND #1
-                BEQ EVEN_TILE
-                LDA #$13
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-            EVEN_TILE
-                LDA #$12
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-             
-        WATER
-                CMP #'W'
-                BNE CONCRETE
-                LDA #4
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-        CONCRETE
-                CMP #'C'
-                BNE ASHPHALT1
-                LDA #1
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-        ASHPHALT1
-                CMP #'A'
-                BNE ASHPHALT2
-                LDA #6
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-        ASHPHALT2
-                CMP #'B'
-                BNE DIRT
-                LDA #7
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-        DIRT
-                CMP #'D'
-                BNE LT_DONE
-                LDA #3
-                STA TILE_MAP1,Y
-                BRA LT_DONE
-                
-    LT_DONE
-                INY
-                ; store the tileset in the next byte
-                LDA #0
-                STA TILE_MAP1,Y
-                INY
-                setal
-                TYA
-                AND #$4F
-                CMP #80
-                BNE LT_NEXT_TILE
-                TYA
-                CLC
-                ADC #24
-                TAY
-                
-    LT_NEXT_TILE
-                setas
-                INX
-                CPX #(640/16) * (480 / 16)
-                BEQ LT_EXIT
-                JMP TBT_GET_TILE
-        LT_EXIT
-                RTS
-
 ; display the number of lives remaining
 ; display the current player score
 ; display the high score
 SHOW_SCORE_BOARD 
                 .as
                 PHB
-                setdbr <`TILE_MAP1
+                setdbr <`VTILE_MAP1
                 LDA #0
                 LDX #6
         HEART_CLEAR_LOOP
-                STA TILE_MAP1 + 165,X ; descending loop offset by 1
+                STA VTILE_MAP1 + 165,X ; descending loop offset by 1
                 DEX
                 BNE HEART_CLEAR_LOOP
                 
@@ -1183,7 +996,7 @@ SHOW_SCORE_BOARD
                 TAX
         SHOW_HEART
                 LDA #TILE_HEART
-                STA TILE_MAP1 + 166,Y
+                STA VTILE_MAP1 + 166,Y
                 INY
                 INY
                 DEX
@@ -1199,13 +1012,13 @@ SHOW_SCORE_BOARD
                 LSR A
                 CLC 
                 ADC #TILE_0 ; tiles are offset at 20
-                STA TILE_MAP1 + 230
+                STA VTILE_MAP1 + 230
                
                 LDA SCORE + 1 ; the low nibble
                 AND #$F
                 CLC
                 ADC #TILE_0 ; tiles are offset at 20
-                STA TILE_MAP1 + 232
+                STA VTILE_MAP1 + 232
                 
                 LDA SCORE
                 LSR ; get the high nibble
@@ -1214,20 +1027,55 @@ SHOW_SCORE_BOARD
                 LSR A
                 CLC 
                 ADC #TILE_0 ; tiles are offset at 20
-                STA TILE_MAP1 + 234
+                STA VTILE_MAP1 + 234
                 
                 LDA SCORE ; the low nibble
                 AND #$F
                 CLC
                 ADC #TILE_0 ; tiles are offset at 20
-                STA TILE_MAP1 + 236
+                STA VTILE_MAP1 + 236
         
                 PLB
                 RTS
-PALETTE
-.binary "assets/fraggy.pal"
 
-* = $170000
-TILES
-.binary "assets/fraggy.bin"
+LOAD_ASSETS
+                .as
+                PHB
+                ; set the stride of tileset0 to 256;
+                LDA #8
+                STA TILESET0_ADDY_CFG
+                
+                ; load tiles @ $B0:0000
+                setal
+                LDX #<>TILES
+                LDY #<>VTILE_SET0
+                LDA #256 * 48 ; three rows of tiles
+                MVN <`TILES,<`VTILE_SET0
 
+                ; load LUT0
+                LDX #<>PALETTE_TILES
+                LDY #<>GRPH_LUT0_PTR
+                LDA #1024
+                MVN <`PALETTE_TILES,<`GRPH_LUT0_PTR
+                
+                ; load LUT1 - same as LUT0 - this is a bug in Vicky
+                LDX #<>PALETTE_SPRITES
+                LDY #<>GRPH_LUT1_PTR
+                LDA #1024
+                MVN <`PALETTE_SPRITES,<`GRPH_LUT1_PTR
+                
+                ; copy tilemap to video RAM
+                LDX #<>game_board
+                LDY #<>VTILE_MAP1
+                LDA #40*30*2
+                MVN <`game_board,<`VTILE_MAP1
+                
+                ; copy sprites to video RAM
+                LDX #<>SPRITES
+                LDY #<>VSPRITES
+                LDA #4 * 8 * 32 * 32
+                MVN <`SPRITES,<`VSPRITES
+                setas
+                PLB
+                
+                RTS

@@ -17,10 +17,10 @@
 .include "base.asm"
 
 TOTAL_SPRITES   = 27
-TILE_SET0       = $B00000
-TILE_MAP0       = $B02000
-TILE_MAP1       = $B02960
-SPRITES         = $B10000
+VTILE_SET0      = $B00000
+VTILE_MAP0      = $B03000
+VTILE_MAP1      = $B03960
+VSPRITES        = $B10000
 JOYSTICK_SC_TMP = $000F89
 
 ; sprite names
@@ -34,98 +34,21 @@ LILLYPAD_SPRITE = 16 ; lilly pad has 8 sprites
 TONGUE_SPRITE   = 24
 BEE_SPRITE      = 25
 THREE_SECS      = 180
+
 ; numbers are displayed with tiles
 TILE_HEART      = 16
-TILE_0          = 20
-TILE_1          = 21
-TILE_2          = 22
-TILE_3          = 23
-TILE_4          = 24
-TILE_5          = 25
-TILE_6          = 26
-TILE_7          = 27
-TILE_8          = 28
-TILE_9          = 29
+TILE_0          = 32
+TILE_1          = 33
+TILE_2          = 34
+TILE_3          = 35
+TILE_4          = 36
+TILE_5          = 37
+TILE_6          = 38
+TILE_7          = 39
+TILE_8          = 40
+TILE_9          = 41
 
 * = $160000
-
-PLAYER_X    .word 100
-PLAYER_Y    .word 100
-LIVES       .byte 3
-GAME_OVER   .byte 0
-DEAD        .byte 0
-RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
-BEE_TIMER   .byte 0 ; show the bee for a short period of time.
-SCORE       .word 0 
-TONGUE_POS  .word 0
-TONGUE_CTR  .byte 0
-PL_MOVE_UP  .byte 0
-
-; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
-; I've added 'dirty' tiles here to test the machine and FoenixIDE rendering of tiles in the border
-game_board 
-            .text "........................................" ;1 - not shown
-            .text "........................................" ;2 - not shown
-            .text "........................................" ;3
-            .text "..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.." ;4 ; display score and remaining lives here?
-            .text "..GGWWWWGGGWWWWGGGWWWWGGGWWWWGGGWWWWGG.." ;5
-            .text "..GGWGGWGGGWGGWGGGWGGWGGGWGGWGGGWGGWGG.." ;6
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;7
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;8
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;9
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;10
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;11
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;12
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;13
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;14
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;15
-            .text "..WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.." ;16
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;17
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;18
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;19
-            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;20
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;21
-            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;22  - I'm testing the margins/borders odd behaviour
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;23
-            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;24
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;25
-            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;26
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;27
-            .text "..BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB.." ;28
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;29
-            .text "..CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.." ;30
-            
-game_over_board 
-            .text "........................................" ;1 - not shown
-            .text "........................................" ;2 - not shown
-            .text "........................................" ;3
-            .text "........................................" ;4 ; display score and remaining lives here?
-            .text "........................................" ;5
-            .text "........................................" ;6
-            .text "........................................" ;7
-            .text "........................................" ;8
-            .text "........................................" ;9
-            .text "........................................" ;10
-            .text "........................................" ;11
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;12
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;13
-            .text "..AA................................AA.." ;14
-            .text "..AA................................AA.." ;15
-            .text "..AA................................AA.." ;16
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
-            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;18
-            .text "........................................" ;19
-            .text "........................................" ;20
-            .text "........................................" ;21
-            .text "........................................" ;22
-            .text "........................................" ;23
-            .text "........................................" ;24
-            .text "........................................" ;25
-            .text "........................................" ;26
-            .text "........................................" ;27
-            .text "........................................" ;28
-            .text "........................................" ;29
-            .text "........................................" ;30
 
 GAME_START
             setas
@@ -181,6 +104,18 @@ GAME_START
             
     GAME_LOOP
             BRA GAME_LOOP
+            
+PLAYER_X    .word 100
+PLAYER_Y    .word 100
+LIVES       .byte 3
+GAME_OVER   .byte 0
+DEAD        .byte 0
+RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
+BEE_TIMER   .byte 0 ; show the bee for a short period of time.
+SCORE       .word 0 
+TONGUE_POS  .word 0
+TONGUE_CTR  .byte 0
+PL_MOVE_UP  .byte 0
 
 .include "interrupt_handler.asm"
 .include "display.asm"
@@ -191,6 +126,55 @@ SONG
 ;.binary "assets/11 Sarinuka Sands (Daytime) (2nd Day).vgm"
 .binary "assets/03 Forest Path.vgm"
 
+; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
+; I've added 'dirty' tiles here to test the machine and FoenixIDE rendering of tiles in the border
+game_board 
+            .binary "assets/fraggy-tilemap.tlm"  ; 40 x 30 x 2 = 2400 bytes - this could be easily compressed by removing all the even bytes.
+            
+game_over_board 
+            .text "........................................" ;1 - not shown
+            .text "........................................" ;2 - not shown
+            .text "........................................" ;3
+            .text "........................................" ;4 ; display score and remaining lives here?
+            .text "........................................" ;5
+            .text "........................................" ;6
+            .text "........................................" ;7
+            .text "........................................" ;8
+            .text "........................................" ;9
+            .text "........................................" ;10
+            .text "........................................" ;11
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;12
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;13
+            .text "..AA................................AA.." ;14
+            .text "..AA................................AA.." ;15
+            .text "..AA................................AA.." ;16
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;17
+            .text "..AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.." ;18
+            .text "........................................" ;19
+            .text "........................................" ;20
+            .text "........................................" ;21
+            .text "........................................" ;22
+            .text "........................................" ;23
+            .text "........................................" ;24
+            .text "........................................" ;25
+            .text "........................................" ;26
+            .text "........................................" ;27
+            .text "........................................" ;28
+            .text "........................................" ;29
+            .text "........................................" ;30
+
+TILES
+            .binary "assets/fraggy-tileset.bin"
+PALETTE_TILES
+            .binary "assets/fraggy.pal"
+PALETTE_SPRITES
+            .binary "assets/sprites.pal"
+            
+* = $170000
+SPRITES
+            .binary "assets/fraggy-sprites.bin"
+
+; I'm leaving the game array at the end because I want to be able to extend the list to 64 sprites, eventually
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
             .word $FFFC, 640-96, 14*32 , 0              ; sprite  0 - car front
