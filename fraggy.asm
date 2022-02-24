@@ -21,19 +21,33 @@ VTILE_SET0      = $B00000
 VTILE_MAP0      = $B03000
 VTILE_MAP1      = $B03960
 VSPRITES        = $B10000
+VFROGS_UP       = $B20000             ; 4 sprites
+VFROGS_DOWN     = VFROGS + 4096       ; 4 sprites
+VFROGS_LEFT     = VFROGS_DOWN + 4096  ; 4 sprites
+VFROGS_RIGHT    = VFROGS_LEFT + 4096  ; 4 sprites
 JOYSTICK_SC_TMP = $000F89
 
+; frog sprite names
+PLAYER_UP       = 0
+PLAYER_LEFT     = 8
+PLAYER_RIGHT    = 12
+PLAYER_DOWN     = 4
+
 ; sprite names
-PLAYER_UP       = 10
-PLAYER_LEFT     = 11
-PLAYER_RIGHT    = 13
-PLAYER_DOWN     = 12
+RED_CAR         =  0
+BUS             =  2
+LOG             =  5
+POLICE_CAR      =  8
+SPORTS_CAR      = 10
+TRACTOR         = 12
 SPLASH_SPRITE   = 14
 SPLATT_SPRITE   = 15
-LILLYPAD_SPRITE = 16 ; lilly pad has 8 sprites
+LILLYPAD        = 16 ; lilly pad has 8 sprites
 TONGUE_SPRITE   = 24
 BEE_SPRITE      = 25
-THREE_SECS      = 180
+BONUS_SPRITE    = 27
+
+THREE_SECS      = 180  ; the number of SOF interrupts for 3 seconds
 
 ; numbers are displayed with tiles
 TILE_HEART      = 16
@@ -163,37 +177,53 @@ game_over_board
             .text "........................................" ;29
             .text "........................................" ;30
 
+* = $170000
 TILES
             .binary "assets/fraggy-tileset.bin"
 PALETTE_TILES
             .binary "assets/fraggy.pal"
-PALETTE_SPRITES
-            .binary "assets/sprites.pal"
-            
-* = $170000
+FROG_UP
+            .binary "assets/frog-sheet-up.bin"
+FROG_DOWN
+            .binary "assets/frog-sheet-down.bin"
+FROG_LEFT
+            .binary "assets/frog-sheet-left.bin"
+FROG_RIGHT
+            .binary "assets/frog-sheet-right.bin"
 SPRITES
             .binary "assets/fraggy-sprites.bin"
 
 ; I'm leaving the game array at the end because I want to be able to extend the list to 64 sprites, eventually
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
-            .word $FFFC, 640-96, 14*32 , 0              ; sprite  0 - car front
-            .word $FFFC, 640-64, 14*32 , 1              ; sprite  1 - car back
-            .word     2, 32    , 13*32 , 2              ; sprite  2 - bus back
-            .word     2, 64    , 13*32 , 3              ; sprite  3 - bus middle
-            .word     2, 96    , 13*32 , 4              ; sprite  4 - bus front
-            .word $FFFA, 96    , 12*32 , 0              ; sprite  5 - car front
-            .word $FFFA, 128   , 12*32 , 1              ; sprite  6 - car back
-            .word     1, 192   , 11*32 , 8              ; sprite  7 - oldie back
-            .word     1, 224   , 11*32 , 9              ; sprite  8 - oldie front
-            .word $FFFC, 320-96, 10*32 , 0              ; sprite  0 - car front
-            .word $FFFC, 320-64, 10*32 , 1              ; sprite  1 - car back
-            ; line 9 *32 is safe
-            .word $FFFB, 320   , 160    , 5              ; sprite  9 - log 1
-            .word $FFFB, 352   , 160    , 6              ; sprite 10 - log 2
-            .word $FFFB, 384   , 160    , 7              ; sprite 11 - log 3
-            .word     2, 416   , 192    , 5              ; sprite 12 - log 1
-            .word     2, 448   , 192    , 7              ; sprite 13 - log 3
-            .word $FFFE, 512   , 224    ,LILLYPAD_SPRITE ; sprite 15 - lilypad
+            .word     1, 640-96, 14*32 , TRACTOR        ; sprite  0
+            .word     1, 640-64, 14*32 , TRACTOR + 1    ; sprite  1
+            .word $FFFA, 96    , 12*32 , POLICE_CAR     ; sprite  2
+            .word $FFFA, 128   , 12*32 , POLICE_CAR + 1 ; sprite  3
+            .word     2, 32    , 13*32 , BUS            ; sprite  4
+            .word     2, 64    , 13*32 , BUS + 1        ; sprite  5
+            .word     2, 96    , 13*32 , BUS + 2        ; sprite  6
+            .word $FFFC, 320-96, 10*32 , RED_CAR        ; sprite  7
+            .word $FFFC, 320-64, 10*32 , RED_CAR + 1    ; sprite  8
+            .word     8, 192   , 11*32 , SPORTS_CAR     ; sprite  9
+            .word     8, 224   , 11*32 , SPORTS_CAR +1  ; sprite 10
+            .word     0, 0     , 0     , 0              ; blank
+            .word     0, 0     , 0     , 0              ; blank
+            .word     0, 0     , 0     , 0              ; blank
+            .word     0, 0     , 0     , 0              ; blank
+            .word     0, 0     , 0     , 0              ; blank
             
-            ;.word     0, 0     , 0      ,PLAYER_UP       ; player sprite
+            ; line 9 *32 is safe
+            .word     3,  90   , 4*32    , LILLYPAD + 3   ; sprite 16
+            .word     3, 410   , 4*32    , LILLYPAD + 5   ; sprite 17
+            .word $FFFB, 320   , 5*32    , LOG            ; sprite 18
+            .word $FFFB, 352   , 5*32    , LOG + 1        ; sprite 19
+            .word $FFFB, 384   , 5*32    , LOG + 2        ; sprite 20
+            .word     2, 416   , 6*32    , LOG            ; sprite 21
+            .word     2, 448   , 6*32    , LOG + 2        ; sprite 22
+            .word     1, 320   , 7*32    , LOG            ; sprite 18
+            .word     1, 352   , 7*32    , LOG + 1        ; sprite 19
+            .word     1, 384   , 7*32    , LOG + 2        ; sprite 20
+            .word $FFFE, 512   , 8*32    , LILLYPAD + 6   ; sprite 23
+            .word $FFFE, 260   , 8*32    , LILLYPAD + 2   ; sprite 24
+            

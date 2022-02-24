@@ -100,15 +100,18 @@ ENABLE_SPRITES_NPC
                 LDX #0  ; X increments in steps of 8
                 LDY #0
                 LDA #0
+                ; reserve the first 4 sprites
                 STA @lSP00_CONTROL_REG
                 STA @lSP01_CONTROL_REG
                 STA @lSP02_CONTROL_REG
                 STA @lSP03_CONTROL_REG
                 
     LSP_LOOP
+                LDA game_array, X  ; if the speed is zero skip
+                BEQ LSP_SKIP_ROW
                 LDA #0
                 STA @lSP04_ADDY_PTR_L,X
-                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT1)
+                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
                 STA @lSP04_CONTROL_REG,X
                 LDA #1
                 STA @lSP04_ADDY_PTR_H,X
@@ -116,13 +119,14 @@ ENABLE_SPRITES_NPC
                 ASL A
                 ASL A
                 STA @lSP04_ADDY_PTR_M,X
-                
+
+    LSP_SKIP_ROW
                 TXA
                 CLC
                 ADC #8
                 TAX
                 INY
-                CPY #18
+                CPY #32
                 BNE LSP_LOOP
                 setxl
                 RTS
@@ -133,9 +137,9 @@ ENABLE_SPRITES_NPC
 INIT_PLAYER
                 ; start at position (100,100)
                 setal
-                LDA #PLAYER_UP * 1024
+                LDA #<>VFROGS_UP
                 STA @lSP00_ADDY_PTR_L
-                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT1)
+                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
                 STA @lSP00_CONTROL_REG
                 LDA #9 * 32 + 32
                 STA PLAYER_X
@@ -145,7 +149,7 @@ INIT_PLAYER
                 STA @lSP00_Y_POS_L
                 
                 setas
-                LDA #1
+                LDA #(`VFROGS_UP - $B0_0000)
                 STA @lSP00_ADDY_PTR_H
             
                 RTS
@@ -160,17 +164,20 @@ INIT_NPC
                 LDY #0
                 
         INIT_NPC_LOOP
+                LDA game_array,X
+                BEQ INIT_NPC_SKIP
                 LDA game_array + 2,X ; X POSITION
                 STA @lSP04_X_POS_L,X
                 LDA game_array + 4,X ; Y POSITION
                 STA @lSP04_Y_POS_L,X
                 
+        INIT_NPC_SKIP
                 TXA
                 CLC
                 ADC #8
                 TAX
                 INY 
-                CPY #18
+                CPY #32
                 BNE INIT_NPC_LOOP
                 
                 setas
@@ -303,7 +310,6 @@ UPDATE_DISPLAY
                 
         SKIP_TONGUE_UPDATE
                 PLA
-                setal
                 
         JOY_FIRE
                 BIT #$10 ; fire
@@ -338,7 +344,6 @@ UPDATE_DISPLAY
                 BRA JOY_DONE
                 
         JOY_DONE
-                setas
                 JSR UPDATE_NPC_POSITIONS
                 JSR COLLISION_CHECK
                 ; if the player has moved up without collision, add 10 points.
@@ -359,10 +364,12 @@ UPDATE_DISPLAY
                 ADC #10
                 STA SCORE
                 CLD
+                setas
+                
                 ; reset the score flag
                 LDA #0
                 STA PL_MOVE_UP
-                setas
+                
                 JSR SHOW_SCORE_BOARD
                 
         UD_DONE
@@ -379,6 +386,8 @@ UPDATE_NPC_POSITIONS
                 LDY #0
                 
         UNPC_LOOP
+                LDA game_array,X
+                BEQ UNP_SKIP_ROW
                 LDA game_array + 2,X ; X POSITION
                 CLC
                 ADC game_array,X ; add the speed
@@ -401,13 +410,13 @@ UPDATE_NPC_POSITIONS
                 STA @lSP04_X_POS_L,X
                 STA game_array + 2,X
                 
-                
+        UNP_SKIP_ROW
                 TXA
                 CLC
                 ADC #8
                 TAX
                 INY
-                CPY #18
+                CPY #32
                 BNE UNPC_LOOP
                 
                 setas
@@ -417,7 +426,11 @@ UPDATE_NPC_POSITIONS
 ; * Player movements
 ; ********************************************
 PLAYER_MOVE_DOWN
-                .al
+                .as
+                LDA #PLAYER_DOWN * 4
+                STA SP00_ADDY_PTR_M
+                setal
+                
                 LDA PLAYER_Y
                 CLC
                 ADC #32
@@ -430,13 +443,15 @@ PLAYER_MOVE_DOWN
                 STA PLAYER_Y
                 STA SP00_Y_POS_L
                 setas
-                LDA #PLAYER_DOWN * 4
-                STA SP00_ADDY_PTR_M
-                setal
+                
                 RTS
                 
 PLAYER_MOVE_UP
-                .al
+                .as
+                LDA #PLAYER_UP * 4
+                STA SP00_ADDY_PTR_M
+                setal
+                
                 LDA PLAYER_Y
                 SEC
                 SBC #32
@@ -449,13 +464,15 @@ PLAYER_MOVE_UP
                 STA PLAYER_Y
                 STA SP00_Y_POS_L
                 setas
-                LDA #PLAYER_UP * 4
-                STA SP00_ADDY_PTR_M
-                setal
+                
                 RTS
                 
 PLAYER_MOVE_RIGHT
-                .al
+                .as
+                LDA #PLAYER_RIGHT * 4
+                STA SP00_ADDY_PTR_M
+                setal
+                
                 LDA PLAYER_X
                 CLC
                 ADC #32
@@ -468,13 +485,15 @@ PLAYER_MOVE_RIGHT
                 STA PLAYER_X
                 STA SP00_X_POS_L
                 setas
-                LDA #PLAYER_RIGHT * 4
-                STA SP00_ADDY_PTR_M
-                setal
+                
                 RTS
                 
 PLAYER_MOVE_LEFT
-                .al
+                .as
+                LDA #PLAYER_LEFT * 4
+                STA SP00_ADDY_PTR_M
+                setal
+                
                 LDA PLAYER_X
                 SEC
                 SBC #32
@@ -487,14 +506,17 @@ PLAYER_MOVE_LEFT
                 STA PLAYER_X
                 STA SP00_X_POS_L
                 setas
-                LDA #PLAYER_LEFT * 4
-                STA SP00_ADDY_PTR_M
-                setal
+                
                 RTS
                 
 INITIAL_DIST    = 4
 FLICK_TONGUE
-                .al
+                .as
+                LDA #1
+                STA SP01_CONTROL_REG
+                STA SP01_ADDY_PTR_H
+                
+                setal
                 ; turn the frog to UP position
                 LDA #PLAYER_UP * 1024
                 STA SP00_ADDY_PTR_L
@@ -515,13 +537,8 @@ FLICK_TONGUE
                 LDA PLAYER_Y
                 SBC TONGUE_POS
                 STA SP01_Y_POS_L
-                
                 setas
-                LDA #1
-                STA SP01_CONTROL_REG
-                STA SP01_ADDY_PTR_H
                 
-                setal
                 RTS
                 
 UPDATE_TONGUE
@@ -589,9 +606,11 @@ COLLISION_CHECK
                 CMP #160
                 BCC HOME_LINE
                 
-                LDX #0
+                LDX #16*8 
+                LDY #0
                 
         NEXT_WATER_ROW
+                LDA game_array,X
                 LDA game_array+4,X  ; read the Y position
                 CMP PLAYER_Y
                 BNE CCW_CONTINUE
@@ -617,7 +636,8 @@ COLLISION_CHECK
                 CLC
                 ADC #8
                 TAX
-                CPX #8*16-8
+                INY
+                CPY #16
                 BNE NEXT_WATER_ROW
                 
                 BRA W_COLLISION
@@ -721,7 +741,10 @@ COLLISION_CHECK
 STREET_COLLISION
                 .al
                 LDX #0
+                LDY #0
         NEXT_STREET_ROW
+                LDA game_array,X
+                BEQ CCS_CONTINUE
                 LDA game_array+4,X  ; read the Y position
                 CMP PLAYER_Y
                 BNE CCS_CONTINUE
@@ -748,7 +771,8 @@ STREET_COLLISION
                 CLC
                 ADC #8
                 TAX
-                CPX #8*16-8
+                INY
+                CPY #16
                 BNE NEXT_STREET_ROW
         CC_DONE
                 setas
@@ -915,17 +939,39 @@ UPDATE_LILLY
                 LDA #0
                 STA LILLY_CYCLE
                 
-                LDA game_array + 14 * 8 + 6
+                LDX #8*16
+                LDY #0
+        UP_LI_CHECK
+                LDA game_array,X
+                BEQ UP_LI_SKIP_ROW
+                
+                LDA game_array + 6,X
+                BIT #$10
+                BEQ UP_LI_SKIP_ROW
+                BIT #$20
+                BNE UP_LI_SKIP_ROW
+                
                 INC A
                 CMP #24
                 BNE STORE_LILLY
                 LDA #16
                 
         STORE_LILLY
-                STA game_array + 14 * 8 + 6
+                STA game_array + 6,X
                 ASL A
                 ASL A
-                STA @lSP18_ADDY_PTR_M
+                STA @lSP04_ADDY_PTR_M,X
+                
+        UP_LI_SKIP_ROW
+                TXA
+                CLC
+                ADC #8
+                TAX
+                
+                INY
+                CPY #16
+                BNE UP_LI_CHECK
+                
                 RTS
                 
         UL_SKIP
@@ -982,6 +1028,8 @@ SHOW_SCORE_BOARD
                 .as
                 PHB
                 setdbr <`VTILE_MAP1
+                LDA #0
+                XBA
                 LDA #0
                 LDX #6
         HEART_CLEAR_LOOP
@@ -1058,12 +1106,6 @@ LOAD_ASSETS
                 LDA #1024
                 MVN <`PALETTE_TILES,<`GRPH_LUT0_PTR
                 
-                ; load LUT1 - same as LUT0 - this is a bug in Vicky
-                LDX #<>PALETTE_SPRITES
-                LDY #<>GRPH_LUT1_PTR
-                LDA #1024
-                MVN <`PALETTE_SPRITES,<`GRPH_LUT1_PTR
-                
                 ; copy tilemap to video RAM
                 LDX #<>game_board
                 LDY #<>VTILE_MAP1
@@ -1073,8 +1115,15 @@ LOAD_ASSETS
                 ; copy sprites to video RAM
                 LDX #<>SPRITES
                 LDY #<>VSPRITES
-                LDA #4 * 8 * 32 * 32
+                LDA #4 * 8 * 32 * 32  ; 32 k
                 MVN <`SPRITES,<`VSPRITES
+                
+                ; copy fraggy animation to video RAM
+                LDX #<>FROG_UP
+                LDY #<>VFROGS_UP
+                LDA #4 * 4 * 32 * 32  ; 16 k
+                MVN <`FROG_UP,<`VFROGS_UP
+                
                 setas
                 PLB
                 
