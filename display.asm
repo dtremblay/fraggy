@@ -88,7 +88,7 @@ INIT_DISPLAY
                 JSR INIT_NPC
                 JSR SHOW_SCORE_BOARD
                 
-                LDA #$9F ; - joystick in initial state
+                LDA #$DF ; - joystick in initial state
                 JSR UPDATE_DISPLAY
                 RTS
                 
@@ -151,6 +151,9 @@ INIT_PLAYER
                 setas
                 LDA #(`VFROGS_UP - $B0_0000)
                 STA @lSP00_ADDY_PTR_H
+                LDA #0
+                STA MOVING_CNT
+                STA MOVING
             
                 RTS
 
@@ -297,7 +300,6 @@ UPDATE_DISPLAY
                 
                 
     NOT_DEAD
-                JSR UPDATE_HOME_TILES
                 JSR UPDATE_WATER_TILES
                 JSR UPDATE_LILLY
                 
@@ -305,13 +307,16 @@ UPDATE_DISPLAY
                 LDA TONGUE_POS
                 BEQ SKIP_TONGUE_UPDATE
                 JSR UPDATE_TONGUE
-                PLA
+                PLA ; if the tongue is sticking out, we don't let the player move
                 BRA JOY_DONE
                 
         SKIP_TONGUE_UPDATE
-                PLA
+                LDA MOVING
+                BNE ANIMATE_PLAYER
                 
-        JOY_FIRE
+                LDA #0
+                STA MOVING_CNT
+                PLA
                 BIT #$10 ; fire
                 BNE JOY_UP
                 JSR FLICK_TONGUE
@@ -376,6 +381,130 @@ UPDATE_DISPLAY
                 PLB
                 RTS
 
+; at each 8 SOF interrupt move the player sprite
+ANIMATE_PLAYER
+                .as
+                PLA ; we ignore the player's moves
+                LDA #0
+                XBA
+                LDA MOVING_CNT
+                INC A
+                BIT #3
+                BNE ANIM_DONE
+                
+                STA MOVING_CNT
+                
+                ; READ THE OFFSET
+                LSR A
+                LSR A
+                TAX
+                LDA SPRITE_OFFSET,X
+                PHA
+                CLC
+                ADC MOVING
+                DEC A
+                ; MULTIPLY BY 4
+                ASL A
+                ASL A
+                STA @lSP00_ADDY_PTR_M
+                
+                TXA
+                ASL A
+                TAX
+                LDA MOVING
+                CMP #PLAYER_UP + 1
+                BEQ ANIM_UP_COL
+                
+                CMP #PLAYER_RIGHT + 1
+                BEQ ANIM_RIGHT_COL
+                
+                CMP #PLAYER_LEFT + 1
+                BEQ ANIM_LEFT_COL
+                
+                BRA ANIM_DOWN_COL
+                
+    ANIM_COMPLETE
+                PLA ; check if the value was 0
+                BNE JOY_DONE
+                
+                ; stop the moving
+                LDA #0
+                STA MOVING
+                JMP JOY_DONE
+                
+    ANIM_DONE
+                STA MOVING_CNT
+                JMP JOY_DONE
+                
+ANIM_UP_COL
+                setal
+                
+                LDA PLAYER_Y
+                SEC
+                SBC SPRITE_MOVE,X
+                ; check for collisions and out of screen
+                CMP #96
+                BCS PMU_DONE
+                LDA #96
+                
+        PMU_DONE
+                STA PLAYER_Y
+                STA SP00_Y_POS_L
+                setas
+                BRA ANIM_COMPLETE
+                
+ANIM_LEFT_COL
+                setal
+                
+                LDA PLAYER_X
+                SEC
+                SBC SPRITE_MOVE,X
+                ; check for collisions and out of screen
+                CMP #64
+                BCS PML_DONE
+                LDA #64
+                
+        PML_DONE
+                STA PLAYER_X
+                STA SP00_X_POS_L
+                setas
+                
+                BRA ANIM_COMPLETE
+             
+ANIM_RIGHT_COL             
+                setal
+                
+                LDA PLAYER_X
+                CLC
+                ADC SPRITE_MOVE,X
+                ; check for collisions and out of screen
+                CMP #640 - 32
+                BCC PMR_DONE
+                LDA #640 - 32 ; the lowest position on screen
+                
+        PMR_DONE
+                STA PLAYER_X
+                STA SP00_X_POS_L
+                setas
+                BRA ANIM_COMPLETE
+                
+ANIM_DOWN_COL
+                setal
+                
+                LDA PLAYER_Y
+                CLC
+                ADC SPRITE_MOVE,X
+                ; check for collisions and out of screen
+                CMP #480
+                BCC PMD_DONE
+                LDA #480 ; the lowest position on screen
+                
+        PMD_DONE
+                STA PLAYER_Y
+                STA SP00_Y_POS_L
+                setas
+                JMP ANIM_COMPLETE
+                
 ; ****************************************************
 ; * Update non-players
 ; ****************************************************
@@ -390,7 +519,7 @@ UPDATE_NPC_POSITIONS
                 BEQ UNP_SKIP_ROW
                 LDA game_array + 2,X ; X POSITION
                 CLC
-                ADC game_array,X ; add the speed
+                ADC game_array,X     ; add the speed
                 BPL GRT_LFT_MRG
                  
                 
@@ -404,7 +533,7 @@ UPDATE_NPC_POSITIONS
         GRT_LFT_MRG
                 CMP #640 - 4
                 BCC LESS_RGT_MRG
-                LDA #0
+                AND #7
                 
         LESS_RGT_MRG
                 STA @lSP04_X_POS_L,X
@@ -429,20 +558,8 @@ PLAYER_MOVE_DOWN
                 .as
                 LDA #PLAYER_DOWN * 4
                 STA SP00_ADDY_PTR_M
-                setal
-                
-                LDA PLAYER_Y
-                CLC
-                ADC #32
-                ; check for collisions and out of screen
-                CMP #480
-                BCC PMD_DONE
-                LDA #480 ; the lowest position on screen
-                
-        PMD_DONE
-                STA PLAYER_Y
-                STA SP00_Y_POS_L
-                setas
+                LDA #PLAYER_DOWN + 1
+                STA MOVING
                 
                 RTS
                 
@@ -450,20 +567,8 @@ PLAYER_MOVE_UP
                 .as
                 LDA #PLAYER_UP * 4
                 STA SP00_ADDY_PTR_M
-                setal
-                
-                LDA PLAYER_Y
-                SEC
-                SBC #32
-                ; check for collisions and out of screen
-                CMP #128
-                BCS PMU_DONE
-                LDA #128
-                
-        PMU_DONE
-                STA PLAYER_Y
-                STA SP00_Y_POS_L
-                setas
+                LDA #PLAYER_UP + 1
+                STA MOVING
                 
                 RTS
                 
@@ -471,20 +576,8 @@ PLAYER_MOVE_RIGHT
                 .as
                 LDA #PLAYER_RIGHT * 4
                 STA SP00_ADDY_PTR_M
-                setal
-                
-                LDA PLAYER_X
-                CLC
-                ADC #32
-                ; check for collisions and out of screen
-                CMP #640 - 32
-                BCC PMR_DONE
-                LDA #640 - 32 ; the lowest position on screen
-                
-        PMR_DONE
-                STA PLAYER_X
-                STA SP00_X_POS_L
-                setas
+                LDA #PLAYER_RIGHT + 1
+                STA MOVING
                 
                 RTS
                 
@@ -492,20 +585,8 @@ PLAYER_MOVE_LEFT
                 .as
                 LDA #PLAYER_LEFT * 4
                 STA SP00_ADDY_PTR_M
-                setal
-                
-                LDA PLAYER_X
-                SEC
-                SBC #32
-                ; check for collisions and out of screen
-                CMP #64
-                BCS PML_DONE
-                LDA #64
-                
-        PML_DONE
-                STA PLAYER_X
-                STA SP00_X_POS_L
-                setas
+                LDA #PLAYER_LEFT + 1
+                STA MOVING
                 
                 RTS
                 
@@ -603,7 +684,7 @@ COLLISION_CHECK
                 CMP #288
                 BCS CCW_DONE
                 
-                CMP #160
+                CMP #128
                 BCC HOME_LINE
                 
                 LDX #16*8 
@@ -718,6 +799,8 @@ COLLISION_CHECK
                 ; show splash sprite at player's location
                 LDA #SPLASH_SPRITE * 4
                 STA SP00_ADDY_PTR_M
+                LDA #1
+                STA SP00_ADDY_PTR_H
 
                 ; set the player to DEAD
             SET_DEAD
@@ -735,6 +818,8 @@ COLLISION_CHECK
                 ; show splash sprite at player's location
                 LDA #SPLATT_SPRITE * 4
                 STA SP00_ADDY_PTR_M
+                LDA #1
+                STA SP00_ADDY_PTR_H
                 BRA SET_DEAD
                 
                 
@@ -777,74 +862,6 @@ STREET_COLLISION
         CC_DONE
                 setas
                 RTS
-                
-HOME_CYCLE      .byte 0
-EVEN_TILE_VAL   .byte $12
-ODD_TILE_VAL    .byte $13
-UPDATE_HOME_TILES
-                .as
-                PHB
-                ; alternate the HOME tiles to imitate wind motion
-                LDA HOME_CYCLE
-                INC A
-                CMP #15 ; only update every N SOF cycle
-                BNE UT_SKIP
-                LDA #0
-                STA HOME_CYCLE
-
-                LDX #280 ; line 8 in the game board
-                LDY #7 * 80 ; line 8 in the tileset
-                setdbr <`VTILE_MAP1
-
-        UT_GET_TILE
-                LDA game_board,X
-                CMP #'H'
-                BNE UT_DONE
-                
-                TXA
-                AND #1
-                BEQ UT_EVEN_TILE
-                LDA EVEN_TILE_VAL
-                
-                STA VTILE_MAP1,Y
-                BRA UT_DONE
-                
-        UT_EVEN_TILE
-                LDA ODD_TILE_VAL
-                STA VTILE_MAP1,Y
-                
-        UT_DONE
-                INY
-                INY
-                INX
-                CPX #320
-                BNE UT_GET_TILE
-                
-                ; alternate the tiles
-                LDA EVEN_TILE_VAL
-                CMP #$12
-                BEQ ALT_ODD
-                ; A is $13
-                STA ODD_TILE_VAL
-                LDA #$12
-                STA EVEN_TILE_VAL
-                PLB
-                RTS
-                
-        ALT_ODD
-                ; A is 12
-                STA ODD_TILE_VAL
-                LDA #$13
-                STA EVEN_TILE_VAL
-                PLB
-                RTS
-                
-    UT_SKIP
-                STA HOME_CYCLE
-                PLB
-                RTS
-
-
 
 WATER_CYCLE     .byte 0
 EVEN_WTILE_VAL  .byte $4

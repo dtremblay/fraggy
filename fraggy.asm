@@ -30,7 +30,7 @@ JOYSTICK_SC_TMP = $000F89
 ; frog sprite names
 PLAYER_UP       = 0
 PLAYER_LEFT     = 8
-PLAYER_RIGHT    = 12
+PLAYER_RIGHT    =12
 PLAYER_DOWN     = 4
 
 ; sprite names
@@ -130,6 +130,10 @@ SCORE       .word 0
 TONGUE_POS  .word 0
 TONGUE_CTR  .byte 0
 PL_MOVE_UP  .byte 0
+MOVING      .byte 0
+MOVING_CNT  .byte 0
+SPRITE_OFFSET   .BYTE 0, 1, 2, 2, 2, 3, 0
+SPRITE_MOVE     .WORD 0, 0, 8, 8, 8, 8, 0
 
 .include "interrupt_handler.asm"
 .include "display.asm"
@@ -198,11 +202,11 @@ game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
             .word     1, 640-96, 14*32 , TRACTOR        ; sprite  0
             .word     1, 640-64, 14*32 , TRACTOR + 1    ; sprite  1
-            .word $FFFA, 96    , 12*32 , POLICE_CAR     ; sprite  2
-            .word $FFFA, 128   , 12*32 , POLICE_CAR + 1 ; sprite  3
-            .word     2, 32    , 13*32 , BUS            ; sprite  4
-            .word     2, 64    , 13*32 , BUS + 1        ; sprite  5
-            .word     2, 96    , 13*32 , BUS + 2        ; sprite  6
+            .word $FFFA, 96    , 13*32 , POLICE_CAR     ; sprite  2
+            .word $FFFA, 128   , 13*32 , POLICE_CAR + 1 ; sprite  3
+            .word     2, 32    , 12*32 , BUS            ; sprite  4
+            .word     2, 64    , 12*32 , BUS + 1        ; sprite  5
+            .word     2, 96    , 12*32 , BUS + 2        ; sprite  6
             .word $FFFC, 320-96, 10*32 , RED_CAR        ; sprite  7
             .word $FFFC, 320-64, 10*32 , RED_CAR + 1    ; sprite  8
             .word     8, 192   , 11*32 , SPORTS_CAR     ; sprite  9
@@ -214,13 +218,15 @@ game_array  ; the array treats each sprite in order
             .word     0, 0     , 0     , 0              ; blank
             
             ; line 9 *32 is safe
-            .word     3,  90   , 4*32    , LILLYPAD + 3   ; sprite 16
-            .word     3, 410   , 4*32    , LILLYPAD + 5   ; sprite 17
-            .word $FFFB, 320   , 5*32    , LOG            ; sprite 18
-            .word $FFFB, 352   , 5*32    , LOG + 1        ; sprite 19
-            .word $FFFB, 384   , 5*32    , LOG + 2        ; sprite 20
-            .word     2, 416   , 6*32    , LOG            ; sprite 21
-            .word     2, 448   , 6*32    , LOG + 2        ; sprite 22
+            .word     3,  96   , 4*32    , LOG            ; sprite 16
+            .word     3, 128   , 4*32    , LOG + 2        ; sprite 17
+            .word     3, 416   , 4*32    , LOG            ; sprite 18
+            .word     3, 448   , 4*32    , LOG + 2        ; sprite 19
+            .word $FFFB, 320   , 5*32    , LOG            ; sprite 20
+            .word $FFFB, 352   , 5*32    , LOG + 1        ; sprite 21
+            .word $FFFB, 384   , 5*32    , LOG + 2        ; sprite 22
+            .word     2, 416   , 6*32    , LILLYPAD + 5   ; sprite 21
+            .word     2, 132   , 6*32    , LILLYPAD + 7   ; sprite 22
             .word     1, 320   , 7*32    , LOG            ; sprite 18
             .word     1, 352   , 7*32    , LOG + 1        ; sprite 19
             .word     1, 384   , 7*32    , LOG + 2        ; sprite 20
