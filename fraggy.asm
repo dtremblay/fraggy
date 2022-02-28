@@ -134,6 +134,7 @@ MOVING      .byte 0
 MOVING_CNT  .byte 0
 SPRITE_OFFSET   .BYTE 0, 1, 2, 2, 2, 3, 0
 SPRITE_MOVE     .WORD 0, 0, 8, 8, 8, 8, 0
+HOME_GATE   .byte 0
 
 .include "interrupt_handler.asm"
 .include "display.asm"
@@ -219,12 +220,12 @@ game_array  ; the array treats each sprite in order
             
             ; line 9 *32 is safe
             .word     3,  96   , 4*32    , LOG            ; sprite 16
-            .word     3, 128   , 4*32    , LOG + 2        ; sprite 17
+            .word     3, 128   , 4*32    , LOG + 2        ; sprite 17c
             .word     3, 416   , 4*32    , LOG            ; sprite 18
             .word     3, 448   , 4*32    , LOG + 2        ; sprite 19
-            .word $FFFB, 320   , 5*32    , LOG            ; sprite 20
-            .word $FFFB, 352   , 5*32    , LOG + 1        ; sprite 21
-            .word $FFFB, 384   , 5*32    , LOG + 2        ; sprite 22
+            .word $FFFC, 320   , 5*32    , LOG            ; sprite 20
+            .word $FFFC, 352   , 5*32    , LOG + 1        ; sprite 21
+            .word $FFFC, 384   , 5*32    , LOG + 2        ; sprite 22
             .word     2, 416   , 6*32    , LILLYPAD + 5   ; sprite 21
             .word     2, 132   , 6*32    , LILLYPAD + 7   ; sprite 22
             .word     1, 320   , 7*32    , LOG            ; sprite 18
