@@ -29,8 +29,10 @@ INIT_DISPLAY
                 JSR LOAD_ASSETS
                 
                 setal
-                ; enable tilemap 1
                 LDA #0
+                STA RESET_BOARD
+                
+                ; enable tilemap 1
                 STA TL1_START_ADDY_H
                 ; set the tilemap window position to 0
                 LDA #0
@@ -145,7 +147,9 @@ INIT_PLAYER
                 LDA #9 * 32 + 32
                 STA PLAYER_X
                 STA @lSP00_X_POS_L
-                LDA #480
+                
+                LDA #15 * 32
+                ; LDA #9 * 32  ; use this to debug the middle line
                 STA PLAYER_Y
                 STA @lSP00_Y_POS_L
                 
@@ -267,16 +271,17 @@ UPDATE_DISPLAY
                 LDA GAME_OVER
                 BNE GAME_OVER_DRAW
                 
-                ; check if the player is dead
-                LDA DEAD
-                BEQ NOT_DEAD
-                
                 ; when the player is dead, wait 180 SOF cycles
                 LDA RESET_BOARD
+                BEQ CHECK_DEAD
                 DEC A
                 STA RESET_BOARD
                 BNE NO_UPDATE
                 
+       CHECK_DEAD
+                ; check if the player is dead
+                LDA DEAD
+                BEQ NOT_DEAD
                 LDA LIVES 
                 DEC A
                 STA LIVES 
@@ -301,7 +306,14 @@ UPDATE_DISPLAY
                 
                 
     NOT_DEAD
-                JSR UPDATE_WATER_TILES
+                LDA GATE_UP
+                BEQ REG_FLOW
+                
+                LDA #0
+                STA GATE_UP
+                JSR INIT_PLAYER
+                
+        REG_FLOW
                 JSR UPDATE_LILLY
                 
                 ; check if the frog's tongue is out
@@ -351,7 +363,11 @@ UPDATE_DISPLAY
                 
         JOY_DONE
                 JSR UPDATE_NPC_POSITIONS
+                LDA MOVING
+                BNE NO_COLLISION_WHILE_ANIMATING
                 JSR COLLISION_CHECK
+                
+        NO_COLLISION_WHILE_ANIMATING
                 ; if the player has moved up without collision, add 10 points.
                 LDA PL_MOVE_UP
                 BEQ UD_DONE
@@ -671,9 +687,9 @@ COLLISION_CHECK
                 setdbr <`TONGUE_CTR
                 setal
                 LDA PLAYER_Y
-                CMP #288 ; mid-screen
+                CMP #289 ; mid-screen
                 
-                BCC WATER_COL_BR
+                BLT WATER_COL_BR
                 JSR STREET_COLLISION
                 setas
                 PLB
@@ -726,15 +742,87 @@ STREET_COLLISION
         CC_DONE
                 setas
                 RTS
-
-        CCW_DONE
-                setas
-                PLB
-                RTS
                 
         S_COLLISION
                 .al
                 PHB
+                setas
+                ; show splash sprite at player's location
+                LDA #SPLATT_SPRITE * 4
+                STA SP00_ADDY_PTR_M
+                LDA #1
+                STA SP00_ADDY_PTR_H
+                PLB
+                JMP SET_DEAD
+                   
+WATER_COLLISION
+                .al
+                CMP #288
+                BLT WC_CONTINUE
+                RTS
+                
+       WC_CONTINUE
+                CMP #96
+                BNE WC_COMPARE_ROWS
+                JMP HOME_LINE
+                
+        WC_COMPARE_ROWS
+                LDX #16*8 ; we ignore the first 16 sprites in the game array
+                LDY #0
+                
+        NEXT_WATER_ROW
+                ; Skip row if speed is 0
+                LDA game_array,X
+                BEQ CCW_CONTINUE
+                
+                ; 
+                LDA game_array+4,X  ; read the sprite Y position
+                CMP PLAYER_Y
+                BNE CCW_CONTINUE
+
+                LDA PLAYER_X
+                CMP game_array+2,X  ; read the X position
+                BEQ FLOAT
+                BCC CHECK_RIGHT_BOUND_W
+        CHECK_LEFT_BOUND_W
+                LDA game_array+2,X
+                ADC #32
+                CMP PLAYER_X
+                BCS FLOAT
+                BRA CCW_CONTINUE
+        CHECK_RIGHT_BOUND_W
+                ADC #32
+                CMP game_array+2,X  ; read the X position
+                BCS FLOAT
+                
+        CCW_CONTINUE
+                TXA
+                CLC
+                ADC #8
+                TAX
+                INY
+                CPY #16
+                BNE NEXT_WATER_ROW
+                ; if none of the sprites match, then the player has fallen in water
+                JMP W_COLLISION
+                
+        FLOAT
+                .al
+                ; move the frog with the NPC
+                CLC
+                LDA PLAYER_X
+                ADC game_array,X
+                CMP #64
+                BCC W_COLLISION
+                CMP #640-32
+                BCS W_COLLISION
+                
+                STA PLAYER_X
+                STA SP00_X_POS_L
+                RTS
+               
+       H_COLLISION
+                .al
                 setas
                 ; show splash sprite at player's location
                 LDA #SPLATT_SPRITE * 4
@@ -759,122 +847,58 @@ STREET_COLLISION
                 STA @lDEAD
                 LDA #THREE_SECS
                 STA RESET_BOARD
-                PLB
                 RTS
-                
-WATER_COLLISION
-                .al
-                CMP #288
-                BCS CCW_DONE
-                
-                CMP #96
-                BCC HOME_LINE
-                
-                LDX #16*8 ; we ignore the first 16 sprites in the game array
-                LDY #0
-                
-        NEXT_WATER_ROW
-                ; Skip row if speed is 0
-                LDA game_array,X
-                BEQ CCW_CONTINUE
-                
-                ; 
-                LDA game_array+4,X  ; read the sprite Y position
-                CMP PLAYER_Y
-                BEQ FLOAT
-                CLC
-                ADC #31
-                CMP PLAYER_Y  ; if sprite-y + 31 < player-y
-                BLT CCW_CONTINUE
-                
-                AND #$FFE0
-                CMP PLAYER_Y        ; if sprite-y > player-y 
-                BGE CCW_CONTINUE  
-                
-                
-                LDA PLAYER_X
-                CMP game_array+2,X  ; read the X position
-                BEQ FLOAT
-                BCC CHECK_RIGHT_BOUND_W
-        CHECK_LEFT_BOUND_W
-                LDA game_array+2,X
-                ADC #32
-                CMP PLAYER_X
-                BCS FLOAT
-                BRA CCW_CONTINUE
-        CHECK_RIGHT_BOUND_W
-                ADC #32
-                CMP game_array+2,X  ; read the X position
-                BCS FLOAT
-
-        FLOAT
-                .al
-                ; move the frog with the NPC
-                CLC
-                LDA PLAYER_X
-                ADC game_array,X
-                CMP #64
-                BCC W_COLLISION
-                CMP #640-32
-                BCS W_COLLISION
-                
-                STA PLAYER_X
-                STA SP00_X_POS_L
-                RTS
-                
-        CCW_CONTINUE
-                TXA
-                CLC
-                ADC #8
-                TAX
-                INY
-                CPY #16
-                BNE NEXT_WATER_ROW
-                
-                JMP W_COLLISION
                 
         HOME_LINE
                 .al
-                PLB
                 LDA PLAYER_X
                 LDX #1
-                CMP #62
+                LDY #6*2
+                CMP #62+32
                 BLT H_COLLISION
-                CMP 97
-                BGE H_COLLISION
+                CMP #97+32
+                BLT HOME_CHECK_VALID
                 
                 LDX #2
-                CMP #174
+                LDY #13*2
+                CMP #174+32
                 BLT H_COLLISION
-                CMP #210
-                BGE H_COLLISION
+                CMP #210+32
+                BLT HOME_CHECK_VALID
                 
                 LDX #4
-                CMP #286
+                LDY #20*2
+                CMP #286+32
                 BLT H_COLLISION
-                CMP #322
-                BGE H_COLLISION
+                CMP #322+32
+                BLT HOME_CHECK_VALID
 
                 LDX #8
-                CMP #398
+                LDY #27*2
+                CMP #398+32
                 BLT H_COLLISION
-                CMP #434
-                BGE H_COLLISION
+                CMP #434+32
+                BLT HOME_CHECK_VALID
 
                 LDX #$10
-                CMP #510
+                LDY #34*2
+                CMP #510+32
                 BLT H_COLLISION
-                CMP #546
+                CMP #546+32
                 BGE H_COLLISION
                 
+        HOME_CHECK_VALID
+                setas
                 TXA
                 AND #$1F
                 BIT HOME_GATE
-                BNE H_COLLISION
-                
+                BEQ HOME_NO_COLL_BR
+                JMP H_COLLISION
+        HOME_NO_COLL_BR
                 ORA HOME_GATE
                 STA HOME_GATE
-        
+                setal
+                
                 ; add 200 to the score in BCD
                 SED
                 LDA SCORE
@@ -882,118 +906,45 @@ WATER_COLLISION
                 ADC #$200
                 STA SCORE
                 CLD
+                
                 LDA #0
                 
                 setas
-                TXA
-                ASL A
-                TAX
+                ; pause the display for three seconds!
+                LDA #THREE_SECS
+                STA RESET_BOARD
                 
-                ; use the player's X position to redecorate the home line
-                LDA #14
-                STA VTILE_MAP1 + 12 * 40 , X
-                LDA #15
-                STA VTILE_MAP1 + 12 * 40 + 2, X
-                LDA #30
-                STA VTILE_MAP1 + 14 * 40, X
-                LDA #31
-                STA VTILE_MAP1 + 14 * 40 + 2, X
+                LDA #1
+                STA GATE_UP
                 
-                ; set the crown here and restart the player on the first line
-                JSR INIT_PLAYER
-                
-                PLB
-                RTS
-                
-        H_COLLISION
-                .al
-                PHB
-                setas
-                ; show splash sprite at player's location
-                LDA #SPLATT_SPRITE * 4
-                STA SP00_ADDY_PTR_M
+                LDA #BONUS_SPRITE * 4
+                STA @lSP00_ADDY_PTR_M
                 LDA #1
                 STA SP00_ADDY_PTR_H
-                JMP SET_DEAD
-
-WATER_CYCLE     .byte 0
-EVEN_WTILE_VAL  .byte $4
-ODD_WTILE_VAL   .byte $5
-UPDATE_WATER_TILES
-                .as
-                PHB
-                ; alternate the WATER tiles to imitate waves
-                LDA WATER_CYCLE
+                
+                TYX
+                
+                ; use the player's X position to redecorate the home line
+                LDA #30
+                STA VTILE_MAP1 +  8 * 40 , X
+                LDA #31
+                STA VTILE_MAP1 +  8 * 40 + 2, X
+                LDA #46
+                STA VTILE_MAP1 + 10 * 40, X
+                LDA #47
+                STA VTILE_MAP1 + 10 * 40 + 2, X
+                
+                ; set the crown here and restart the player on the first line
+                JSR SHOW_SCORE_BOARD
+                
+                LDA HOME_GATE
+                CMP #$1F ; go to the next chapter.
+                BNE HOME_LINE_DONE
+                
+                LDA LEVEL
                 INC A
-                CMP #12 ; only update every N SOF cycle
-                BNE UW_SKIP
-                LDA #0
-                STA WATER_CYCLE
-
-                LDX #4 * 40 ; line 9 in the game board
-                LDY #4 * 80 + 2; line 8 in the tileset
-                setdbr <`VTILE_MAP1
-
-        UW_GET_TILE
-                LDA game_board,X
-                CMP #'W'
-                BNE UW_DONE
-
-                ;check if X is even/odd
-                TXA
-                AND #1
-                BEQ UW_EVEN_TILE
-                LDA EVEN_WTILE_VAL
-                
-                STA VTILE_MAP1,Y
-                BRA UW_DONE
-                
-        UW_EVEN_TILE
-                LDA ODD_WTILE_VAL
-                STA VTILE_MAP1,Y
-                
-        UW_DONE
-                INY
-                INY
-                setal
-                TYA
-                AND #$4F
-                CMP #80
-                BNE WT_NEXT_TILE
-                TYA
-                CLC
-                ADC #24
-                TAY
-                
-    WT_NEXT_TILE
-                setas
-                
-                INX
-                CPX #16 * 40
-                BNE UW_GET_TILE
-                
-                ; alternate the tiles
-                LDA EVEN_WTILE_VAL
-                CMP #4
-                BEQ W_ALT_ODD
-                ; A is $14
-                STA ODD_WTILE_VAL
-                LDA #$4
-                STA EVEN_WTILE_VAL
-                PLB
-                RTS
-                
-        W_ALT_ODD
-                ; A is 4
-                STA ODD_WTILE_VAL
-                LDA #$5
-                STA EVEN_WTILE_VAL
-                PLB
-                RTS
-                
-    UW_SKIP
-                STA WATER_CYCLE
-                PLB
+                STA LEVEL
+    HOME_LINE_DONE
                 RTS
             
 LILLY_CYCLE     .byte 0
