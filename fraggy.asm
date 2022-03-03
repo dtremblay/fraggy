@@ -16,22 +16,25 @@
 .include "timer_def.asm"
 .include "base.asm"
 
-TOTAL_SPRITES   = 27
+; *************************************************************************
+; * Define variable for managing sprites and tiles
+; *************************************************************************
+NPC_SPRITES     = 60
 VTILE_SET0      = $B00000
 VTILE_MAP0      = $B03000
 VTILE_MAP1      = $B03960
 VSPRITES        = $B10000
 VFROGS_UP       = $B20000             ; 4 sprites
-VFROGS_DOWN     = VFROGS + 4096       ; 4 sprites
+VFROGS_DOWN     = VFROGS_UP + 4096    ; 4 sprites
 VFROGS_LEFT     = VFROGS_DOWN + 4096  ; 4 sprites
 VFROGS_RIGHT    = VFROGS_LEFT + 4096  ; 4 sprites
 JOYSTICK_SC_TMP = $000F89
 
 ; frog sprite names
-PLAYER_UP       = 0
-PLAYER_LEFT     = 8
-PLAYER_RIGHT    =12
-PLAYER_DOWN     = 4
+PLAYER_UP       =  0
+PLAYER_LEFT     =  8
+PLAYER_RIGHT    = 12
+PLAYER_DOWN     =  4
 
 ; sprite names
 RED_CAR         =  0
@@ -47,10 +50,9 @@ TONGUE_SPRITE   = 24
 BEE_SPRITE      = 25
 BONUS_SPRITE    = 27
 
-THREE_SECS      = 180  ; the number of SOF interrupts for 3 seconds
-
-; numbers are displayed with tiles
+; the heart tile - used to display the number of player lives
 TILE_HEART      = 16
+; numbers are displayed with tiles
 TILE_0          = 32
 TILE_1          = 33
 TILE_2          = 34
@@ -62,8 +64,13 @@ TILE_7          = 39
 TILE_8          = 40
 TILE_9          = 41
 
-* = $160000
+DEFAULT_LIVES   =  3
+THREE_SECS      = 180  ; the number of SOF interrupts for 3 seconds
 
+* = $160000
+; *************************************************************************
+; * Setup interrupts, load the song and initialize basic variables.
+; *************************************************************************
 GAME_START
             setas
             setxl
@@ -102,7 +109,7 @@ GAME_START
             STA GAME_OVER
             STA DEAD
             
-            LDA #3
+            LDA #DEFAULT_LIVES
             STA LIVES
             
             JSL VGM_SET_SONG_POINTERS
@@ -118,7 +125,9 @@ GAME_START
             
     GAME_LOOP
             BRA GAME_LOOP
-            
+; *************************************************************************
+; * Game registers
+; *************************************************************************
 PLAYER_X    .word 100
 PLAYER_Y    .word 100
 LIVES       .byte 3
@@ -134,21 +143,25 @@ MOVING      .byte 0
 MOVING_CNT  .byte 0
 SPRITE_OFFSET   .BYTE 0, 1, 2, 2, 2, 3, 0
 SPRITE_MOVE     .WORD 0, 0, 8, 8, 8, 8, 0
-HOME_GATE   .byte 0
+HOME_NEST   .byte 0 ; record the nests that have been filled
 LEVEL       .byte 1
-GATE_UP     .byte 0
+NEST_UP     .byte 0 ; player has just filled the next
 
 .include "interrupt_handler.asm"
 .include "display.asm"
 .include "vgm_player.asm"
 
+; *************************************************************************
+; * Song file - in VGM format
+; *************************************************************************
 SONG
+.binary "assets/03 Forest Path.vgm"
 ;.binary "assets/03 Bay Yard (Daytime) (1st Day).vgm"
 ;.binary "assets/11 Sarinuka Sands (Daytime) (2nd Day).vgm"
-.binary "assets/03 Forest Path.vgm"
 
-; our resolution is 640 x 480 - tiles are 16 x 16 - therefore 40 x 30
-; I've added 'dirty' tiles here to test the machine and FoenixIDE rendering of tiles in the border
+; *************************************************************************
+; * The game board is 40 x 30 tiles
+; *************************************************************************
 game_board 
             .binary "assets/fraggy-tilemap.tlm"  ; 40 x 30 x 2 = 2400 bytes - this could be easily compressed by removing all the even bytes.
             
@@ -184,6 +197,11 @@ game_over_board
             .text "........................................" ;29
             .text "........................................" ;30
 
+; *************************************************************************
+; *************************************************************************
+; * Image files for tiles and sprites, along with color palette
+; *************************************************************************
+; *************************************************************************
 * = $170000
 TILES
             .binary "assets/fraggy-tileset.bin"
@@ -200,42 +218,75 @@ FROG_RIGHT
 SPRITES
             .binary "assets/fraggy-sprites.bin"
 
-; I'm leaving the game array at the end because I want to be able to extend the list to 64 sprites, eventually
+; *************************************************************************
+; * The game array describes the sprites, position, speed and direction
+; * The FMX machine has 64 sprites.  4 sprites are reserved for the player.
+; * The remaining 60 sprites can be used by the game array.
+; * If this is not enough, use the SOL interrups to double the number of 
+; * sprite to 128.
+; *************************************************************************
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
-            .word     1, 640-96, 14*32 , TRACTOR        ; sprite  0
-            .word     1, 640-64, 14*32 , TRACTOR + 1    ; sprite  1
-            .word     1, 170   , 14*32 , TRACTOR        ; sprite  2
-            .word     1, 202   , 14*32 , TRACTOR + 1    ; sprite  3
-            .word $FFFA, 96    , 13*32 , POLICE_CAR     ; sprite  4
-            .word $FFFA, 128   , 13*32 , POLICE_CAR + 1 ; sprite  5
-            .word     2, 32    , 12*32 , BUS            ; sprite  6
-            .word     2, 64    , 12*32 , BUS + 1        ; sprite  7
-            .word     2, 96    , 12*32 , BUS + 2        ; sprite  8
-            .word $FFFC, 320-96, 10*32 , RED_CAR        ; sprite  9
-            .word $FFFC, 320-64, 10*32 , RED_CAR + 1    ; sprite 10
-            .word     8, 192   , 11*32 , SPORTS_CAR     ; sprite 11
-            .word     8, 224   , 11*32 , SPORTS_CAR +1  ; sprite 12
-            .word     0, 0     , 0     , 0              ; blank  13
+            .word     1, 640-96, 14*32 , TRACTOR        ; sprite  1
+            .word     1, 640-64, 14*32 , TRACTOR + 1    ; sprite  2
+            .word     1, 170   , 14*32 , TRACTOR        ; sprite  3
+            .word     1, 202   , 14*32 , TRACTOR + 1    ; sprite  4
+            .word $FFFA, 96    , 13*32 , POLICE_CAR     ; sprite  5
+            .word $FFFA, 128   , 13*32 , POLICE_CAR + 1 ; sprite  6
+            .word     2, 32    , 12*32 , BUS            ; sprite  7
+            .word     2, 64    , 12*32 , BUS + 1        ; sprite  8
+            .word     2, 96    , 12*32 , BUS + 2        ; sprite  9
+            .word $FFFC, 320-96, 10*32 , RED_CAR        ; sprite 10
+            .word $FFFC, 320-64, 10*32 , RED_CAR + 1    ; sprite 11
+            .word     8, 192   , 11*32 , SPORTS_CAR     ; sprite 12
+            .word     8, 224   , 11*32 , SPORTS_CAR +1  ; sprite 13
             .word     0, 0     , 0     , 0              ; blank  14
             .word     0, 0     , 0     , 0              ; blank  15
+            .word     0, 0     , 0     , 0              ; blank  16
+            .word     0, 0     , 0     , 0              ; blank  17
+            .word     0, 0     , 0     , 0              ; blank  18
+            .word     0, 0     , 0     , 0              ; blank  19
+            .word     0, 0     , 0     , 0              ; blank  20
+            .word     0, 0     , 0     , 0              ; blank  21
+            .word     0, 0     , 0     , 0              ; blank  22
+            .word     0, 0     , 0     , 0              ; blank  23
+            .word     0, 0     , 0     , 0              ; blank  24
+            .word     0, 0     , 0     , 0              ; blank  25
+            .word     0, 0     , 0     , 0              ; blank  26
+            .word     0, 0     , 0     , 0              ; blank  27
+            .word     0, 0     , 0     , 0              ; blank  28
+            .word     0, 0     , 0     , 0              ; blank  29
+            .word     0, 0     , 0     , 0              ; blank  30
             
             ; line 9 *32 is safe
-            .word     2,  96   , 4*32    , LOG            ; sprite 16
-            .word     2, 128   , 4*32    , LOG + 2        ; sprite 17
-            .word     2, 416   , 4*32    , LOG            ; sprite 18
-            .word     2, 448   , 4*32    , LOG + 2        ; sprite 19
-            .word $FFFD, 320   , 5*32    , LOG            ; sprite 20
-            .word $FFFD, 352   , 5*32    , LOG + 1        ; sprite 21
-            .word $FFFD, 384   , 5*32    , LOG + 2        ; sprite 22
-            .word     2, 416   , 6*32    , LILLYPAD + 5   ; sprite 23
-            .word     2, 132   , 6*32    , LILLYPAD + 7   ; sprite 24
-            .word     1, 320   , 7*32    , LOG            ; sprite 25
-            .word     1, 352   , 7*32    , LOG + 1        ; sprite 26
-            .word     1, 384   , 7*32    , LOG + 2        ; sprite 27
-            .word     1,  40   , 7*32    , LOG            ; sprite 28
-            .word     1,  72   , 7*32    , LOG + 1        ; sprite 29
-            .word     1, 104   , 7*32    , LOG + 2        ; sprite 30
-            .word $FFFE, 512   , 8*32    , LILLYPAD + 6   ; sprite 31
-            .word $FFFE, 260   , 8*32    , LILLYPAD + 2   ; sprite 32
+            .word     2,  96   , 4*32    , LOG            ; sprite 31
+            .word     2, 128   , 4*32    , LOG + 2        ; sprite 32
+            .word     2, 416   , 4*32    , LOG            ; sprite 33
+            .word     2, 448   , 4*32    , LOG + 2        ; sprite 34
+            .word $FFFD, 320   , 5*32    , LOG            ; sprite 35
+            .word $FFFD, 352   , 5*32    , LOG + 1        ; sprite 36
+            .word $FFFD, 384   , 5*32    , LOG + 2        ; sprite 37
+            .word     2, 416   , 6*32    , LILLYPAD + 5   ; sprite 38
+            .word     2, 132   , 6*32    , LILLYPAD + 7   ; sprite 39
+            .word     1, 320   , 7*32    , LOG            ; sprite 40
+            .word     1, 352   , 7*32    , LOG + 1        ; sprite 41
+            .word     1, 384   , 7*32    , LOG + 2        ; sprite 42
+            .word     1,  40   , 7*32    , LOG            ; sprite 43
+            .word     1,  72   , 7*32    , LOG + 1        ; sprite 44
+            .word     1, 104   , 7*32    , LOG + 2        ; sprite 45
+            .word $FFFE, 512   , 8*32    , LILLYPAD + 6   ; sprite 46
+            .word $FFFE, 260   , 8*32    , LILLYPAD + 2   ; sprite 47
+            .word     0, 0     , 0     , 0                ; blank  48
+            .word     0, 0     , 0     , 0                ; blank  49
+            .word     0, 0     , 0     , 0                ; blank  50
+            .word     0, 0     , 0     , 0                ; blank  51
+            .word     0, 0     , 0     , 0                ; blank  52
+            .word     0, 0     , 0     , 0                ; blank  53
+            .word     0, 0     , 0     , 0                ; blank  54
+            .word     0, 0     , 0     , 0                ; blank  55
+            .word     0, 0     , 0     , 0                ; blank  56
+            .word     0, 0     , 0     , 0                ; blank  57
+            .word     0, 0     , 0     , 0                ; blank  58
+            .word     0, 0     , 0     , 0                ; blank  59
+            .word     0, 0     , 0     , 0                ; blank  60
             

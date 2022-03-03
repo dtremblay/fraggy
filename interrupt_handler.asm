@@ -120,7 +120,8 @@ KEYBOARD_INTERRUPT
                 JSR UPDATE_DISPLAY
         KBD_SKIP        
                 RTS
-;
+
+
 ; ///////////////////////////////////////////////////////////////////
 ; ///
 ; /// Start of Frame Interrupt
@@ -134,9 +135,11 @@ SOF_INTERRUPT
                 AND #$DF
                 EOR JOYSTICK_SC_TMP
                 BEQ SOF_CONTINUE
+                
                 LDA JOYSTICK0
                 STA JOYSTICK_SC_TMP
                 BRA SOF_DISPLAY
+                
         SOF_CONTINUE
                 LDA #$DF
         SOF_DISPLAY
@@ -144,8 +147,7 @@ SOF_INTERRUPT
                 
                 RTS
 
-;
-;
+
 ; ///////////////////////////////////////////////////////////////////
 ; ///
 ; /// Timer0 interrupt

@@ -1,3 +1,6 @@
+; *************************************************************************
+; * Initialize the video RAM and machine registers
+; *************************************************************************
 INIT_DISPLAY
                 .as
 
@@ -24,8 +27,10 @@ INIT_DISPLAY
                 STA MASTER_CTRL_REG_L
                 
                 ; display intro screen
+                
                 ; wait for user to press a key or joystick button
                 
+                ; load sprites and tiles
                 JSR LOAD_ASSETS
                 
                 setal
@@ -69,7 +74,7 @@ INIT_DISPLAY
                 STA SCORE
                 
                 setas
-                STA HOME_GATE
+                STA HOME_NEST
                 ; enable tilemap 1
                 LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
                 STA @lTL1_CONTROL_REG
@@ -84,9 +89,9 @@ INIT_DISPLAY
                 LDA #3
                 STA LIVES
                 
-                ; enable the sprites
+                ; enable the non-player sprites
                 JSR ENABLE_SPRITES_NPC
-                
+                ; initialize the player to the bottom row
                 JSR INIT_PLAYER
                 JSR INIT_NPC
                 JSR SHOW_SCORE_BOARD
@@ -94,14 +99,16 @@ INIT_DISPLAY
                 LDA #$DF ; - joystick in initial state
                 JSR UPDATE_DISPLAY
                 RTS
-                
+
+; *************************************************************
+; * Setup the sprite registers for the non-player sprites
+; *************************************************************
 ENABLE_SPRITES_NPC
                 .as
-                setxs
                 ; now enabled the sprites
                 ; the address of the sprite is based on the game_array
                 LDX #0  ; X increments in steps of 8
-                LDY #0
+                LDY #0  ; Y counts the number of sprites total - 60
                 LDA #0
                 ; reserve the first 4 sprites
                 STA @lSP00_CONTROL_REG
@@ -124,14 +131,15 @@ ENABLE_SPRITES_NPC
                 STA @lSP04_ADDY_PTR_M,X
 
     LSP_SKIP_ROW
+                setal
                 TXA
                 CLC
                 ADC #8
                 TAX
+                setas
                 INY
-                CPY #32
+                CPY #NPC_SPRITES
                 BNE LSP_LOOP
-                setxl
                 RTS
                 
 ; *************************************************************
@@ -144,12 +152,12 @@ INIT_PLAYER
                 STA @lSP00_ADDY_PTR_L
                 LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
                 STA @lSP00_CONTROL_REG
-                LDA #9 * 32 + 32
+                LDA #9 * 32 + 32  ; the middle of the screen
                 STA PLAYER_X
                 STA @lSP00_X_POS_L
                 
-                LDA #15 * 32
-                ; LDA #9 * 32  ; use this to debug the middle line
+                LDA #15 * 32      ; the bottom row
+                ; LDA #9 * 32       ; use this to debug the middle line
                 STA PLAYER_Y
                 STA @lSP00_Y_POS_L
                 
@@ -185,14 +193,16 @@ INIT_NPC
                 ADC #8
                 TAX
                 INY 
-                CPY #32
+                CPY #NPC_SPRITES
                 BNE INIT_NPC_LOOP
                 
                 setas
                 RTS
 
-; display the game over/title screen 
-; show the game over tilemap
+; *************************************************************
+; * Display the game over/title screen 
+; * Show the game over tilemap
+; *************************************************************
 GAME_OVER_DRAW
                 .as
 
@@ -260,20 +270,22 @@ GAME_OVER_DRAW
                 PLB
                 RTS
                 
-; ****************************************************
-; * A contains the joystick byte - keyboard AWSD mimicks joystick
-; ****************************************************
+; *************************************************************
+; * The function gets called 60 times a second, by the SOF interrupt.
+; * A contains the joystick byte - keyboard AWSD mimicks joystick.
+; *************************************************************
 UPDATE_DISPLAY
                 .as
                 PHB
                 PHA
                 
-                LDA GAME_OVER
+                LDA GAME_OVER    ; GAME_OVER=1 signifies the player lost
                 BNE GAME_OVER_DRAW
                 
                 ; when the player is dead, wait 180 SOF cycles
-                LDA RESET_BOARD
+                LDA RESET_BOARD   ; wait until RESET_BOARD is zero
                 BEQ CHECK_DEAD
+
                 DEC A
                 STA RESET_BOARD
                 BNE NO_UPDATE
@@ -282,6 +294,8 @@ UPDATE_DISPLAY
                 ; check if the player is dead
                 LDA DEAD
                 BEQ NOT_DEAD
+
+                ; if the player died, decrease the remaining lives
                 LDA LIVES 
                 DEC A
                 STA LIVES 
@@ -306,11 +320,12 @@ UPDATE_DISPLAY
                 
                 
     NOT_DEAD
-                LDA GATE_UP
+                LDA NEST_UP
                 BEQ REG_FLOW
                 
+                ; when a player fills the next, we wait 3 seconds and then reset the player
                 LDA #0
-                STA GATE_UP
+                STA NEST_UP
                 JSR INIT_PLAYER
                 
         REG_FLOW
@@ -398,7 +413,12 @@ UPDATE_DISPLAY
                 PLB
                 RTS
 
-; at each 8 SOF interrupt move the player sprite
+; *************************************************************
+; * The player can move left, right, up and down.
+; * When the player is in-flight, moves are not allowed.
+; * When the player is in-flight, no collision is computed.
+; * Animation occurs ever 4 SOF interrupt move the player sprite
+; *************************************************************
 ANIMATE_PLAYER
                 .as
                 PLA ; we ignore the player's moves
@@ -452,7 +472,8 @@ ANIMATE_PLAYER
     ANIM_DONE
                 STA MOVING_CNT
                 JMP JOY_DONE
-                
+           
+; *************************************************************     
 ANIM_UP_COL
                 setal
                 
@@ -470,6 +491,7 @@ ANIM_UP_COL
                 setas
                 BRA ANIM_COMPLETE
                 
+; *************************************************************
 ANIM_LEFT_COL
                 setal
                 
@@ -487,7 +509,8 @@ ANIM_LEFT_COL
                 setas
                 
                 BRA ANIM_COMPLETE
-             
+
+; *************************************************************
 ANIM_RIGHT_COL             
                 setal
                 
@@ -504,7 +527,8 @@ ANIM_RIGHT_COL
                 STA SP00_X_POS_L
                 setas
                 BRA ANIM_COMPLETE
-                
+
+; *************************************************************
 ANIM_DOWN_COL
                 setal
                 
@@ -523,7 +547,7 @@ ANIM_DOWN_COL
                 JMP ANIM_COMPLETE
                 
 ; ****************************************************
-; * Update non-players
+; * Update non-players sprites
 ; ****************************************************
 UPDATE_NPC_POSITIONS
                 .as
@@ -542,9 +566,10 @@ UPDATE_NPC_POSITIONS
                 
 ;                CMP #4
 ;                BCS GRT_LFT_MRG
-                LDA #640-4 ; right edge
-                CLC
-                ADC game_array,X ; add the speed
+                ;LDA #640-4 ; right edge
+                ;CLC
+                ;ADC game_array,X ; add the speed
+                ADC #640-4
                 BRA LESS_RGT_MRG
                 
         GRT_LFT_MRG
@@ -562,14 +587,14 @@ UPDATE_NPC_POSITIONS
                 ADC #8
                 TAX
                 INY
-                CPY #32
+                CPY #NPC_SPRITES
                 BNE UNPC_LOOP
                 
                 setas
                 RTS
 
 ; ********************************************
-; * Player movements
+; * Player Movements
 ; ********************************************
 PLAYER_MOVE_DOWN
                 .as
@@ -579,7 +604,7 @@ PLAYER_MOVE_DOWN
                 STA MOVING
                 
                 RTS
-                
+; ********************************************
 PLAYER_MOVE_UP
                 .as
                 LDA #PLAYER_UP * 4
@@ -588,7 +613,7 @@ PLAYER_MOVE_UP
                 STA MOVING
                 
                 RTS
-                
+; ********************************************
 PLAYER_MOVE_RIGHT
                 .as
                 LDA #PLAYER_RIGHT * 4
@@ -597,7 +622,7 @@ PLAYER_MOVE_RIGHT
                 STA MOVING
                 
                 RTS
-                
+; ********************************************
 PLAYER_MOVE_LEFT
                 .as
                 LDA #PLAYER_LEFT * 4
@@ -606,7 +631,11 @@ PLAYER_MOVE_LEFT
                 STA MOVING
                 
                 RTS
-                
+
+; ********************************************
+; * Flick the frog's tongue
+; * This will used to pick flies remotely.
+; ********************************************
 INITIAL_DIST    = 4
 FLICK_TONGUE
                 .as
@@ -638,7 +667,7 @@ FLICK_TONGUE
                 setas
                 
                 RTS
-                
+; ********************************************
 UPDATE_TONGUE
                 .as
                 PHB
@@ -702,14 +731,17 @@ COLLISION_CHECK
                 setas
                 PLB
                 RTS
-
+; *****************************************************************
+; * Detect a collision when the player position is greather than 288
+; *****************************************************************
 STREET_COLLISION
                 .al
                 LDX #0
                 LDY #0
         NEXT_STREET_ROW
-                LDA game_array,X
+                LDA game_array,X     ; if speed is 0, skip the row
                 BEQ CCS_CONTINUE
+
                 LDA game_array+4,X  ; read the Y position
                 CMP PLAYER_Y
                 BNE CCS_CONTINUE
@@ -737,7 +769,7 @@ STREET_COLLISION
                 ADC #8
                 TAX
                 INY
-                CPY #16
+                CPY #NPC_SPRITES / 2  ; half of the sprites are bottom of the screen
                 BNE NEXT_STREET_ROW
         CC_DONE
                 setas
@@ -754,7 +786,10 @@ STREET_COLLISION
                 STA SP00_ADDY_PTR_H
                 PLB
                 JMP SET_DEAD
-                   
+
+; *****************************************************************
+; *  Detect a collision when the player position is less than 288
+; *****************************************************************
 WATER_COLLISION
                 .al
                 CMP #288
@@ -767,7 +802,7 @@ WATER_COLLISION
                 JMP HOME_LINE
                 
         WC_COMPARE_ROWS
-                LDX #16*8 ; we ignore the first 16 sprites in the game array
+                LDX #NPC_SPRITES / 2 * 8 ; we ignore the first 30 sprites in the game array
                 LDY #0
                 
         NEXT_WATER_ROW
@@ -805,7 +840,7 @@ WATER_COLLISION
                 BNE NEXT_WATER_ROW
                 ; if none of the sprites match, then the player has fallen in water
                 JMP W_COLLISION
-                
+        ; the player jumps on logs, lilly pads and turtles   
         FLOAT
                 .al
                 ; move the frog with the NPC
@@ -849,39 +884,44 @@ WATER_COLLISION
                 STA RESET_BOARD
                 RTS
                 
+; *****************************************************************
+; * At the home line, check if the player is aligned with a free nest.
+; * If the nest is free, then the player gets a 200 point bonus.
+; * If the nest is not free or the player is not aligned, then death occurs.
+; *****************************************************************
         HOME_LINE
                 .al
                 LDA PLAYER_X
-                LDX #1
-                LDY #6*2
+                LDX #1        ; nest state
+                LDY #6*2      ; the first draw tile
                 CMP #62+32
                 BLT H_COLLISION
                 CMP #97+32
                 BLT HOME_CHECK_VALID
                 
-                LDX #2
-                LDY #13*2
+                LDX #2        ; nest state
+                LDY #13*2     ; the first draw tile
                 CMP #174+32
                 BLT H_COLLISION
                 CMP #210+32
                 BLT HOME_CHECK_VALID
                 
-                LDX #4
-                LDY #20*2
+                LDX #4        ; nest state
+                LDY #20*2     ; the first draw tile
                 CMP #286+32
                 BLT H_COLLISION
                 CMP #322+32
                 BLT HOME_CHECK_VALID
 
-                LDX #8
-                LDY #27*2
+                LDX #8        ; nest state
+                LDY #27*2     ; the first draw tile
                 CMP #398+32
                 BLT H_COLLISION
                 CMP #434+32
                 BLT HOME_CHECK_VALID
 
-                LDX #$10
-                LDY #34*2
+                LDX #$10      ; nest state
+                LDY #34*2     ; the first draw tile
                 CMP #510+32
                 BLT H_COLLISION
                 CMP #546+32
@@ -891,12 +931,12 @@ WATER_COLLISION
                 setas
                 TXA
                 AND #$1F
-                BIT HOME_GATE
-                BEQ HOME_NO_COLL_BR
+                BIT HOME_NEST
+                BEQ HOME_NO_COLLISION_BRANCH
                 JMP H_COLLISION
-        HOME_NO_COLL_BR
-                ORA HOME_GATE
-                STA HOME_GATE
+        HOME_NO_COLLISION_BRANCH
+                ORA HOME_NEST
+                STA HOME_NEST
                 setal
                 
                 ; add 200 to the score in BCD
@@ -914,9 +954,10 @@ WATER_COLLISION
                 LDA #THREE_SECS
                 STA RESET_BOARD
                 
-                LDA #1
-                STA GATE_UP
+                LDA #1         ; flag that the player has nested and the position needs to be reset
+                STA NEST_UP
                 
+                ; Display the BONUS SCORE where the frog was located
                 LDA #BONUS_SPRITE * 4
                 STA @lSP00_ADDY_PTR_M
                 LDA #1
@@ -924,7 +965,7 @@ WATER_COLLISION
                 
                 TYX
                 
-                ; use the player's X position to redecorate the home line
+                ; Place a big frog in the nest - this location is no longer available.
                 LDA #30
                 STA VTILE_MAP1 +  8 * 40 , X
                 LDA #31
@@ -937,16 +978,20 @@ WATER_COLLISION
                 ; set the crown here and restart the player on the first line
                 JSR SHOW_SCORE_BOARD
                 
-                LDA HOME_GATE
+                LDA HOME_NEST
                 CMP #$1F ; go to the next chapter.
                 BNE HOME_LINE_DONE
                 
+                ; the player has filled all the nest - go to the next level and reset the game board
                 LDA LEVEL
                 INC A
                 STA LEVEL
     HOME_LINE_DONE
                 RTS
             
+; *****************************************************************
+; * Make the lilly pads turn
+; *****************************************************************
 LILLY_CYCLE     .byte 0
 
 ; find all the lillies in the game array and make them rotate
@@ -960,7 +1005,7 @@ UPDATE_LILLY
                 LDA #0
                 STA LILLY_CYCLE
                 
-                LDX #8*16
+                LDX #NPC_SPRITES / 2 * 8
                 LDY #0
         UP_LI_CHECK
                 LDA game_array,X
@@ -984,13 +1029,14 @@ UPDATE_LILLY
                 STA @lSP04_ADDY_PTR_M,X
                 
         UP_LI_SKIP_ROW
+                setal
                 TXA
                 CLC
                 ADC #8
                 TAX
-                
+                setas
                 INY
-                CPY #16
+                CPY #NPC_SPRITES
                 BNE UP_LI_CHECK
                 
                 RTS
@@ -999,10 +1045,11 @@ UPDATE_LILLY
                 STA LILLY_CYCLE
                 RTS
                 
-; ****************************************************
+; *****************************************************************
 ; * Write a Hex Value to the position specified by Y
 ; * Y contains the screen position
 ; * A contains the value to display
+; *****************************************************************
 HEX_MAP         .text '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 LOW_NIBBLE      .byte 0
 HIGH_NIBBLE     .byte 0
@@ -1042,9 +1089,11 @@ WRITE_HEX
         PLA
                 RTS
 
-; display the number of lives remaining
-; display the current player score
-; display the high score
+; *****************************************************************
+; * Display the number of lives remaining
+; * Display the current player score
+; * Display the high score
+; *****************************************************************
 SHOW_SCORE_BOARD 
                 .as
                 PHB
@@ -1107,6 +1156,9 @@ SHOW_SCORE_BOARD
                 PLB
                 RTS
 
+; *****************************************************************
+; * Load sprites and tiles into Video RAM
+; *****************************************************************
 LOAD_ASSETS
                 .as
                 PHB
