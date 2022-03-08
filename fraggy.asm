@@ -21,8 +21,8 @@
 ; *************************************************************************
 NPC_SPRITES     = 60
 VTILE_SET0      = $B00000
-VTILE_MAP0      = $B03000
-VTILE_MAP1      = $B03960
+VTILE_MAP0      = $B04000
+VTILE_MAP1      = $B04960
 VSPRITES        = $B10000
 VFROGS_UP       = $B20000             ; 4 sprites
 VFROGS_DOWN     = VFROGS_UP + 4096    ; 4 sprites
@@ -52,6 +52,8 @@ BONUS_SPRITE    = 27
 
 ; the heart tile - used to display the number of player lives
 TILE_HEART      = 16
+; the level frog - used to display the level
+LEVEL_FROG      = 42
 ; numbers are displayed with tiles
 TILE_0          = 32
 TILE_1          = 33
@@ -64,8 +66,12 @@ TILE_7          = 39
 TILE_8          = 40
 TILE_9          = 41
 
-DEFAULT_LIVES   =  3
+PBAR_1          = 48
+RBAR_1          = 52
+
+DEFAULT_LIVES   =  5
 THREE_SECS      = 180  ; the number of SOF interrupts for 3 seconds
+DEFAULT_TIMER   = 50
 
 * = $160000
 ; *************************************************************************
@@ -130,12 +136,13 @@ GAME_START
 ; *************************************************************************
 PLAYER_X    .word 100
 PLAYER_Y    .word 100
-LIVES       .byte 3
+LIVES       .byte DEFAULT_LIVES
 GAME_OVER   .byte 0
 DEAD        .byte 0
 RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
 BEE_TIMER   .byte 0 ; show the bee for a short period of time.
-SCORE       .word 0 
+SCORE       .long 0 
+GTIMER      .byte 50 ; this timer is used to control the game time
 TONGUE_POS  .word 0
 TONGUE_CTR  .byte 0
 PL_MOVE_UP  .byte 0
@@ -146,6 +153,7 @@ SPRITE_MOVE     .WORD 0, 0, 8, 8, 8, 8, 0
 HOME_NEST   .byte 0 ; record the nests that have been filled
 LEVEL       .byte 1
 NEST_UP     .byte 0 ; player has just filled the next
+SOF_COUNTER .byte 0 ; count seconds - 60 SOF interrupts
 
 .include "interrupt_handler.asm"
 .include "display.asm"
@@ -205,8 +213,11 @@ game_over_board
 * = $170000
 TILES
             .binary "assets/fraggy-tileset.bin"
+SPRITES
+            .binary "assets/fraggy-sprites.bin"
 PALETTE_TILES
             .binary "assets/fraggy.pal"
+* = $180000
 FROG_UP
             .binary "assets/frog-sheet-up.bin"
 FROG_DOWN
@@ -215,8 +226,7 @@ FROG_LEFT
             .binary "assets/frog-sheet-left.bin"
 FROG_RIGHT
             .binary "assets/frog-sheet-right.bin"
-SPRITES
-            .binary "assets/fraggy-sprites.bin"
+
 
 ; *************************************************************************
 ; * The game array describes the sprites, position, speed and direction
@@ -227,66 +237,66 @@ SPRITES
 ; *************************************************************************
 game_array  ; the array treats each sprite in order
             ;     speed  X       Y        sprite
-            .word     1, 640-96, 14*32 , TRACTOR        ; sprite  1
-            .word     1, 640-64, 14*32 , TRACTOR + 1    ; sprite  2
-            .word     1, 170   , 14*32 , TRACTOR        ; sprite  3
-            .word     1, 202   , 14*32 , TRACTOR + 1    ; sprite  4
-            .word $FFFA, 96    , 13*32 , POLICE_CAR     ; sprite  5
-            .word $FFFA, 128   , 13*32 , POLICE_CAR + 1 ; sprite  6
-            .word     2, 32    , 12*32 , BUS            ; sprite  7
-            .word     2, 64    , 12*32 , BUS + 1        ; sprite  8
-            .word     2, 96    , 12*32 , BUS + 2        ; sprite  9
-            .word $FFFC, 320-96, 10*32 , RED_CAR        ; sprite 10
-            .word $FFFC, 320-64, 10*32 , RED_CAR + 1    ; sprite 11
-            .word     8, 192   , 11*32 , SPORTS_CAR     ; sprite 12
-            .word     8, 224   , 11*32 , SPORTS_CAR +1  ; sprite 13
-            .word     0, 0     , 0     , 0              ; blank  14
-            .word     0, 0     , 0     , 0              ; blank  15
-            .word     0, 0     , 0     , 0              ; blank  16
-            .word     0, 0     , 0     , 0              ; blank  17
-            .word     0, 0     , 0     , 0              ; blank  18
-            .word     0, 0     , 0     , 0              ; blank  19
-            .word     0, 0     , 0     , 0              ; blank  20
-            .word     0, 0     , 0     , 0              ; blank  21
-            .word     0, 0     , 0     , 0              ; blank  22
-            .word     0, 0     , 0     , 0              ; blank  23
-            .word     0, 0     , 0     , 0              ; blank  24
-            .word     0, 0     , 0     , 0              ; blank  25
-            .word     0, 0     , 0     , 0              ; blank  26
-            .word     0, 0     , 0     , 0              ; blank  27
-            .word     0, 0     , 0     , 0              ; blank  28
-            .word     0, 0     , 0     , 0              ; blank  29
-            .word     0, 0     , 0     , 0              ; blank  30
+            .word     1, 640-96, 14*32-16 , TRACTOR        ; sprite  1
+            .word     1, 640-64, 14*32-16 , TRACTOR + 1    ; sprite  2
+            .word     1, 170   , 14*32-16 , TRACTOR        ; sprite  3
+            .word     1, 202   , 14*32-16 , TRACTOR + 1    ; sprite  4
+            .word $FFFA, 96    , 13*32-16 , POLICE_CAR     ; sprite  5
+            .word $FFFA, 128   , 13*32-16 , POLICE_CAR + 1 ; sprite  6
+            .word     2, 32    , 12*32-16 , BUS            ; sprite  7
+            .word     2, 64    , 12*32-16 , BUS + 1        ; sprite  8
+            .word     2, 96    , 12*32-16 , BUS + 2        ; sprite  9
+            .word $FFFC, 320-96, 10*32-16 , RED_CAR        ; sprite 10
+            .word $FFFC, 320-64, 10*32-16 , RED_CAR + 1    ; sprite 11
+            .word     8, 192   , 11*32-16 , SPORTS_CAR     ; sprite 12
+            .word     8, 224   , 11*32-16 , SPORTS_CAR +1  ; sprite 13
+            .word     0, 0     , 0        , 0              ; blank  14
+            .word     0, 0     , 0        , 0              ; blank  15
+            .word     0, 0     , 0        , 0              ; blank  16
+            .word     0, 0     , 0        , 0              ; blank  17
+            .word     0, 0     , 0        , 0              ; blank  18
+            .word     0, 0     , 0        , 0              ; blank  19
+            .word     0, 0     , 0        , 0              ; blank  20
+            .word     0, 0     , 0        , 0              ; blank  21
+            .word     0, 0     , 0        , 0              ; blank  22
+            .word     0, 0     , 0        , 0              ; blank  23
+            .word     0, 0     , 0        , 0              ; blank  24
+            .word     0, 0     , 0        , 0              ; blank  25
+            .word     0, 0     , 0        , 0              ; blank  26
+            .word     0, 0     , 0        , 0              ; blank  27
+            .word     0, 0     , 0        , 0              ; blank  28
+            .word     0, 0     , 0        , 0              ; blank  29
+            .word     0, 0     , 0        , 0              ; blank  30
             
             ; line 9 *32 is safe
-            .word     2,  96   , 4*32    , LOG            ; sprite 31
-            .word     2, 128   , 4*32    , LOG + 2        ; sprite 32
-            .word     2, 416   , 4*32    , LOG            ; sprite 33
-            .word     2, 448   , 4*32    , LOG + 2        ; sprite 34
-            .word $FFFD, 320   , 5*32    , LOG            ; sprite 35
-            .word $FFFD, 352   , 5*32    , LOG + 1        ; sprite 36
-            .word $FFFD, 384   , 5*32    , LOG + 2        ; sprite 37
-            .word     2, 416   , 6*32    , LILLYPAD + 5   ; sprite 38
-            .word     2, 132   , 6*32    , LILLYPAD + 7   ; sprite 39
-            .word     1, 320   , 7*32    , LOG            ; sprite 40
-            .word     1, 352   , 7*32    , LOG + 1        ; sprite 41
-            .word     1, 384   , 7*32    , LOG + 2        ; sprite 42
-            .word     1,  40   , 7*32    , LOG            ; sprite 43
-            .word     1,  72   , 7*32    , LOG + 1        ; sprite 44
-            .word     1, 104   , 7*32    , LOG + 2        ; sprite 45
-            .word $FFFE, 512   , 8*32    , LILLYPAD + 6   ; sprite 46
-            .word $FFFE, 260   , 8*32    , LILLYPAD + 2   ; sprite 47
-            .word     0, 0     , 0     , 0                ; blank  48
-            .word     0, 0     , 0     , 0                ; blank  49
-            .word     0, 0     , 0     , 0                ; blank  50
-            .word     0, 0     , 0     , 0                ; blank  51
-            .word     0, 0     , 0     , 0                ; blank  52
-            .word     0, 0     , 0     , 0                ; blank  53
-            .word     0, 0     , 0     , 0                ; blank  54
-            .word     0, 0     , 0     , 0                ; blank  55
-            .word     0, 0     , 0     , 0                ; blank  56
-            .word     0, 0     , 0     , 0                ; blank  57
-            .word     0, 0     , 0     , 0                ; blank  58
-            .word     0, 0     , 0     , 0                ; blank  59
-            .word     0, 0     , 0     , 0                ; blank  60
+            .word     2,  96   , 4*32-16    , LOG            ; sprite 31
+            .word     2, 128   , 4*32-16    , LOG + 2        ; sprite 32
+            .word     2, 416   , 4*32-16    , LOG            ; sprite 33
+            .word     2, 448   , 4*32-16    , LOG + 2        ; sprite 34
+            .word $FFFD, 320   , 5*32-16    , LOG            ; sprite 35
+            .word $FFFD, 352   , 5*32-16    , LOG + 1        ; sprite 36
+            .word $FFFD, 384   , 5*32-16    , LOG + 2        ; sprite 37
+            .word     2, 416   , 6*32-16    , LILLYPAD + 5   ; sprite 38
+            .word     2, 132   , 6*32-16    , LILLYPAD + 7   ; sprite 39
+            .word     1, 320   , 7*32-16    , LOG            ; sprite 40
+            .word     1, 352   , 7*32-16    , LOG + 1        ; sprite 41
+            .word     1, 384   , 7*32-16    , LOG + 2        ; sprite 42
+            .word     1,  40   , 7*32-16    , LOG            ; sprite 43
+            .word     1,  72   , 7*32-16    , LOG + 1        ; sprite 44
+            .word     1, 104   , 7*32-16    , LOG + 2        ; sprite 45
+            .word $FFFE, 512   , 8*32-16    , LILLYPAD + 6   ; sprite 46
+            .word $FFFE, 260   , 8*32-16    , LILLYPAD + 2   ; sprite 47
+            .word     0, 0     , 0          , 0              ; blank  48
+            .word     0, 0     , 0          , 0              ; blank  49
+            .word     0, 0     , 0          , 0              ; blank  50
+            .word     0, 0     , 0          , 0              ; blank  51
+            .word     0, 0     , 0          , 0              ; blank  52
+            .word     0, 0     , 0          , 0              ; blank  53
+            .word     0, 0     , 0          , 0              ; blank  54
+            .word     0, 0     , 0          , 0              ; blank  55
+            .word     0, 0     , 0          , 0              ; blank  56
+            .word     0, 0     , 0          , 0              ; blank  57
+            .word     0, 0     , 0          , 0              ; blank  58
+            .word     0, 0     , 0          , 0              ; blank  59
+            .word     0, 0     , 0          , 0              ; blank  60
             

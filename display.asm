@@ -86,7 +86,7 @@ INIT_DISPLAY
                 STA DEAD
                 STA PL_MOVE_UP
                 
-                LDA #3
+                LDA #DEFAULT_LIVES
                 STA LIVES
                 
                 ; enable the non-player sprites
@@ -96,8 +96,17 @@ INIT_DISPLAY
                 JSR INIT_NPC
                 JSR SHOW_SCORE_BOARD
                 
+                ; reset the timer bar
+                LDA #0
+                STA SOF_COUNTER
+                
+                LDA #DEFAULT_TIMER
+                STA GTIMER
+                JSR UPDATE_TIMER_BAR
+                
                 LDA #$DF ; - joystick in initial state
                 JSR UPDATE_DISPLAY
+                
                 RTS
 
 ; *************************************************************
@@ -156,8 +165,8 @@ INIT_PLAYER
                 STA PLAYER_X
                 STA @lSP00_X_POS_L
                 
-                LDA #15 * 32      ; the bottom row
-                ; LDA #9 * 32       ; use this to debug the middle line
+                LDA #15 * 32-16      ; the bottom row
+                ; LDA #9 * 32-16        ; use this to debug the middle line
                 STA PLAYER_Y
                 STA @lSP00_Y_POS_L
                 
@@ -167,6 +176,9 @@ INIT_PLAYER
                 LDA #0
                 STA MOVING_CNT
                 STA MOVING
+                
+                LDA #50
+                STA GTIMER
             
                 RTS
 
@@ -326,9 +338,43 @@ UPDATE_DISPLAY
                 ; when a player fills the next, we wait 3 seconds and then reset the player
                 LDA #0
                 STA NEST_UP
+                ; increment the level
+                LDA #DEFAULT_TIMER
+                STA GTIMER
                 JSR INIT_PLAYER
                 
         REG_FLOW
+                ; count SOF and update the progress bar, if tick has occured
+                LDA SOF_COUNTER
+                INC A
+                CMP #60
+                BNE REG_FLOW_CONTINUE
+                LDA #0
+                STA SOF_COUNTER
+                ; check the timer
+                LDA GTIMER
+                DEC A
+                BNE GTIMER_UPDATE
+                ; player has run out of timer
+                STA GTIMER
+                
+                LDA #SPLATT_SPRITE * 4
+                STA SP00_ADDY_PTR_M
+                LDA #1
+                STA SP00_ADDY_PTR_H
+                PLA
+                PLB
+                JMP SET_DEAD  ; this JMP calls RTS
+                
+                
+            GTIMER_UPDATE
+                STA GTIMER
+                JSR UPDATE_TIMER_BAR
+                BRA REG_FLOW_CONTINUE_2
+        
+        REG_FLOW_CONTINUE
+                STA SOF_COUNTER
+        REG_FLOW_CONTINUE_2
                 JSR UPDATE_LILLY
                 
                 ; check if the frog's tongue is out
@@ -481,9 +527,9 @@ ANIM_UP_COL
                 SEC
                 SBC SPRITE_MOVE,X
                 ; check for collisions and out of screen
-                CMP #96
+                CMP #80
                 BCS PMU_DONE
-                LDA #96
+                LDA #80
                 
         PMU_DONE
                 STA PLAYER_Y
@@ -536,9 +582,9 @@ ANIM_DOWN_COL
                 CLC
                 ADC SPRITE_MOVE,X
                 ; check for collisions and out of screen
-                CMP #480
+                CMP #464
                 BCC PMD_DONE
-                LDA #480 ; the lowest position on screen
+                LDA #464 ; the lowest position on screen
                 
         PMD_DONE
                 STA PLAYER_Y
@@ -716,7 +762,7 @@ COLLISION_CHECK
                 setdbr <`TONGUE_CTR
                 setal
                 LDA PLAYER_Y
-                CMP #289 ; mid-screen
+                CMP #273 ; mid-screen
                 
                 BLT WATER_COL_BR
                 JSR STREET_COLLISION
@@ -792,12 +838,12 @@ STREET_COLLISION
 ; *****************************************************************
 WATER_COLLISION
                 .al
-                CMP #288
+                CMP #262
                 BLT WC_CONTINUE
                 RTS
                 
        WC_CONTINUE
-                CMP #96
+                CMP #80
                 BNE WC_COMPARE_ROWS
                 JMP HOME_LINE
                 
@@ -836,7 +882,7 @@ WATER_COLLISION
                 ADC #8
                 TAX
                 INY
-                CPY #16
+                CPY #30
                 BNE NEXT_WATER_ROW
                 ; if none of the sprites match, then the player has fallen in water
                 JMP W_COLLISION
@@ -967,13 +1013,13 @@ WATER_COLLISION
                 
                 ; Place a big frog in the nest - this location is no longer available.
                 LDA #30
-                STA VTILE_MAP1 +  8 * 40 , X
+                STA VTILE_MAP1 + 6 * 40 , X
                 LDA #31
-                STA VTILE_MAP1 +  8 * 40 + 2, X
+                STA VTILE_MAP1 + 6 * 40 + 2, X
                 LDA #46
-                STA VTILE_MAP1 + 10 * 40, X
+                STA VTILE_MAP1 + 8 * 40, X
                 LDA #47
-                STA VTILE_MAP1 + 10 * 40 + 2, X
+                STA VTILE_MAP1 + 8 * 40 + 2, X
                 
                 ; set the crown here and restart the player on the first line
                 JSR SHOW_SCORE_BOARD
@@ -1099,30 +1145,45 @@ SHOW_SCORE_BOARD
                 PHB
                 setdbr <`VTILE_MAP1
                 LDA #0
-                XBA
-                LDA #0
-                LDX #6
+                LDX #0
+                LDY #12 ; clear the 6 tiles
         HEART_CLEAR_LOOP
-                STA VTILE_MAP1 + 165,X ; descending loop offset by 1
-                DEX
+                STA VTILE_MAP1 + (40+2)*2,X ; descending loop offset by 1
+                INX
+                DEY
                 BNE HEART_CLEAR_LOOP
                 
                 ; now draw the hearts
+                XBA
                 LDA LIVES
                 BEQ SSB_SCORE
-                LDY #0
+                ASL A
                 TAX
         SHOW_HEART
                 LDA #TILE_HEART
-                STA VTILE_MAP1 + 166,Y
-                INY
-                INY
+                STA VTILE_MAP1 + (40+2)*2,X
+                DEX
                 DEX
                 BNE SHOW_HEART
                 
                 ; draw the score - each byte is 2 digits BCD 00 to 99
                 ; not really elegant...
         SSB_SCORE
+                LDA SCORE + 2 ; the high byte
+                LSR ; get the high nibble
+                LSR A
+                LSR A
+                LSR A
+                CLC 
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP1 + 146
+               
+                LDA SCORE + 2 ; the low nibble
+                AND #$F
+                CLC
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP1 + 148
+                
                 LDA SCORE + 1 ; the high byte
                 LSR ; get the high nibble
                 LSR A
@@ -1130,13 +1191,13 @@ SHOW_SCORE_BOARD
                 LSR A
                 CLC 
                 ADC #TILE_0 ; tiles are offset at 20
-                STA VTILE_MAP1 + 230
+                STA VTILE_MAP1 + 150
                
                 LDA SCORE + 1 ; the low nibble
                 AND #$F
                 CLC
                 ADC #TILE_0 ; tiles are offset at 20
-                STA VTILE_MAP1 + 232
+                STA VTILE_MAP1 + 152
                 
                 LDA SCORE
                 LSR ; get the high nibble
@@ -1145,14 +1206,71 @@ SHOW_SCORE_BOARD
                 LSR A
                 CLC 
                 ADC #TILE_0 ; tiles are offset at 20
-                STA VTILE_MAP1 + 234
+                STA VTILE_MAP1 + 154
                 
                 LDA SCORE ; the low nibble
                 AND #$F
                 CLC
                 ADC #TILE_0 ; tiles are offset at 20
-                STA VTILE_MAP1 + 236
+                STA VTILE_MAP1 + 156
+                
+                ; clear the level display - 32 bytes
+                LDA #0
+                LDY #32
+                LDX #0
+        SSB_LEVEL_CLR
+                STA VTILE_MAP1 + (29*40+2)*2, X
+                INX
+                DEY
+                BNE SSB_LEVEL_CLR
+                
+                ; display the level at the bottom of the display
+                ; the maximum is 16
+                XBA
+                LDA LEVEL
+                AND #$F ; mask to 16
+                ASL A
+                TAX
+                LDA #LEVEL_FROG
+        SSB_LEVEL
+                STA VTILE_MAP1 + (29*40+2)*2, X
+                DEX
+                DEX
+                BNE SSB_LEVEL
         
+                PLB
+                RTS
+
+; *****************************************************************
+; * The player has 50 seconds to get to the nest.
+; * Each tile signifies 5 seconds.  
+; * PBAR_1 is 4
+; * PBAR_2 is 3
+; * PBAR_3 is 2
+; * PBAR_4 is 1
+; * TILE_0 is 0
+; * When the time gets below 10 seconds, use the red progress bar.
+; *****************************************************************
+UPDATE_TIMER_BAR
+                .as
+                PHB
+                setdbr <`VTILE_MAP1
+                LDA #0
+                LDY #20 ; clear the 10 tiles
+                LDX #0
+        UTB_CLEAR
+                STA VTILE_MAP1 + (29*40+26)*2, X
+                INX
+                DEY
+                BNE UTB_CLEAR
+                
+                LDA GTIMER
+                CMP #10
+                BEQ RED_PROGRESS
+                
+                
+                
+    RED_PROGRESS
                 PLB
                 RTS
 
@@ -1170,7 +1288,7 @@ LOAD_ASSETS
                 setal
                 LDX #<>TILES
                 LDY #<>VTILE_SET0
-                LDA #256 * 48 ; three rows of tiles
+                LDA #256 * 64 ; three rows of tiles
                 MVN <`TILES,<`VTILE_SET0
 
                 ; load LUT0
