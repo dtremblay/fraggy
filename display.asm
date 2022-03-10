@@ -100,10 +100,6 @@ INIT_DISPLAY
                 LDA #0
                 STA SOF_COUNTER
                 
-                LDA #DEFAULT_TIMER
-                STA GTIMER
-                JSR UPDATE_TIMER_BAR
-                
                 LDA #$DF ; - joystick in initial state
                 JSR UPDATE_DISPLAY
                 
@@ -177,8 +173,9 @@ INIT_PLAYER
                 STA MOVING_CNT
                 STA MOVING
                 
-                LDA #50
+                LDA #DEFAULT_TIMER
                 STA GTIMER
+                JSR UPDATE_TIMER_BAR
             
                 RTS
 
@@ -335,12 +332,11 @@ UPDATE_DISPLAY
                 LDA NEST_UP
                 BEQ REG_FLOW
                 
-                ; when a player fills the next, we wait 3 seconds and then reset the player
+                ; when a player fills the nest, we wait 3 seconds and then reset the player
                 LDA #0
                 STA NEST_UP
-                ; increment the level
-                LDA #DEFAULT_TIMER
-                STA GTIMER
+                ; TODO - increment the level
+
                 JSR INIT_PLAYER
                 
         REG_FLOW
@@ -355,9 +351,10 @@ UPDATE_DISPLAY
                 LDA GTIMER
                 DEC A
                 BNE GTIMER_UPDATE
-                ; player has run out of timer
+                ; player has run out of time
                 STA GTIMER
-                
+                JSR UPDATE_TIMER_BAR
+
                 LDA #SPLATT_SPRITE * 4
                 STA SP00_ADDY_PTR_M
                 LDA #1
@@ -927,7 +924,7 @@ WATER_COLLISION
                 LDA #1
                 STA @lDEAD
                 LDA #THREE_SECS
-                STA RESET_BOARD
+                STA @lRESET_BOARD
                 RTS
                 
 ; *****************************************************************
@@ -985,14 +982,48 @@ WATER_COLLISION
                 STA HOME_NEST
                 setal
                 
-                ; add 200 to the score in BCD
-                SED
+                ; prepare X to be the multiplier
+                LDA GTIMER
+                AND #$FF
+                TAX
+
+                SED  ; perform additions in BCD
+                ; add 200 - this should be 50, so I need to update the sprite - too lazy
                 LDA SCORE
                 CLC
                 ADC #$200
                 STA SCORE
+                BCC HL_MULTIPLY
+
+                setas  ; there was a carry, so add 1 to the hi byte
+                CLC
+                LDA SCORE + 2
+                ADC #1
+                LDA SCORE + 2
+                setal
+
+        HL_MULTIPLY
+                ; multiply the number of seconds remaining by 10
+                LDA SCORE
+        HL_MULTIPLY_LOOP
+                CLC
+                ADC #$10
+                STA SCORE
+                BCC HL_MULT_LP_END
+
+                setas  ; there was a carry, so add 1 to the hi byte
+                CLC
+                LDA SCORE + 2
+                ADC #1
+                LDA SCORE + 2
+                setal
+
+        HL_MULT_LP_END
+                DEX
+                BNE HL_MULTIPLY_LOOP
+        
                 CLD
-                
+    
                 LDA #0
                 
                 setas
@@ -1243,7 +1274,7 @@ SHOW_SCORE_BOARD
 
 ; *****************************************************************
 ; * The player has 50 seconds to get to the nest.
-; * Each tile signifies 5 seconds.  
+; * Each tile signifies 4 seconds.  
 ; * PBAR_1 is 4
 ; * PBAR_2 is 3
 ; * PBAR_3 is 2
@@ -1256,21 +1287,71 @@ UPDATE_TIMER_BAR
                 PHB
                 setdbr <`VTILE_MAP1
                 LDA #0
-                LDY #20 ; clear the 10 tiles
+                XBA
+                LDA #0
+                LDY #26 ; clear the 13 tiles
                 LDX #0
+                ; clear all the tiles - up to 13
         UTB_CLEAR
-                STA VTILE_MAP1 + (29*40+26)*2, X
+                STA VTILE_MAP1 + (29*40+23)*2, X
                 INX
                 DEY
                 BNE UTB_CLEAR
                 
                 LDA GTIMER
-                CMP #10
-                BEQ RED_PROGRESS
+                CMP #11
+                BLT RED_PROGRESS
                 
+                LSR A ; divide by 4 to get the number of full tiles
+                LSR A ; this number should never be 0
+                TAY
+                LDX #26
+                LDA #PBAR_1
+        UTB_DRAW_PRG
+                STA VTILE_MAP1 + (29*40+22)*2, X
+                DEX
+                DEX
+                DEY
+                BNE UTB_DRAW_PRG
+                
+        UTB_DRAW_SUBTILE
+                LDA GTIMER
+                AND #3  ; remainder of division by 4
+                BEQ UTB_BLANK_DONE
+
+                EOR #3  ; flip the bits                
+                SEC     ; magic math - two's complement
+                ADC #PBAR_1
+                
+                STA VTILE_MAP1 + (29*40+22)*2, X
+        UTB_BLANK_DONE
+                PLB
+                RTS
                 
                 
     RED_PROGRESS
+                LSR A
+                LSR A  ; divide by 4 to get the number of full tiles
+                BEQ DRAW_RED_SUBTILE
+                TAY
+                LDX #26
+                LDA #RBAR_1
+    UTB_DRAW_RED_PRG
+                STA VTILE_MAP1 + (29*40+22)*2, X
+                DEX
+                DEX
+                DEY
+                BNE UTB_DRAW_RED_PRG
+    DRAW_RED_SUBTILE
+                LDA GTIMER
+                AND #3  ; remainder of division by 4
+                BEQ UTB_BLANK_DONE
+
+                EOR #3  ; flip the bits                
+                SEC     ; magic math - two's complement
+                ADC #RBAR_1
+                STA VTILE_MAP1 + (29*40+22)*2, X
+                
                 PLB
                 RTS
 
