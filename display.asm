@@ -793,18 +793,19 @@ STREET_COLLISION
                 CMP game_array+2,X  ; read the X position
 
                 BEQ S_COLLISION
-                BCC CHECK_RIGHT_BOUND
+                BLT CHECK_RIGHT_BOUND
+                
         CHECK_LEFT_BOUND
                 LDA game_array+2,X
-                ADC #32
+                ADC #PLAYER_WIDTH+PADDING
                 CMP PLAYER_X
-                BCS S_COLLISION
+                BGE S_COLLISION   ; BCS
                 BRA CCS_CONTINUE
                 
         CHECK_RIGHT_BOUND
-                ADC #32
+                ADC #PLAYER_WIDTH + PADDING
                 CMP game_array+2,X  ; read the X position
-                BCS S_COLLISION
+                BGE S_COLLISION
                 
         CCS_CONTINUE
                 TXA
@@ -864,12 +865,13 @@ WATER_COLLISION
                 BCC CHECK_RIGHT_BOUND_W
         CHECK_LEFT_BOUND_W
                 LDA game_array+2,X
-                ADC #32
+                ADC #PLAYER_WIDTH+PADDING
                 CMP PLAYER_X
                 BCS FLOAT
                 BRA CCW_CONTINUE
+                
         CHECK_RIGHT_BOUND_W
-                ADC #32
+                ADC #PLAYER_WIDTH+PADDING
                 CMP game_array+2,X  ; read the X position
                 BCS FLOAT
                 
@@ -890,9 +892,9 @@ WATER_COLLISION
                 CLC
                 LDA PLAYER_X
                 ADC game_array,X
-                CMP #64
+                CMP #64-PADDING
                 BCC W_COLLISION
-                CMP #640-32
+                CMP #640-32+PADDING
                 BCS W_COLLISION
                 
                 STA PLAYER_X

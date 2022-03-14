@@ -1,7 +1,7 @@
 
 ; 64tass Turbo Assembler Macro V1.55.2425-test listing file
-; 64tass-1.55.2425-test.exe -D TARGET_SYS= --long-address --intel-hex --m65816 -o fraggy.hex --list fraggy.lst .\fraggy.asm
-; Thu Mar 10 23:35:01 2022
+; 64tass-1.55.2425-test.exe -D TARGET_SYS= --long-address --intel-hex --m65816 -o fraggy.hex --list fraggy.lst fraggy.asm
+; Mon Mar 14 23:14:07 2022
 
 ;Offset	;Hex		;Monitor	;Source
 
@@ -9,16 +9,16 @@
 
 =					TARGET_SYS=
 
-;******  Processing input file: .\fraggy.asm
+;******  Processing input file: fraggy.asm
 
 
-;******  Processing file: .\macros_inc.asm
+;******  Processing file: macros_inc.asm
 
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\bank_00_inc.asm
+;******  Processing file: bank_00_inc.asm
 
 =$000000				BANK0_BEGIN      = $000000 ;Start of bank 0 and Direct page
 =$000000				unused_0000      = $000000 ;12 Bytes unused
@@ -181,10 +181,10 @@
 =$200000				VECTORS_END      = $200000 ;*End of vector space
 =$00ffff				BANK0_END        = $00FFFF ;End of Bank 00 and Direct page
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\vicky_ii_def.asm
+;******  Processing file: vicky_ii_def.asm
 
 =$af0000				MASTER_CTRL_REG_L	      = $AF0000
 =$01					Mstr_Ctrl_Text_Mode_En  = $01       ; Enable the Text Mode
@@ -270,7 +270,7 @@
 =$afe000				BTX_START               = $AFE000     ; BEATRIX Registers
 =$afffff				BTX_END                 = $AFFFFF
 
-;******  Processing file: .\VKYII_CFP9553_BITMAP_def.asm
+;******  Processing file: VKYII_CFP9553_BITMAP_def.asm
 
 =$01					BM_Enable             = $01
 =$00					BM_LUT0               = $00 ;
@@ -298,10 +298,10 @@
 =$af010e				BM1_RESERVED_6      = $AF010E
 =$af010f				BM1_RESERVED_7      = $AF010F
 
-;******  Return to file: .\vicky_ii_def.asm
+;******  Return to file: vicky_ii_def.asm
 
 
-;******  Processing file: .\VKYII_CFP9553_TILEMAP_def.asm
+;******  Processing file: VKYII_CFP9553_TILEMAP_def.asm
 
 =$01					TILE_Enable             = $01
 =$af0200				TL0_CONTROL_REG         = $AF0200       ; Bit[0] - Enable, Bit[3:1] - LUT Select,
@@ -385,10 +385,10 @@
 =$af029e				TILESET7_ADDY_H         = $AF029E
 =$af029f				TILESET7_ADDY_CFG       = $AF029F
 
-;******  Return to file: .\vicky_ii_def.asm
+;******  Return to file: vicky_ii_def.asm
 
 
-;******  Processing file: .\VKYII_CFP9553_VDMA_def.asm
+;******  Processing file: VKYII_CFP9553_VDMA_def.asm
 
 =$af0400				VDMA_CONTROL_REG        = $AF0400
 =$01					VDMA_CTRL_Enable        = $01
@@ -426,10 +426,10 @@
 =$af040e				VDMA_DST_STRIDE_L       = $AF040E   ; Always use an Even Number ( The Engine uses Even Ver of that value)
 =$af040f				VDMA_DST_STRIDE_H       = $AF040F   ;
 
-;******  Return to file: .\vicky_ii_def.asm
+;******  Return to file: vicky_ii_def.asm
 
 
-;******  Processing file: .\VKYII_CFP9553_SDMA_def.asm
+;******  Processing file: VKYII_CFP9553_SDMA_def.asm
 
 =$af0420				SDMA_CTRL_REG0           = $AF0420
 =$01					SDMA_CTRL0_Enable        = $01
@@ -474,10 +474,10 @@
 =$04					SDMA_STAT_Src_Add_Err    = $04      ; If Set to 1, Source Address Invalid
 =$08					SDMA_STAT_TimeOut_Err    = $08      ; will be set to 1 if a Timeout occur when transfering between data from and to VRAM
 
-;******  Return to file: .\vicky_ii_def.asm
+;******  Return to file: vicky_ii_def.asm
 
 
-;******  Processing file: .\VKYII_CFP9553_SPRITE_def.asm
+;******  Processing file: VKYII_CFP9553_SPRITE_def.asm
 
 =$01					SPRITE_Enable             = $01
 =$00					SPRITE_LUT0               = $00 ; This is the LUT that the Sprite will use
@@ -1008,13 +1008,13 @@
 =$af0dfe				SP63_Y_POS_L            = $AF0DFE
 =$af0dff				SP63_Y_POS_H            = $AF0DFF
 
-;******  Return to file: .\vicky_ii_def.asm
+;******  Return to file: vicky_ii_def.asm
 
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\interrupt_def.asm
+;******  Processing file: interrupt_def.asm
 
 =$000140				INT_PENDING_REG0 = $000140 ;
 =$000141				INT_PENDING_REG1 = $000141 ;
@@ -1065,10 +1065,10 @@
 =$40					FNX3_INT06_TBD        = $40  ;External Expansion
 =$80					FNX3_INT07_TBD        = $80  ; SDCARD Insertion
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\keyboard_def.asm
+;******  Processing file: keyboard_def.asm
 
 =$af1064				STATUS_PORT           = $AF1064
 =$af1060				KBD_OUT_BUF           = $AF1060
@@ -1184,10 +1184,10 @@
 >0270	00 00 00 00 00 00 00 00		                      .text $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00    ; $70
 >0278	00 00 00 00 00 00 00 00
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\io_def.asm
+;******  Processing file: io_def.asm
 
 =$afe800				JOYSTICK0     = $AFE800  ;(R) Joystick 0 - J7 (Next to Buzzer)
 =$afe801				JOYSTICK1     = $AFE801  ;(R) Joystick 1 - J8
@@ -1201,10 +1201,10 @@
 =$afe821				CODEC_DATA_HI = $AFE821  ;(W) MSB od Add/Data Reg to Control CODEC See WM8776 Spec
 =$afe822				CODEC_WR_CTRL = $AFE822  ;(W) Bit[0] = 1 -> Start Writing the CODEC Control Register
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\math_def.asm
+;******  Processing file: math_def.asm
 
 =$000100				UNSIGNED_MULT_A     = $000100 ;2 Bytes Operand A (ie: A x B)
 =$000102				UNSIGNED_MULT_B     = $000102 ;2 Bytes Operand B (ie: A x B)
@@ -1226,10 +1226,10 @@
 =$000124				ADDER_B          = $000124 ; 4 bytes (32 bit) Accumulator B
 =$000128				ADDER_R          = $000128 ; 4 bytes (32 bit) Result
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\timer_def.asm
+;******  Processing file: timer_def.asm
 
 =$000160				TIMER0_CTRL_REG   = $000160 ; (Write - Control, Read Status)
 =$01					TMR0_EN     = $01
@@ -1260,10 +1260,10 @@
 =$00016e				TIMER1_CMP_M      = $00016E ;
 =$00016f				TIMER1_CMP_H      = $00016F ;
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\base.asm
+;******  Processing file: base.asm
 
 .38ff00	18		clc		                CLC
 .38ff01	fb		xce		                XCE   ; go into native mode
@@ -1297,7 +1297,7 @@
 >38fffc	00 ff				RVECTOR_ERESET  .addr HRESET   ; FFFC
 >38fffe	60 ff				RVECTOR_EIRQ    .addr HIRQ     ; FFFE
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 =60					NPC_SPRITES     = 60
 =$b00000				VTILE_SET0      = $B00000
@@ -1342,6 +1342,8 @@
 =5					DEFAULT_LIVES   =  5
 =180					THREE_SECS      = 180  ; the number of SOF interrupts for 3 seconds
 =50					DEFAULT_TIMER   = 50
+=22					PLAYER_WIDTH    = 22   ; the width of the frog - for collision calculations
+=5					PADDING         = 5    ; the amount of space left and right of the player
 .160000					GAME_START
 .160000	e2 20		sep #$20	                SEP #$20        ; set A short
 .160002	c2 10		rep #$10	                REP #$10        ; set X long
@@ -1401,7 +1403,7 @@
 >160094	00				NEST_UP     .byte 0 ; player has just filled the next
 >160095	00				SOF_COUNTER .byte 0 ; count seconds - 60 SOF interrupts
 
-;******  Processing file: .\interrupt_handler.asm
+;******  Processing file: interrupt_handler.asm
 
 .160096					IRQ_HANDLER
 .160096	48		pha		                PHA             ; begin setdp macro
@@ -1500,10 +1502,10 @@
 .160145					NMI_HANDLER
 .160145	6b		rtl		                RTL
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\display.asm
+;******  Processing file: display.asm
 
 .160146					INIT_DISPLAY
 .160146	a9 20		lda #$20	                LDA #$20
@@ -2058,17 +2060,17 @@
 .16062a	ad 6a 00	lda $16006a	                LDA PLAYER_X
 .16062d	df 02 40 18	cmp $184002,x	                CMP game_array+2,X  ; read the X position
 .160631	f0 28		beq $16065b	                BEQ S_COLLISION
-.160633	90 0e		bcc $160643	                BCC CHECK_RIGHT_BOUND
+.160633	90 0e		bcc $160643	                BLT CHECK_RIGHT_BOUND
 .160635					        CHECK_LEFT_BOUND
 .160635	bf 02 40 18	lda $184002,x	                LDA game_array+2,X
-.160639	69 20 00	adc #$0020	                ADC #32
+.160639	69 1b 00	adc #$001b	                ADC #PLAYER_WIDTH+PADDING
 .16063c	cd 6a 00	cmp $16006a	                CMP PLAYER_X
-.16063f	b0 1a		bcs $16065b	                BCS S_COLLISION
+.16063f	b0 1a		bcs $16065b	                BGE S_COLLISION   ; BCS
 .160641	80 09		bra $16064c	                BRA CCS_CONTINUE
 .160643					        CHECK_RIGHT_BOUND
-.160643	69 20 00	adc #$0020	                ADC #32
+.160643	69 1b 00	adc #$001b	                ADC #PLAYER_WIDTH + PADDING
 .160646	df 02 40 18	cmp $184002,x	                CMP game_array+2,X  ; read the X position
-.16064a	b0 0f		bcs $16065b	                BCS S_COLLISION
+.16064a	b0 0f		bcs $16065b	                BGE S_COLLISION
 .16064c					        CCS_CONTINUE
 .16064c	8a		txa		                TXA
 .16064d	18		clc		                CLC
@@ -2112,12 +2114,12 @@
 .16069a	90 0e		bcc $1606aa	                BCC CHECK_RIGHT_BOUND_W
 .16069c					        CHECK_LEFT_BOUND_W
 .16069c	bf 02 40 18	lda $184002,x	                LDA game_array+2,X
-.1606a0	69 20 00	adc #$0020	                ADC #32
+.1606a0	69 1b 00	adc #$001b	                ADC #PLAYER_WIDTH+PADDING
 .1606a3	cd 6a 00	cmp $16006a	                CMP PLAYER_X
 .1606a6	b0 1a		bcs $1606c2	                BCS FLOAT
 .1606a8	80 09		bra $1606b3	                BRA CCW_CONTINUE
 .1606aa					        CHECK_RIGHT_BOUND_W
-.1606aa	69 20 00	adc #$0020	                ADC #32
+.1606aa	69 1b 00	adc #$001b	                ADC #PLAYER_WIDTH+PADDING
 .1606ad	df 02 40 18	cmp $184002,x	                CMP game_array+2,X  ; read the X position
 .1606b1	b0 0f		bcs $1606c2	                BCS FLOAT
 .1606b3					        CCW_CONTINUE
@@ -2133,9 +2135,9 @@
 .1606c2	18		clc		                CLC
 .1606c3	ad 6a 00	lda $16006a	                LDA PLAYER_X
 .1606c6	7f 00 40 18	adc $184000,x	                ADC game_array,X
-.1606ca	c9 40 00	cmp #$0040	                CMP #64
+.1606ca	c9 3b 00	cmp #$003b	                CMP #64-PADDING
 .1606cd	90 1e		bcc $1606ed	                BCC W_COLLISION
-.1606cf	c9 60 02	cmp #$0260	                CMP #640-32
+.1606cf	c9 65 02	cmp #$0265	                CMP #640-32+PADDING
 .1606d2	b0 19		bcs $1606ed	                BCS W_COLLISION
 .1606d4	8d 6a 00	sta $16006a	                STA PLAYER_X
 .1606d7	8f 04 0c af	sta $af0c04	                STA SP00_X_POS_L
@@ -2524,10 +2526,10 @@
 .1609d6	ab		plb		                PLB
 .1609d7	60		rts		                RTS
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 
-;******  Processing file: .\vgm_player.asm
+;******  Processing file: vgm_player.asm
 
 =$8					VGM_VERSION       = $8  ; 32-bits
 =$c					SN_CLOCK          = $C  ; 32-bits
@@ -3434,7 +3436,7 @@
 .161032					    UNKNOWN_DATA_BLOCK
 .161032	60		rts		            RTS
 
-;******  Return to file: .\fraggy.asm
+;******  Return to file: fraggy.asm
 
 .161033					SONG
 >161033	56 67 6d 20 10 a0 00 00		.binary "assets/03 Forest Path.vgm"
@@ -9526,13 +9528,13 @@
 >184030	02 00 20 00 70 01 02 00		            .word     2, 32    , 12*32-16 , BUS            ; sprite  7
 >184038	02 00 40 00 70 01 03 00		            .word     2, 64    , 12*32-16 , BUS + 1        ; sprite  8
 >184040	02 00 60 00 70 01 04 00		            .word     2, 96    , 12*32-16 , BUS + 2        ; sprite  9
->184048	fc ff e0 00 30 01 00 00		            .word $FFFC, 320-96, 10*32-16 , RED_CAR        ; sprite 10
->184050	fc ff 00 01 30 01 01 00		            .word $FFFC, 320-64, 10*32-16 , RED_CAR + 1    ; sprite 11
->184058	08 00 c0 00 50 01 0a 00		            .word     8, 192   , 11*32-16 , SPORTS_CAR     ; sprite 12
->184060	08 00 e0 00 50 01 0b 00		            .word     8, 224   , 11*32-16 , SPORTS_CAR +1  ; sprite 13
->184068	00 00 00 00 00 00 00 00		            .word     0, 0     , 0        , 0              ; blank  14
->184070	00 00 00 00 00 00 00 00		            .word     0, 0     , 0        , 0              ; blank  15
->184078	00 00 00 00 00 00 00 00		            .word     0, 0     , 0        , 0              ; blank  16
+>184048	02 00 36 01 70 01 02 00		            .word     2,310    , 12*32-16 , BUS            ; sprite 10
+>184050	02 00 56 01 70 01 03 00		            .word     2,342    , 12*32-16 , BUS + 1        ; sprite 11
+>184058	02 00 76 01 70 01 04 00		            .word     2,374    , 12*32-16 , BUS + 2        ; sprite 12
+>184060	fc ff e0 00 30 01 00 00		            .word $FFFC, 320-96, 10*32-16 , RED_CAR        ; sprite 13
+>184068	fc ff 00 01 30 01 01 00		            .word $FFFC, 320-64, 10*32-16 , RED_CAR + 1    ; sprite 14
+>184070	08 00 c0 00 50 01 0a 00		            .word     8, 192   , 11*32-16 , SPORTS_CAR     ; sprite 15
+>184078	08 00 e0 00 50 01 0b 00		            .word     8, 224   , 11*32-16 , SPORTS_CAR +1  ; sprite 16
 >184080	00 00 00 00 00 00 00 00		            .word     0, 0     , 0        , 0              ; blank  17
 >184088	00 00 00 00 00 00 00 00		            .word     0, 0     , 0        , 0              ; blank  18
 >184090	00 00 00 00 00 00 00 00		            .word     0, 0     , 0        , 0              ; blank  19
@@ -9549,28 +9551,28 @@
 >1840e8	00 00 00 00 00 00 00 00		            .word     0, 0     , 0        , 0              ; blank  30
 >1840f0	02 00 60 00 70 00 05 00		            .word     2,  96   , 4*32-16    , LOG            ; sprite 31
 >1840f8	02 00 80 00 70 00 07 00		            .word     2, 128   , 4*32-16    , LOG + 2        ; sprite 32
->184100	02 00 a0 01 70 00 05 00		            .word     2, 416   , 4*32-16    , LOG            ; sprite 33
->184108	02 00 c0 01 70 00 07 00		            .word     2, 448   , 4*32-16    , LOG + 2        ; sprite 34
->184110	fd ff 40 01 90 00 05 00		            .word $FFFD, 320   , 5*32-16    , LOG            ; sprite 35
->184118	fd ff 60 01 90 00 06 00		            .word $FFFD, 352   , 5*32-16    , LOG + 1        ; sprite 36
->184120	fd ff 80 01 90 00 07 00		            .word $FFFD, 384   , 5*32-16    , LOG + 2        ; sprite 37
->184128	02 00 a0 01 b0 00 15 00		            .word     2, 416   , 6*32-16    , LILLYPAD + 5   ; sprite 38
->184130	02 00 84 00 b0 00 17 00		            .word     2, 132   , 6*32-16    , LILLYPAD + 7   ; sprite 39
->184138	01 00 40 01 d0 00 05 00		            .word     1, 320   , 7*32-16    , LOG            ; sprite 40
->184140	01 00 60 01 d0 00 06 00		            .word     1, 352   , 7*32-16    , LOG + 1        ; sprite 41
->184148	01 00 80 01 d0 00 07 00		            .word     1, 384   , 7*32-16    , LOG + 2        ; sprite 42
->184150	01 00 28 00 d0 00 05 00		            .word     1,  40   , 7*32-16    , LOG            ; sprite 43
->184158	01 00 48 00 d0 00 06 00		            .word     1,  72   , 7*32-16    , LOG + 1        ; sprite 44
->184160	01 00 68 00 d0 00 07 00		            .word     1, 104   , 7*32-16    , LOG + 2        ; sprite 45
->184168	fe ff 00 02 f0 00 16 00		            .word $FFFE, 512   , 8*32-16    , LILLYPAD + 6   ; sprite 46
->184170	fe ff 04 01 f0 00 12 00		            .word $FFFE, 260   , 8*32-16    , LILLYPAD + 2   ; sprite 47
->184178	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  48
->184180	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  49
->184188	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  50
->184190	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  51
->184198	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  52
->1841a0	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  53
->1841a8	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  54
+>184100	02 00 20 01 70 00 05 00		            .word     2, 288   , 4*32-16    , LOG            ; sprite 33
+>184108	02 00 40 01 70 00 07 00		            .word     2, 320   , 4*32-16    , LOG + 2        ; sprite 34
+>184110	02 00 e0 01 70 00 05 00		            .word     2, 480   , 4*32-16    , LOG            ; sprite 35
+>184118	02 00 00 02 70 00 07 00		            .word     2, 512   , 4*32-16    , LOG + 2        ; sprite 36
+>184120	fe ff 40 01 90 00 05 00		            .word $FFFE, 320   , 5*32-16    , LOG            ; sprite 37
+>184128	fe ff 60 01 90 00 06 00		            .word $FFFE, 352   , 5*32-16    , LOG + 1        ; sprite 38
+>184130	fe ff 80 01 90 00 07 00		            .word $FFFE, 384   , 5*32-16    , LOG + 2        ; sprite 39
+>184138	fe ff 20 00 90 00 05 00		            .word $FFFE,  32   , 5*32-16    , LOG            ; sprite 40
+>184140	fe ff 40 00 90 00 06 00		            .word $FFFE,  64   , 5*32-16    , LOG + 1        ; sprite 41
+>184148	fe ff 60 00 90 00 07 00		            .word $FFFE,  96   , 5*32-16    , LOG + 2        ; sprite 42
+>184150	02 00 a0 01 b0 00 15 00		            .word     2, 416   , 6*32-16    , LILLYPAD + 5   ; sprite 43
+>184158	02 00 84 00 b0 00 17 00		            .word     2, 132   , 6*32-16    , LILLYPAD + 7   ; sprite 44
+>184160	02 00 00 00 b0 00 12 00		            .word     2,   0   , 6*32-16    , LILLYPAD + 2   ; sprite 45
+>184168	01 00 40 01 d0 00 05 00		            .word     1, 320   , 7*32-16    , LOG            ; sprite 46
+>184170	01 00 60 01 d0 00 06 00		            .word     1, 352   , 7*32-16    , LOG + 1        ; sprite 47
+>184178	01 00 80 01 d0 00 07 00		            .word     1, 384   , 7*32-16    , LOG + 2        ; sprite 48
+>184180	01 00 28 00 d0 00 05 00		            .word     1,  40   , 7*32-16    , LOG            ; sprite 49
+>184188	01 00 48 00 d0 00 06 00		            .word     1,  72   , 7*32-16    , LOG + 1        ; sprite 50
+>184190	01 00 68 00 d0 00 07 00		            .word     1, 104   , 7*32-16    , LOG + 2        ; sprite 51
+>184198	fe ff 00 02 f0 00 16 00		            .word $FFFE, 512   , 8*32-16    , LILLYPAD + 6   ; sprite 52
+>1841a0	fe ff 04 01 f0 00 12 00		            .word $FFFE, 260   , 8*32-16    , LILLYPAD + 2   ; sprite 53
+>1841a8	fe ff 81 01 f0 00 17 00		            .word $FFFE, 385   , 8*32-16    , LILLYPAD + 7   ; sprite 54
 >1841b0	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  55
 >1841b8	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  56
 >1841c0	00 00 00 00 00 00 00 00		            .word     0, 0     , 0          , 0              ; blank  57
