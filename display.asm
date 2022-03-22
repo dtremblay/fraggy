@@ -85,9 +85,13 @@ INIT_DISPLAY
                 STA GAME_OVER
                 STA DEAD
                 STA PL_MOVE_UP
+                STA NEST_UP
                 
                 LDA #DEFAULT_LIVES
                 STA LIVES
+                
+                LDA #1
+                STA LEVEL
                 
                 ; enable the non-player sprites
                 JSR ENABLE_SPRITES_NPC
@@ -95,6 +99,7 @@ INIT_DISPLAY
                 JSR INIT_PLAYER
                 JSR INIT_NPC
                 JSR SHOW_SCORE_BOARD
+                JSR SHOW_LEVEL
                 
                 ; reset the timer bar
                 LDA #0
@@ -162,7 +167,7 @@ INIT_PLAYER
                 STA @lSP00_X_POS_L
                 
                 LDA #15 * 32-16      ; the bottom row
-                ; LDA #9 * 32-16        ; use this to debug the middle line
+                ;LDA #9 * 32-16        ; use this to debug the middle line
                 STA PLAYER_Y
                 STA @lSP00_Y_POS_L
                 
@@ -331,13 +336,25 @@ UPDATE_DISPLAY
     NOT_DEAD
                 LDA NEST_UP
                 BEQ REG_FLOW
-                
+
                 ; when a player fills the nest, we wait 3 seconds and then reset the player
                 LDA #0
                 STA NEST_UP
-                ; TODO - increment the level
 
                 JSR INIT_PLAYER
+                
+                LDA HOME_NEST
+                CMP #$1F ; go to the next chapter.
+                BNE REG_FLOW
+                
+                ; the player has filled all the nest - go to the next level and reset the game board
+                LDA LEVEL
+                INC A
+                STA LEVEL
+                
+                LDA #0
+                STA HOME_NEST
+                JSR SHOW_LEVEL
                 
         REG_FLOW
                 ; count SOF and update the progress bar, if tick has occured
@@ -892,9 +909,9 @@ WATER_COLLISION
                 CLC
                 LDA PLAYER_X
                 ADC game_array,X
-                CMP #64-PADDING
+                CMP #54-PADDING      ; added a fuzzy buffer
                 BCC W_COLLISION
-                CMP #640-32+PADDING
+                CMP #640-22+PADDING  ; added a fuzzy buffer
                 BCS W_COLLISION
                 
                 STA PLAYER_X
@@ -1057,15 +1074,6 @@ WATER_COLLISION
                 ; set the crown here and restart the player on the first line
                 JSR SHOW_SCORE_BOARD
                 
-                LDA HOME_NEST
-                CMP #$1F ; go to the next chapter.
-                BNE HOME_LINE_DONE
-                
-                ; the player has filled all the nest - go to the next level and reset the game board
-                LDA LEVEL
-                INC A
-                STA LEVEL
-    HOME_LINE_DONE
                 RTS
             
 ; *****************************************************************
@@ -1077,12 +1085,12 @@ LILLY_CYCLE     .byte 0
 UPDATE_LILLY
                 .as
                 ; alternate the HOME tiles to imitate wind motion
-                LDA LILLY_CYCLE
+                LDA @l LILLY_CYCLE
                 INC A
                 CMP #10 ; only update every N SOF cycle
                 BNE UL_SKIP
                 LDA #0
-                STA LILLY_CYCLE
+                STA @l LILLY_CYCLE
                 
                 LDX #NPC_SPRITES / 2 * 8
                 LDY #0
@@ -1121,7 +1129,7 @@ UPDATE_LILLY
                 RTS
                 
         UL_SKIP
-                STA LILLY_CYCLE
+                STA @l LILLY_CYCLE
                 RTS
                 
 ; *****************************************************************
@@ -1247,12 +1255,22 @@ SHOW_SCORE_BOARD
                 ADC #TILE_0 ; tiles are offset at 20
                 STA VTILE_MAP1 + 156
                 
+                PLB
+                RTS
+                
+; *****************************************************************
+; * Display the level
+; *****************************************************************
+SHOW_LEVEL
+                .as
+                PHB
+                setdbr <`VTILE_MAP1
                 ; clear the level display - 32 bytes
                 LDA #0
                 LDY #32
                 LDX #0
         SSB_LEVEL_CLR
-                STA VTILE_MAP1 + (29*40+2)*2, X
+                STA VTILE_MAP1 + (29*40+3)*2, X
                 INX
                 DEY
                 BNE SSB_LEVEL_CLR
@@ -1270,7 +1288,26 @@ SHOW_SCORE_BOARD
                 DEX
                 DEX
                 BNE SSB_LEVEL
-        
+                
+                ; clear the nest positions
+                LDY #5
+                LDX #6*2
+        SSB_ERASE_NEST
+                LDA #5
+                STA VTILE_MAP1 + 6 * 40 , X
+                LDA #4
+                STA VTILE_MAP1 + 6 * 40 + 2, X
+                LDA #8
+                STA VTILE_MAP1 + 8 * 40, X
+                LDA #9
+                STA VTILE_MAP1 + 8 * 40 + 2, X
+                TXA
+                ADC #14
+                TAX
+                DEY
+                BNE SSB_ERASE_NEST
+                
+                
                 PLB
                 RTS
 

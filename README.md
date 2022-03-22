@@ -5,6 +5,15 @@ Fraggy is a Frogger-like game for the C256 Foenix Retro Computer: https://c256fo
 
 The game runs on the machine and the Foenix IDE: https://github.com/Trinity-11/FoenixIDE
 
+Release 6
+---------
+Updated the look of the tiles and sprites.
+Tightened up the controls.
+Added a timer bar.
+Added code to display a big frog in the nest once the player has arrived.
+Account for all the populated nest and increase the level when all nests are full.
+Added scoring.
+
 Release 3
 ---------
 Added tile cycling for the home and water tiles.  This gives the game a more dynamic look.
