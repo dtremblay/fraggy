@@ -352,6 +352,16 @@ UPDATE_DISPLAY
                 INC A
                 STA LEVEL
                 
+                ; add 1000 points to the player's score - since the score has 3 bytes, we only add 10 to the middle byte
+                setal
+                SED
+                LDA SCORE+1
+                CLC
+                ADC #$10
+                STA SCORE+1
+                CLD
+                setas
+                
                 LDA #0
                 STA HOME_NEST
                 JSR SHOW_LEVEL
@@ -390,6 +400,7 @@ UPDATE_DISPLAY
                 STA SOF_COUNTER
         REG_FLOW_CONTINUE_2
                 JSR UPDATE_LILLY
+                JSR UPDATE_TURTLE
                 
                 ; check if the frog's tongue is out
                 LDA TONGUE_POS
@@ -1105,9 +1116,9 @@ UPDATE_LILLY
                 BNE UP_LI_SKIP_ROW
                 
                 INC A
-                CMP #24
+                CMP #LILLYPAD+8
                 BNE STORE_LILLY
-                LDA #16
+                LDA #LILLYPAD
                 
         STORE_LILLY
                 STA game_array + 6,X
@@ -1130,6 +1141,62 @@ UPDATE_LILLY
                 
         UL_SKIP
                 STA @l LILLY_CYCLE
+                RTS
+
+; *****************************************************************
+; * Make the turtles swim
+; *****************************************************************
+TURTLE_CYCLE    .byte 0
+
+; find all the turtles in the game array and make them swim
+UPDATE_TURTLE
+                .as
+                ; alternate the HOME tiles to imitate wind motion
+                LDA @l TURTLE_CYCLE
+                INC A
+                CMP #10 ; only update every N SOF cycle
+                BNE UT_SKIP
+                LDA #0
+                STA @l TURTLE_CYCLE
+                
+                LDX #NPC_SPRITES / 2 * 8
+                LDY #0
+        UP_TTL_CHECK
+                LDA game_array,X
+                BEQ UP_TTL_SKIP_ROW
+                
+                LDA game_array + 6,X
+                BIT #TURTLE1
+                BEQ UP_TTL_SKIP_ROW
+                CMP #TURTLE4 + 1
+                BGE UP_TTL_SKIP_ROW
+                
+                INC A
+                CMP #TURTLE4+1
+                BNE STORE_TURTLE
+                LDA #TURTLE1
+                
+        STORE_TURTLE
+                STA game_array + 6,X
+                ASL A
+                ASL A
+                STA @lSP04_ADDY_PTR_M,X
+                
+        UP_TTL_SKIP_ROW
+                setal
+                TXA
+                CLC
+                ADC #8
+                TAX
+                setas
+                INY
+                CPY #NPC_SPRITES
+                BNE UP_TTL_CHECK
+                
+                RTS
+                
+        UT_SKIP
+                STA @l TURTLE_CYCLE
                 RTS
                 
 ; *****************************************************************
@@ -1434,6 +1501,12 @@ LOAD_ASSETS
                 LDY #<>VFROGS_UP
                 LDA #4 * 4 * 32 * 32  ; 16 k
                 MVN <`FROG_UP,<`VFROGS_UP
+                
+                ; copy turtles
+                LDX #<>TURTLE
+                LDY #<>VTURTLE
+                LDA #4 * 32 * 32      ; 4 k
+                MVN <`TURTLE,<`VTURTLE
                 
                 setas
                 PLB
