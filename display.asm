@@ -26,10 +26,6 @@ INIT_DISPLAY
                 LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
                 STA MASTER_CTRL_REG_L
                 
-                ; display intro screen
-                
-                ; wait for user to press a key or joystick button
-                
                 ; load sprites and tiles
                 JSR LOAD_ASSETS
                 
@@ -70,10 +66,14 @@ INIT_DISPLAY
                 LDA #<>VTILE_MAP0
                 STA TL0_START_ADDY_L
                 
+                LDA #$50
+                STA SP02_Y_POS_L
+                
                 LDA #0
                 STA SCORE
                 
                 setas
+                STA SCORE + 2
                 STA HOME_NEST
                 ; enable tilemap 1
                 LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
@@ -82,16 +82,27 @@ INIT_DISPLAY
                 ; disable tilemap 0
                 LDA #0
                 STA @lTL0_CONTROL_REG
-                STA GAME_OVER
                 STA DEAD
                 STA PL_MOVE_UP
                 STA NEST_UP
+                STA SP01_CONTROL_REG
+                ; prepare the bee sprite
+                STA SP02_ADDY_PTR_L
+                STA SP02_CONTROL_REG
+                LDA #1
+                STA SP02_ADDY_PTR_H
+                LDA #BEE_SPRITE * 4
+                STA SP02_ADDY_PTR_M
+                
                 
                 LDA #DEFAULT_LIVES
                 STA LIVES
                 
                 LDA #1
                 STA LEVEL
+                
+                LDA #DEFAULT_BEE_TIME
+                STA BEE_TIMER
                 
                 ; enable the non-player sprites
                 JSR ENABLE_SPRITES_NPC
@@ -123,7 +134,6 @@ ENABLE_SPRITES_NPC
                 ; reserve the first 4 sprites
                 STA @lSP00_CONTROL_REG
                 STA @lSP01_CONTROL_REG
-                STA @lSP02_CONTROL_REG
                 STA @lSP03_CONTROL_REG
                 
     LSP_LOOP
@@ -177,6 +187,11 @@ INIT_PLAYER
                 LDA #0
                 STA MOVING_CNT
                 STA MOVING
+                STA BEE_NEST
+                STA @l SP02_CONTROL_REG  ; hide the bee
+                
+                LDA #DEFAULT_BEE_TIME
+                STA BEE_TIMER
                 
                 LDA #DEFAULT_TIMER
                 STA GTIMER
@@ -279,6 +294,9 @@ GAME_OVER_DRAW
                 BIT #$10 ; fire
                 BNE GO_DONE
                 
+                LDA #0
+                STA GAME_OVER
+                
                 JSR INIT_DISPLAY
         GO_DONE
                 PLB
@@ -324,7 +342,6 @@ UPDATE_DISPLAY
                 LDA #0
                 STA DEAD
                 STA PL_MOVE_UP
-                JSR SHOW_SCORE_BOARD
 
                 JSR INIT_PLAYER
         NO_UPDATE
@@ -362,6 +379,7 @@ UPDATE_DISPLAY
                 CLD
                 setas
                 
+                JSR SHOW_SCORE_BOARD
                 LDA #0
                 STA HOME_NEST
                 JSR SHOW_LEVEL
@@ -372,12 +390,18 @@ UPDATE_DISPLAY
                 INC A
                 CMP #60
                 BNE REG_FLOW_CONTINUE
+                
+                ; check the bee timer - if timer is zero, change the bee position randomly
+                JSR CHECK_BEE_TIMER
+                
+                ; update the progress bar
                 LDA #0
                 STA SOF_COUNTER
                 ; check the timer
                 LDA GTIMER
                 DEC A
                 BNE GTIMER_UPDATE
+                
                 ; player has run out of time
                 STA GTIMER
                 JSR UPDATE_TIMER_BAR
@@ -411,8 +435,10 @@ UPDATE_DISPLAY
                 
         SKIP_TONGUE_UPDATE
                 LDA MOVING
-                BNE ANIMATE_PLAYER
+                BEQ SKIP_TONGUE_BR
+                JMP ANIMATE_PLAYER
                 
+       SKIP_TONGUE_BR
                 LDA #0
                 STA MOVING_CNT
                 PLA
@@ -471,8 +497,17 @@ UPDATE_DISPLAY
                 CLC
                 ADC #10
                 STA SCORE
-                CLD
                 setas
+                
+                BCC NOCOL_FINISH
+                ; Add 1 to the hi-byte of the score
+                CLC
+                LDA SCORE+2
+                ADC #1
+                STA SCORE+2
+                
+        NOCOL_FINISH
+                CLD
                 
                 ; reset the score flag
                 LDA #0
@@ -497,14 +532,14 @@ ANIMATE_PLAYER
                 XBA
                 LDA MOVING_CNT
                 INC A
-                BIT #3
+                BIT #1
                 BNE ANIM_DONE
                 
                 STA MOVING_CNT
                 
                 ; READ THE OFFSET
                 LSR A
-                LSR A
+                ;LSR A
                 TAX
                 LDA SPRITE_OFFSET,X
                 PHA
@@ -533,8 +568,9 @@ ANIMATE_PLAYER
                 
     ANIM_COMPLETE
                 PLA ; check if the value was 0
-                BNE JOY_DONE
-                
+                BEQ ANIM_COMPLETE_BR
+                JMP JOY_DONE
+        ANIM_COMPLETE_BR
                 ; stop the moving
                 LDA #0
                 STA MOVING
@@ -1029,7 +1065,7 @@ WATER_COLLISION
                 CLC
                 LDA SCORE + 2
                 ADC #1
-                LDA SCORE + 2
+                STA SCORE + 2
                 setal
 
         HL_MULTIPLY
@@ -1045,7 +1081,7 @@ WATER_COLLISION
                 CLC
                 LDA SCORE + 2
                 ADC #1
-                LDA SCORE + 2
+                STA SCORE + 2
                 setal
 
         HL_MULT_LP_END
@@ -1512,3 +1548,85 @@ LOAD_ASSETS
                 PLB
                 
                 RTS
+
+J_TABLE
+                .byte 0
+                .byte 1
+                .byte 2
+                .byte 4
+                .byte 8
+                .byte $10
+X_TABLE         .word 0
+                .word $70
+                .word $e0
+                .word $150
+                .word $1c0
+                .word $230
+; *****************************************************************
+; * Every time the timer gets to zero the bee moves to a new nest.
+; *****************************************************************
+; random value between 0 and 5
+; 0 - hide
+; 1 - 1st nest - X =  $70
+; 2 - 2nd nest - X =  $E0
+; 3 - 3rd nest - X = $150
+; 4 - 4th nest - X = $1C0
+; 5 - 5th nest - X = $230
+; 6, 7 - hide
+CHECK_BEE_TIMER
+                .as
+                PHB
+                setdbr $16
+                
+                LDA #0
+                XBA
+                LDA BEE_TIMER
+                DEC A
+                BEQ CBT_CONTINUE
+                
+                STA BEE_TIMER
+                BRA CBT_DONE
+                
+        CBT_CONTINUE
+                LDA #DEFAULT_BEE_TIME
+                STA BEE_TIMER
+                
+        CBT_TRY_AGAIN
+                ; display the bee sprite in a random nest
+                LDA GABE_RNG_DAT_LO
+                
+                AND #7
+                BIT BEE_NEST   ; don't allow the displaying of the bee if the same spot as before
+                BNE CBT_TRY_AGAIN
+                CMP #0
+                BEQ CBT_HIDE
+                CMP #6
+                BGE CBT_TRY_AGAIN
+                
+                TAY
+                LDA J_TABLE,Y
+                BIT HOME_NEST     ; the bee should not appear if the nest is already full
+                BNE CBT_TRY_AGAIN
+                STA BEE_NEST
+                TYA
+                ASL A
+                TAY
+                setal
+                
+                LDA X_TABLE,Y
+                STA SP02_X_POS_L
+                setas
+                
+                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
+                STA SP02_CONTROL_REG
+                
+                BRA CBT_DONE
+                
+    CBT_HIDE
+                LDA #0
+                STA BEE_NEST
+                STA SP02_CONTROL_REG  ; hide the bee
+    CBT_DONE
+                PLB
+                RTS
+                

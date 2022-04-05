@@ -11,6 +11,7 @@
 .include "vicky_ii_def.asm"
 .include "interrupt_def.asm"
 .include "keyboard_def.asm"
+.include "GABE_Control_Registers_def.asm"
 .include "io_def.asm"
 .include "math_def.asm"
 .include "timer_def.asm"
@@ -79,6 +80,7 @@ THREE_SECS      = 180  ; the number of SOF interrupts for 3 seconds
 DEFAULT_TIMER   = 50
 PLAYER_WIDTH    = 22   ; the width of the frog - for collision calculations
 PADDING         = 5    ; the amount of space left and right of the player
+DEFAULT_BEE_TIME= 10   ; the bee switches position every 10 seconds
 
 * = $160000
 ; *************************************************************************
@@ -113,14 +115,16 @@ GAME_START
             
             ; initialize variables
             LDA #0
-            STA SCORE
             STA MOUSE_PTR_CTRL_REG_L ; disable the mouse pointer
             
             setas
             STA TONGUE_POS
             STA BEE_TIMER
-            STA GAME_OVER
             STA DEAD
+            
+            LDA #1
+            STA GAME_OVER
+            
             
             LDA #DEFAULT_LIVES
             STA LIVES
@@ -147,8 +151,9 @@ LIVES       .byte DEFAULT_LIVES
 GAME_OVER   .byte 0
 DEAD        .byte 0
 RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
-BEE_TIMER   .byte 0 ; show the bee for a short period of time.
-SCORE       .long 0 
+BEE_TIMER   .byte 10 ; show the bee for a short period of time.
+BEE_NEST    .byte 0 ; which nest is the bee in?
+SCORE       .long 0
 GTIMER      .byte 50 ; this timer is used to control the game time
 TONGUE_POS  .word 0
 TONGUE_CTR  .byte 0
