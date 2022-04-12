@@ -10,8 +10,8 @@
 .include "bank_00_inc.asm"
 .include "vicky_ii_def.asm"
 .include "interrupt_def.asm"
-.include "keyboard_def.asm"
 .include "GABE_Control_Registers_def.asm"
+.include "RTC_def.asm"
 .include "io_def.asm"
 .include "math_def.asm"
 .include "timer_def.asm"
@@ -113,6 +113,10 @@ GAME_START
             LDA #<>SONG
             STA SONG_START
             
+            ; seed the random number generator
+            LDA RTC_SEC
+            STA GABE_RNG_SEED_LO
+            
             ; initialize variables
             LDA #0
             STA MOUSE_PTR_CTRL_REG_L ; disable the mouse pointer
@@ -124,10 +128,8 @@ GAME_START
             
             LDA #1
             STA GAME_OVER
-            
-            
-            LDA #DEFAULT_LIVES
-            STA LIVES
+            LDA #GABE_RNG_CTRL_EN | GABE_RNG_CTRL_DV
+            STA GABE_RNG_CTRL
             
             JSL VGM_SET_SONG_POINTERS
             JSR INIT_DISPLAY
@@ -170,14 +172,7 @@ SOF_COUNTER .byte 0 ; count seconds - 60 SOF interrupts
 .include "interrupt_handler.asm"
 .include "display.asm"
 .include "vgm_player.asm"
-
-; *************************************************************************
-; * Song file - in VGM format
-; *************************************************************************
-SONG
-.binary "assets/03 Forest Path.vgm"
-;.binary "assets/03 Bay Yard (Daytime) (1st Day).vgm"
-;.binary "assets/11 Sarinuka Sands (Daytime) (2nd Day).vgm"
+.include "keyboard_def.asm"
 
 ; *************************************************************************
 ; * The game board is 40 x 30 tiles
@@ -216,31 +211,6 @@ game_over_board
             .text "........................................" ;28
             .text "........................................" ;29
             .text "........................................" ;30
-
-; *************************************************************************
-; *************************************************************************
-; * Image files for tiles and sprites, along with color palette
-; *************************************************************************
-; *************************************************************************
-* = $170000
-TILES
-            .binary "assets/fraggy-tileset.bin"
-SPRITES
-            .binary "assets/fraggy-sprites.bin"
-TURTLE
-            .binary "assets/turtle-sheet.bin"
-PALETTE_TILES
-            .binary "assets/fraggy.pal"
-* = $180000
-FROG_UP
-            .binary "assets/frog-sheet-up.bin"
-FROG_DOWN
-            .binary "assets/frog-sheet-down.bin"
-FROG_LEFT
-            .binary "assets/frog-sheet-left.bin"
-FROG_RIGHT
-            .binary "assets/frog-sheet-right.bin"
-
 
 ; *************************************************************************
 ; * The game array describes the sprites, position, speed and direction
@@ -314,4 +284,37 @@ game_array  ; the array treats each sprite in order
             .word     0, 0     , 0          , 0              ; blank  58
             .word     0, 0     , 0          , 0              ; blank  59
             .word     0, 0     , 0          , 0              ; blank  60
+
+; *************************************************************************
+; *************************************************************************
+; * Image files for tiles and sprites, along with color palette
+; *************************************************************************
+; *************************************************************************
+* = $170000
+TILES
+            .binary "assets/fraggy-tileset.bin"
+SPRITES
+            .binary "assets/fraggy-sprites.bin"
+TURTLE
+            .binary "assets/turtle-sheet.bin"
+PALETTE_TILES
+            .binary "assets/fraggy.pal"
+* = $180000
+FROG_UP
+            .binary "assets/frog-sheet-up.bin"
+FROG_DOWN
+            .binary "assets/frog-sheet-down.bin"
+FROG_LEFT
+            .binary "assets/frog-sheet-left.bin"
+FROG_RIGHT
+            .binary "assets/frog-sheet-right.bin"
+            
+; *************************************************************************
+; * Song file - in VGM format
+; *************************************************************************
+SONG
+.binary "assets/The Lost Vikings - 02 Home.VGM"
+;.binary "assets/03 Forest Path.vgm"
+;.binary "assets/03 Bay Yard (Daytime) (1st Day).vgm"
+;.binary "assets/11 Sarinuka Sands (Daytime) (2nd Day).vgm"
             

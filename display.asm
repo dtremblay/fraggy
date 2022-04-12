@@ -101,9 +101,6 @@ INIT_DISPLAY
                 LDA #1
                 STA LEVEL
                 
-                LDA #DEFAULT_BEE_TIME
-                STA BEE_TIMER
-                
                 ; enable the non-player sprites
                 JSR ENABLE_SPRITES_NPC
                 ; initialize the player to the bottom row
@@ -190,7 +187,7 @@ INIT_PLAYER
                 STA BEE_NEST
                 STA @l SP02_CONTROL_REG  ; hide the bee
                 
-                LDA #DEFAULT_BEE_TIME
+                LDA #DEFAULT_BEE_TIME/2
                 STA BEE_TIMER
                 
                 LDA #DEFAULT_TIMER
@@ -1046,29 +1043,54 @@ WATER_COLLISION
         HOME_NO_COLLISION_BRANCH
                 ORA HOME_NEST
                 STA HOME_NEST
-                setal
                 
-                ; prepare X to be the multiplier
-                LDA GTIMER
-                AND #$FF
-                TAX
-
-                SED  ; perform additions in BCD
-                ; add 200 - this should be 50, so I need to update the sprite - too lazy
-                LDA SCORE
+                ; check if the bee is present
+                TXA
+                AND #$1F
+                BIT BEE_NEST
+                BEQ ADD_50_ONLY
+                
+                ; Display the BONUS SCORE where the frog was located
+                LDA #BONUS_SPRITE * 4
+                STA @lSP00_ADDY_PTR_M
+                LDA #1
+                STA SP00_ADDY_PTR_H
+                
+                ; add 200 to score
+                setal
+                SED
                 CLC
+                LDA SCORE
                 ADC #$200
                 STA SCORE
-                BCC HL_MULTIPLY
-
-                setas  ; there was a carry, so add 1 to the hi byte
+                BRA SCR_CONTINUE
+                
+                
+       ADD_50_ONLY
+                setal
+                SED
+                CLC
+                LDA SCORE
+                ADC #$50
+                STA SCORE
+                
+      SCR_CONTINUE
+                BCC HL_MULTIPLY_TIMER
+                
+                ; the carry was set, so increase the hi-byte
+                setas
                 CLC
                 LDA SCORE + 2
                 ADC #1
                 STA SCORE + 2
                 setal
-
-        HL_MULTIPLY
+                
+        HL_MULTIPLY_TIMER
+                ; prepare X to be the multiplier
+                LDA GTIMER
+                AND #$FF
+                TAX
+        
                 ; multiply the number of seconds remaining by 10
                 LDA SCORE
         HL_MULTIPLY_LOOP
@@ -1083,6 +1105,7 @@ WATER_COLLISION
                 ADC #1
                 STA SCORE + 2
                 setal
+                LDA #0 ; the thousands have rolled over, so set A to 0.
 
         HL_MULT_LP_END
                 DEX
@@ -1099,12 +1122,6 @@ WATER_COLLISION
                 
                 LDA #1         ; flag that the player has nested and the position needs to be reset
                 STA NEST_UP
-                
-                ; Display the BONUS SCORE where the frog was located
-                LDA #BONUS_SPRITE * 4
-                STA @lSP00_ADDY_PTR_M
-                LDA #1
-                STA SP00_ADDY_PTR_H
                 
                 TYX
                 
@@ -1139,6 +1156,9 @@ UPDATE_LILLY
                 LDA #0
                 STA @l LILLY_CYCLE
                 
+                PHP
+                setdbr `<game_array
+                ; skip the road NPC sprites
                 LDX #NPC_SPRITES / 2 * 8
                 LDY #0
         UP_LI_CHECK
@@ -1160,7 +1180,7 @@ UPDATE_LILLY
                 STA game_array + 6,X
                 ASL A
                 ASL A
-                STA @lSP04_ADDY_PTR_M,X
+                STA SP04_ADDY_PTR_M,X
                 
         UP_LI_SKIP_ROW
                 setal
@@ -1170,9 +1190,9 @@ UPDATE_LILLY
                 TAX
                 setas
                 INY
-                CPY #NPC_SPRITES
+                CPY #NPC_SPRITES/2
                 BNE UP_LI_CHECK
-                
+                PLB
                 RTS
                 
         UL_SKIP
@@ -1198,10 +1218,10 @@ UPDATE_TURTLE
                 LDX #NPC_SPRITES / 2 * 8
                 LDY #0
         UP_TTL_CHECK
-                LDA game_array,X
+                LDA @l game_array,X
                 BEQ UP_TTL_SKIP_ROW
                 
-                LDA game_array + 6,X
+                LDA @l game_array + 6,X
                 BIT #TURTLE1
                 BEQ UP_TTL_SKIP_ROW
                 CMP #TURTLE4 + 1
@@ -1213,10 +1233,10 @@ UPDATE_TURTLE
                 LDA #TURTLE1
                 
         STORE_TURTLE
-                STA game_array + 6,X
+                STA @l game_array + 6,X
                 ASL A
                 ASL A
-                STA @lSP04_ADDY_PTR_M,X
+                STA @l SP04_ADDY_PTR_M,X
                 
         UP_TTL_SKIP_ROW
                 setal
@@ -1519,7 +1539,7 @@ LOAD_ASSETS
                 LDY #<>GRPH_LUT0_PTR
                 LDA #1024
                 MVN <`PALETTE_TILES,<`GRPH_LUT0_PTR
-                
+                                
                 ; copy tilemap to video RAM
                 LDX #<>game_board
                 LDY #<>VTILE_MAP1
@@ -1554,8 +1574,10 @@ J_TABLE
                 .byte 1
                 .byte 2
                 .byte 4
-                .byte 8
+                .byte $8
                 .byte $10
+                .byte 0
+                .byte 0
 X_TABLE         .word 0
                 .word $70
                 .word $e0
@@ -1575,57 +1597,75 @@ X_TABLE         .word 0
 ; 6, 7 - hide
 CHECK_BEE_TIMER
                 .as
-                PHB
-                setdbr $16
-                
-                LDA #0
-                XBA
                 LDA BEE_TIMER
                 DEC A
                 BEQ CBT_CONTINUE
                 
                 STA BEE_TIMER
-                BRA CBT_DONE
+                RTS
                 
         CBT_CONTINUE
                 LDA #DEFAULT_BEE_TIME
                 STA BEE_TIMER
+                
+                LDA #GABE_RNG_CTRL_EN
+                STA GABE_RNG_CTRL
+                
+                PHB
+                setdbr $16 
+        
+; TEST CODE        
+;                LDA #0
+;                XBA
+;                INC BEE_NEST
+;                LDY BEE_NEST
+;                TYA
+;                ASL A
+;                TAY
+;                
+;                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
+;                STA SP02_CONTROL_REG
+;                
+;                setal
+;                LDA X_TABLE,Y
+;                STA SP02_X_POS_L
+;                setas
+;                PLB 
+;                RTS
                 
         CBT_TRY_AGAIN
                 ; display the bee sprite in a random nest
                 LDA GABE_RNG_DAT_LO
                 
                 AND #7
-                BIT BEE_NEST   ; don't allow the displaying of the bee if the same spot as before
-                BNE CBT_TRY_AGAIN
-                CMP #0
-                BEQ CBT_HIDE
                 CMP #6
                 BGE CBT_TRY_AGAIN
+                CMP #0
+                BEQ CBT_TRY_AGAIN
                 
                 TAY
                 LDA J_TABLE,Y
                 BIT HOME_NEST     ; the bee should not appear if the nest is already full
                 BNE CBT_TRY_AGAIN
                 STA BEE_NEST
+                
                 TYA
                 ASL A
                 TAY
                 setal
-                
                 LDA X_TABLE,Y
-                STA SP02_X_POS_L
+                STA @l SP02_X_POS_L
                 setas
                 
                 LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
-                STA SP02_CONTROL_REG
+                STA @l SP02_CONTROL_REG
                 
                 BRA CBT_DONE
                 
     CBT_HIDE
                 LDA #0
                 STA BEE_NEST
-                STA SP02_CONTROL_REG  ; hide the bee
+                STA @l SP02_CONTROL_REG  ; hide the bee
     CBT_DONE
                 PLB
                 RTS
