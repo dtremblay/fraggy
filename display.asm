@@ -231,61 +231,13 @@ INIT_NPC
 ; *************************************************************
 GAME_OVER_DRAW
                 .as
-
-                ; enable tilemap 0
-                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
-                STA @lTL0_CONTROL_REG
+                LDA GAME_OVER
+                CMP #2
+                BGE G_O_LOAD_DONE
                 
-                ; disable tilemap 1
-                LDA #0
-                STA @lTL1_CONTROL_REG
+                JSR DRAW_GAME_OVER_MAP
                 
-                ; disable sprites
-                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
-                STA MASTER_CTRL_REG_L
-                
-                setdbr <`VTILE_MAP0
-                
-                ; transform the game board into a tilemap
-                LDX #0
-                LDY #2  ; the tilemap is offset by 1 column, or 2 bytes.
-                setas
-    GOD_GET_TILE
-                LDA game_over_board,X
-                CMP #'.'  ; DOT
-                BNE GOD_ASHPHALT
-                LDA #0
-                STA VTILE_MAP0,Y
-                BRA GOD_DONE
-                
-        GOD_ASHPHALT
-                CMP #'A'
-                BNE GO_DONE
-                LDA #1
-                STA VTILE_MAP0,Y
-                
-    GOD_DONE
-                INY
-                ; store the tileset in the next byte
-                LDA #0
-                STA VTILE_MAP0,Y
-                INY
-                setal
-                TYA
-                AND #$4F
-                CMP #80
-                BNE GOD_NEXT_TILE
-                TYA
-                CLC
-                ADC #24
-                TAY
-                
-    GOD_NEXT_TILE
-                setas
-                INX
-                CPX #(640/16) * (480 / 16)
-                BNE GOD_GET_TILE
-                
+    G_O_LOAD_DONE
                 ; check if the fire button was pressed to restart the game
                 PLA
                 BIT #$10 ; fire
@@ -293,8 +245,8 @@ GAME_OVER_DRAW
                 
                 LDA #0
                 STA GAME_OVER
-                
                 JSR INIT_DISPLAY
+                
         GO_DONE
                 PLB
                 RTS
@@ -1531,7 +1483,7 @@ LOAD_ASSETS
                 setal
                 LDX #<>TILES
                 LDY #<>VTILE_SET0
-                LDA #256 * 64 ; three rows of tiles
+                LDA #256 * 80 ; four rows of tiles
                 MVN <`TILES,<`VTILE_SET0
 
                 ; load LUT0
@@ -1539,8 +1491,14 @@ LOAD_ASSETS
                 LDY #<>GRPH_LUT0_PTR
                 LDA #1024
                 MVN <`PALETTE_TILES,<`GRPH_LUT0_PTR
+                
+                ; copy game-over tilemap to video RAM
+                LDX #<>game_over_board
+                LDY #<>VTILE_MAP0
+                LDA #40*30*2
+                MVN <`game_over_board,<`VTILE_MAP0
                                 
-                ; copy tilemap to video RAM
+                ; copy game board tilemap to video RAM
                 LDX #<>game_board
                 LDY #<>VTILE_MAP1
                 LDA #40*30*2
@@ -1670,3 +1628,22 @@ CHECK_BEE_TIMER
                 PLB
                 RTS
                 
+DRAW_GAME_OVER_MAP
+                .as
+                .databank 0
+                ; enable tilemap 0
+                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
+                STA @lTL0_CONTROL_REG
+                
+                ; disable tilemap 1
+                LDA #0
+                STA @lTL1_CONTROL_REG
+                
+                LDA #2
+                STA GAME_OVER  ; signify that the tilemap is loaded
+                
+                ; disable sprites
+                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+                STA MASTER_CTRL_REG_L
+                
+                RTS
