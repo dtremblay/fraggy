@@ -1628,9 +1628,11 @@ CHECK_BEE_TIMER
                 PLB
                 RTS
                 
+G_O_SCORE_POS   = (15*40+21) * 2
 DRAW_GAME_OVER_MAP
                 .as
-                .databank 0
+                PHB
+                setdbr <`VTILE_MAP0
                 ; enable tilemap 0
                 LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
                 STA @lTL0_CONTROL_REG
@@ -1646,4 +1648,51 @@ DRAW_GAME_OVER_MAP
                 LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
                 STA MASTER_CTRL_REG_L
                 
+                ; draw the score - each byte is 2 digits BCD 00 to 99
+                ; not really elegant...
+                LDA SCORE + 2 ; the high byte
+                LSR ; get the high nibble
+                LSR A
+                LSR A
+                LSR A
+                CLC 
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP0 + G_O_SCORE_POS
+               
+                LDA SCORE + 2 ; the low nibble
+                AND #$F
+                CLC
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP0 + G_O_SCORE_POS + 2
+                
+                LDA SCORE + 1 ; the high byte
+                LSR ; get the high nibble
+                LSR A
+                LSR A
+                LSR A
+                CLC 
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP0 + G_O_SCORE_POS + 4
+               
+                LDA SCORE + 1 ; the low nibble
+                AND #$F
+                CLC
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP0 + G_O_SCORE_POS + 6
+                
+                LDA SCORE
+                LSR ; get the high nibble
+                LSR A
+                LSR A
+                LSR A
+                CLC 
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP0 + G_O_SCORE_POS + 8
+                
+                LDA SCORE ; the low nibble
+                AND #$F
+                CLC
+                ADC #TILE_0 ; tiles are offset at 20
+                STA VTILE_MAP0 + G_O_SCORE_POS + 10
+                PLB
                 RTS
