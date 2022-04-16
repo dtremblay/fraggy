@@ -30,6 +30,8 @@ VFROGS_UP       = $B20000                 ; 4 sprites
 VFROGS_DOWN     = VFROGS_UP + 4096        ; 4 sprites
 VFROGS_LEFT     = VFROGS_DOWN + 4096      ; 4 sprites
 VFROGS_RIGHT    = VFROGS_LEFT + 4096      ; 4 sprites
+VSPLASH         = $B30000                 ; 640 x 480 image
+
 JOYSTICK_SC_TMP = $000F89
 
 ; frog sprite names
@@ -126,13 +128,20 @@ GAME_START
             STA BEE_TIMER
             STA DEAD
             
-            LDA #1
+            LDA #$80
             STA GAME_OVER
             LDA #GABE_RNG_CTRL_EN | GABE_RNG_CTRL_DV
             STA GABE_RNG_CTRL
             
+            ; load the splash screen
+            JSR LOAD_SPLASH
+            
             JSL VGM_SET_SONG_POINTERS
             JSR INIT_DISPLAY
+            
+            ; load sprites and tiles
+            JSR LOAD_ASSETS
+                
             
             ; Enable SOF
             LDA #~( FNX0_INT00_SOF | FNX0_INT02_TMR0)
@@ -150,7 +159,7 @@ GAME_START
 PLAYER_X    .word 100
 PLAYER_Y    .word 100
 LIVES       .byte DEFAULT_LIVES
-GAME_OVER   .byte 0
+GAME_OVER   .byte 0  ; $80 - splash, $1 game over board
 DEAD        .byte 0
 RESET_BOARD .byte 0 ; set this to 180 and the SOF will stop the game updates.
 BEE_TIMER   .byte 10 ; show the bee for a short period of time.
@@ -261,16 +270,19 @@ game_array  ; the array treats each sprite in order
 ; * Image files for tiles and sprites, along with color palette
 ; *************************************************************************
 ; *************************************************************************
-* = $170000
+* = $17_0000
 TILES
             .binary "assets/fraggy-tileset.bin"
 SPRITES
             .binary "assets/fraggy-sprites.bin"
 TURTLE
             .binary "assets/turtle-sheet.bin"
-PALETTE_TILES
+TILES_PALETTE
             .binary "assets/fraggy.pal"
-* = $180000
+SPLASH_PALETTE
+            .binary "assets/splash.pal"
+            
+* = $18_0000
 FROG_UP
             .binary "assets/frog-sheet-up.bin"
 FROG_DOWN
@@ -284,8 +296,13 @@ FROG_RIGHT
 ; * Song file - in VGM format
 ; *************************************************************************
 SONG
-.binary "assets/The Lost Vikings - 02 Home.VGM"
-;.binary "assets/03 Forest Path.vgm"
-;.binary "assets/03 Bay Yard (Daytime) (1st Day).vgm"
-;.binary "assets/11 Sarinuka Sands (Daytime) (2nd Day).vgm"
+            .binary "assets/The Lost Vikings - 02 Home.VGM"
+            ;.binary "assets/03 Forest Path.vgm"
+            ;.binary "assets/03 Bay Yard (Daytime) (1st Day).vgm"
+            ;.binary "assets/11 Sarinuka Sands (Daytime) (2nd Day).vgm"
+
+* = $1B_0000
+SPLASH
+            .binary "assets/fraggy-splash.bin"
+
             

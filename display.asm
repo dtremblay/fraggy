@@ -3,9 +3,9 @@
 ; *************************************************************************
 INIT_DISPLAY
                 .as
-
+                
                 ; set the visible display size - 80 x 60
-                LDA #$20
+                LDA #0
                 STA BORDER_X_SIZE
                 LDA #0
                 STA BORDER_Y_SIZE
@@ -18,16 +18,39 @@ INIT_DISPLAY
                 ; RESET the keyboard handler
                 STZ KEYBOARD_SC_TMP
 
-                ; enable the border
-                LDA #Border_Ctrl_Enable
+                ; disable the border
+                LDA #0
                 STA BORDER_CTRL_REG
 
                 ; enable graphics, tiles and sprites display
-                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_Bitmap_en
                 STA MASTER_CTRL_REG_L
                 
-                ; load sprites and tiles
-                JSR LOAD_ASSETS
+                LDA #BM_LUT1 | BM_ENABLE
+                STA BM0_CONTROL_REG
+                LDA #(<`VSPLASH) - $B0
+                STA BM0_START_ADDY_H
+                
+                setal
+                LDA #0
+                STA BM0_START_ADDY_L
+                setas
+                
+                
+                RTS
+                
+RESTART_GAME
+                .as
+                LDA #$20
+                STA BORDER_X_SIZE
+                
+                ; enable the border
+                LDA #Border_Ctrl_Enable
+                STA BORDER_CTRL_REG
+                
+                ; enable graphics, tiles and sprites display
+                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En + Mstr_Ctrl_Sprite_En ; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+                STA MASTER_CTRL_REG_L
                 
                 setal
                 LDA #0
@@ -94,7 +117,6 @@ INIT_DISPLAY
                 LDA #BEE_SPRITE * 4
                 STA SP02_ADDY_PTR_M
                 
-                
                 LDA #DEFAULT_LIVES
                 STA LIVES
                 
@@ -117,6 +139,7 @@ INIT_DISPLAY
                 JSR UPDATE_DISPLAY
                 
                 RTS
+                
 
 ; *************************************************************
 ; * Setup the sprite registers for the non-player sprites
@@ -245,7 +268,7 @@ GAME_OVER_DRAW
                 
                 LDA #0
                 STA GAME_OVER
-                JSR INIT_DISPLAY
+                JSR RESTART_GAME
                 
         GO_DONE
                 PLB
@@ -293,6 +316,7 @@ UPDATE_DISPLAY
                 STA PL_MOVE_UP
 
                 JSR INIT_PLAYER
+                JSR SHOW_SCORE_BOARD
         NO_UPDATE
                 PLA
                 PLB
@@ -1472,6 +1496,45 @@ UPDATE_TIMER_BAR
 ; *****************************************************************
 ; * Load sprites and tiles into Video RAM
 ; *****************************************************************
+LOAD_SPLASH
+                .as
+                PHB
+                setal
+                LDA #1024
+                LDX #<>SPLASH_PALETTE
+                LDY #<>GRPH_LUT1_PTR
+                MVN <`SPLASH_PALETTE,<`GRPH_LUT1_PTR
+                
+                ; bitmap of 640x480 = $4 B000
+                LDA #$FFFF
+                LDX #<>SPLASH
+                LDY #<>VSPLASH
+                MVN <`SPLASH,<`VSPLASH
+                
+                LDX #<>SPLASH
+                LDY #<>VSPLASH
+                MVN (<`SPLASH)+1,(<`VSPLASH)+1
+                
+                LDX #<>SPLASH
+                LDY #<>VSPLASH
+                MVN (<`SPLASH)+2,(<`VSPLASH)+2
+                
+                LDX #<>SPLASH
+                LDY #<>VSPLASH
+                MVN (<`SPLASH)+3,(<`VSPLASH)+3
+                
+                LDA #$AFFF
+                LDX #<>SPLASH
+                LDY #<>VSPLASH
+                MVN (<`SPLASH)+4,(<`VSPLASH)+4
+                
+                setas
+                PLB
+                RTS
+                
+; *****************************************************************
+; * Load sprites and tiles into Video RAM
+; *****************************************************************
 LOAD_ASSETS
                 .as
                 PHB
@@ -1487,10 +1550,10 @@ LOAD_ASSETS
                 MVN <`TILES,<`VTILE_SET0
 
                 ; load LUT0
-                LDX #<>PALETTE_TILES
+                LDX #<>TILES_PALETTE
                 LDY #<>GRPH_LUT0_PTR
                 LDA #1024
-                MVN <`PALETTE_TILES,<`GRPH_LUT0_PTR
+                MVN <`TILES_PALETTE,<`GRPH_LUT0_PTR
                 
                 ; copy game-over tilemap to video RAM
                 LDX #<>game_over_board
