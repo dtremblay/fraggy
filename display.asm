@@ -642,13 +642,7 @@ UPDATE_NPC_POSITIONS
                 CLC
                 ADC game_array,X     ; add the speed
                 BPL GRT_LFT_MRG
-                 
                 
-;                CMP #4
-;                BCS GRT_LFT_MRG
-                ;LDA #640-4 ; right edge
-                ;CLC
-                ;ADC game_array,X ; add the speed
                 ADC #640-4
                 BRA LESS_RGT_MRG
                 
@@ -1043,6 +1037,11 @@ WATER_COLLISION
                 
                 
        ADD_50_ONLY
+                .as
+                ; turn off the player sprite
+                LDA #0
+                STA SP00_CONTROL_REG
+                
                 setal
                 SED
                 CLC

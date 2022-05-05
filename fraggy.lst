@@ -1,7 +1,7 @@
 
 ; 64tass Turbo Assembler Macro V1.55.2425-test listing file
 ; 64tass-1.55.2425-test.exe -D TARGET_SYS= --long-address --intel-hex --m65816 -o fraggy.hex --list fraggy.lst fraggy.asm
-; Sat Apr 16 23:39:15 2022
+; Thu May 05 19:56:44 2022
 
 ;Offset	;Hex		;Monitor	;Source
 
@@ -1309,7 +1309,7 @@
 .160014	8f 4c 01 00	sta $00014c	            STA @lINT_MASK_REG0
 .160018	8f 4d 01 00	sta $00014d	            STA @lINT_MASK_REG1
 .16001c	8f 4e 01 00	sta $00014e	            STA @lINT_MASK_REG2
-.160020	22 ae 11 16	jsl $1611ae	            JSL VGM_INIT_TIMERS
+.160020	22 b4 11 16	jsl $1611b4	            JSL VGM_INIT_TIMERS
 .160024	a9 18		lda #$18	            LDA #`SONG
 .160026	85 8a		sta $8a		            STA CURRENT_POSITION + 2
 .160028	85 86		sta $86		            STA SONG_START + 2
@@ -1328,10 +1328,10 @@
 .160050	8f 7b 00 16	sta $16007b	            STA GAME_OVER
 .160054	a9 03		lda #$03	            LDA #GABE_RNG_CTRL_EN | GABE_RNG_CTRL_DV
 .160056	8f 86 e8 af	sta $afe886	            STA GABE_RNG_CTRL
-.16005a	20 84 0a	jsr $160a84	            JSR LOAD_SPLASH
-.16005d	22 40 11 16	jsl $161140	            JSL VGM_SET_SONG_POINTERS
+.16005a	20 8a 0a	jsr $160a8a	            JSR LOAD_SPLASH
+.16005d	22 46 11 16	jsl $161146	            JSL VGM_SET_SONG_POINTERS
 .160061	20 53 01	jsr $160153	            JSR INIT_DISPLAY
-.160064	20 ca 0a	jsr $160aca	            JSR LOAD_ASSETS
+.160064	20 d0 0a	jsr $160ad0	            JSR LOAD_ASSETS
 .160067	a9 fa		lda #$fa	            LDA #~( FNX0_INT00_SOF | FNX0_INT02_TMR0)
 .160069	8f 4c 01 00	sta $00014c	            STA @lINT_MASK_REG0
 .16006d	a9 fe		lda #$fe	            LDA #~( FNX1_INT00_KBD )
@@ -1456,7 +1456,7 @@
 .160149	20 46 03	jsr $160346	                JSR UPDATE_DISPLAY
 .16014c	60		rts		                RTS
 .16014d					TIMER0_INTERRUPT
-.16014d	22 10 0c 16	jsl $160c10	                JSL VGM_WRITE_REGISTER
+.16014d	22 16 0c 16	jsl $160c16	                JSL VGM_WRITE_REGISTER
 .160151	60		rts		                RTS
 .160152					NMI_HANDLER
 .160152	6b		rtl		                RTL
@@ -1547,8 +1547,8 @@
 .16024c	20 67 02	jsr $160267	                JSR ENABLE_SPRITES_NPC
 .16024f	20 ae 02	jsr $1602ae	                JSR INIT_PLAYER
 .160252	20 fe 02	jsr $1602fe	                JSR INIT_NPC
-.160255	20 4e 09	jsr $16094e	                JSR SHOW_SCORE_BOARD
-.160258	20 ca 09	jsr $1609ca	                JSR SHOW_LEVEL
+.160255	20 54 09	jsr $160954	                JSR SHOW_SCORE_BOARD
+.160258	20 d0 09	jsr $1609d0	                JSR SHOW_LEVEL
 .16025b	a9 00		lda #$00	                LDA #0
 .16025d	8f a2 00 16	sta $1600a2	                STA SOF_COUNTER
 .160261	a9 df		lda #$df	                LDA #$DF ; - joystick in initial state
@@ -1609,7 +1609,7 @@
 .1602f0	8f 7e 00 16	sta $16007e	                STA BEE_TIMER
 .1602f4	a9 32		lda #$32	                LDA #DEFAULT_TIMER
 .1602f6	8f 83 00 16	sta $160083	                STA GTIMER
-.1602fa	20 19 0a	jsr $160a19	                JSR UPDATE_TIMER_BAR
+.1602fa	20 1f 0a	jsr $160a1f	                JSR UPDATE_TIMER_BAR
 .1602fd	60		rts		                RTS
 .1602fe					INIT_NPC
 .1602fe	c2 20		rep #$20	                REP #$20        ; set A long
@@ -1636,7 +1636,7 @@
 .16032b	af 7b 00 16	lda $16007b	                LDA GAME_OVER
 .16032f	c9 02		cmp #$02	                CMP #2
 .160331	b0 03		bcs $160336	                BGE G_O_LOAD_DONE
-.160333	20 9d 0b	jsr $160b9d	                JSR DRAW_GAME_OVER_MAP
+.160333	20 a3 0b	jsr $160ba3	                JSR DRAW_GAME_OVER_MAP
 .160336					    G_O_LOAD_DONE
 .160336	68		pla		                PLA
 .160337	89 10		bit #$10	                BIT #$10 ; fire
@@ -1672,7 +1672,7 @@
 .160376	8f 7c 00 16	sta $16007c	                STA DEAD
 .16037a	8f 87 00 16	sta $160087	                STA PL_MOVE_UP
 .16037e	20 ae 02	jsr $1602ae	                JSR INIT_PLAYER
-.160381	20 4e 09	jsr $16094e	                JSR SHOW_SCORE_BOARD
+.160381	20 54 09	jsr $160954	                JSR SHOW_SCORE_BOARD
 .160384					        NO_UPDATE
 .160384	68		pla		                PLA
 .160385	ab		plb		                PLB
@@ -1697,23 +1697,23 @@
 .1603b2	8f 81 00 16	sta $160081	                STA SCORE+1
 .1603b6	d8		cld		                CLD
 .1603b7	e2 20		sep #$20	                SEP #$20        ; set A short
-.1603b9	20 4e 09	jsr $16094e	                JSR SHOW_SCORE_BOARD
+.1603b9	20 54 09	jsr $160954	                JSR SHOW_SCORE_BOARD
 .1603bc	a9 00		lda #$00	                LDA #0
 .1603be	8f 9f 00 16	sta $16009f	                STA HOME_NEST
-.1603c2	20 ca 09	jsr $1609ca	                JSR SHOW_LEVEL
+.1603c2	20 d0 09	jsr $1609d0	                JSR SHOW_LEVEL
 .1603c5					        REG_FLOW
 .1603c5	af a2 00 16	lda $1600a2	                LDA SOF_COUNTER
 .1603c9	1a		inc a		                INC A
 .1603ca	c9 3c		cmp #$3c	                CMP #60
 .1603cc	d0 31		bne $1603ff	                BNE REG_FLOW_CONTINUE
-.1603ce	20 3f 0b	jsr $160b3f	                JSR CHECK_BEE_TIMER
+.1603ce	20 45 0b	jsr $160b45	                JSR CHECK_BEE_TIMER
 .1603d1	a9 00		lda #$00	                LDA #0
 .1603d3	8f a2 00 16	sta $1600a2	                STA SOF_COUNTER
 .1603d7	af 83 00 16	lda $160083	                LDA GTIMER
 .1603db	3a		dec a		                DEC A
 .1603dc	d0 18		bne $1603f6	                BNE GTIMER_UPDATE
 .1603de	8f 83 00 16	sta $160083	                STA GTIMER
-.1603e2	20 19 0a	jsr $160a19	                JSR UPDATE_TIMER_BAR
+.1603e2	20 1f 0a	jsr $160a1f	                JSR UPDATE_TIMER_BAR
 .1603e5	a9 3c		lda #$3c	                LDA #SPLATT_SPRITE * 4
 .1603e7	8f 02 0c af	sta $af0c02	                STA SP00_ADDY_PTR_M
 .1603eb	a9 01		lda #$01	                LDA #1
@@ -1723,13 +1723,13 @@
 .1603f3	4c 56 07	jmp $160756	                JMP SET_DEAD  ; this JMP calls RTS
 .1603f6					            GTIMER_UPDATE
 .1603f6	8f 83 00 16	sta $160083	                STA GTIMER
-.1603fa	20 19 0a	jsr $160a19	                JSR UPDATE_TIMER_BAR
+.1603fa	20 1f 0a	jsr $160a1f	                JSR UPDATE_TIMER_BAR
 .1603fd	80 04		bra $160403	                BRA REG_FLOW_CONTINUE_2
 .1603ff					        REG_FLOW_CONTINUE
 .1603ff	8f a2 00 16	sta $1600a2	                STA SOF_COUNTER
 .160403					        REG_FLOW_CONTINUE_2
-.160403	20 5c 08	jsr $16085c	                JSR UPDATE_LILLY
-.160406	20 b7 08	jsr $1608b7	                JSR UPDATE_TURTLE
+.160403	20 62 08	jsr $160862	                JSR UPDATE_LILLY
+.160406	20 bd 08	jsr $1608bd	                JSR UPDATE_TURTLE
 .160409	af 84 00 16	lda $160084	                LDA TONGUE_POS
 .16040d	f0 06		beq $160415	                BEQ SKIP_TONGUE_UPDATE
 .16040f	20 14 06	jsr $160614	                JSR UPDATE_TONGUE
@@ -1797,7 +1797,7 @@
 .160493	d8		cld		                CLD
 .160494	a9 00		lda #$00	                LDA #0
 .160496	8f 87 00 16	sta $160087	                STA PL_MOVE_UP
-.16049a	20 4e 09	jsr $16094e	                JSR SHOW_SCORE_BOARD
+.16049a	20 54 09	jsr $160954	                JSR SHOW_SCORE_BOARD
 .16049d					        UD_DONE
 .16049d	ab		plb		                PLB
 .16049e	60		rts		                RTS
@@ -2195,559 +2195,561 @@
 .1607e1	ad 80 00	lda $160080	                LDA SCORE
 .1607e4	69 00 02	adc #$0200	                ADC #$200
 .1607e7	8d 80 00	sta $160080	                STA SCORE
-.1607ea	80 0d		bra $1607f9	                BRA SCR_CONTINUE
+.1607ea	80 13		bra $1607ff	                BRA SCR_CONTINUE
 .1607ec					       ADD_50_ONLY
-.1607ec	c2 20		rep #$20	                REP #$20        ; set A long
-.1607ee	f8		sed		                SED
-.1607ef	18		clc		                CLC
-.1607f0	ad 80 00	lda $160080	                LDA SCORE
-.1607f3	69 50 00	adc #$0050	                ADC #$50
-.1607f6	8d 80 00	sta $160080	                STA SCORE
-.1607f9					      SCR_CONTINUE
-.1607f9	90 0d		bcc $160808	                BCC HL_MULTIPLY_TIMER
-.1607fb	e2 20		sep #$20	                SEP #$20        ; set A short
-.1607fd	18		clc		                CLC
-.1607fe	ad 82 00	lda $160082	                LDA SCORE + 2
-.160801	69 01		adc #$01	                ADC #1
-.160803	8d 82 00	sta $160082	                STA SCORE + 2
-.160806	c2 20		rep #$20	                REP #$20        ; set A long
-.160808					        HL_MULTIPLY_TIMER
-.160808	ad 83 00	lda $160083	                LDA GTIMER
-.16080b	29 ff 00	and #$00ff	                AND #$FF
-.16080e	aa		tax		                TAX
-.16080f	ad 80 00	lda $160080	                LDA SCORE
-.160812					        HL_MULTIPLY_LOOP
-.160812	18		clc		                CLC
-.160813	69 10 00	adc #$0010	                ADC #$10
-.160816	8d 80 00	sta $160080	                STA SCORE
-.160819	90 10		bcc $16082b	                BCC HL_MULT_LP_END
-.16081b	e2 20		sep #$20	                SEP #$20        ; set A short
-.16081d	18		clc		                CLC
-.16081e	ad 82 00	lda $160082	                LDA SCORE + 2
-.160821	69 01		adc #$01	                ADC #1
-.160823	8d 82 00	sta $160082	                STA SCORE + 2
-.160826	c2 20		rep #$20	                REP #$20        ; set A long
-.160828	a9 00 00	lda #$0000	                LDA #0 ; the thousands have rolled over, so set A to 0.
-.16082b					        HL_MULT_LP_END
-.16082b	ca		dex		                DEX
-.16082c	d0 e4		bne $160812	                BNE HL_MULTIPLY_LOOP
-.16082e	d8		cld		                CLD
-.16082f	a9 00 00	lda #$0000	                LDA #0
-.160832	e2 20		sep #$20	                SEP #$20        ; set A short
-.160834	a9 b4		lda #$b4	                LDA #THREE_SECS
-.160836	8d 7d 00	sta $16007d	                STA RESET_BOARD
-.160839	a9 01		lda #$01	                LDA #1         ; flag that the player has nested and the position needs to be reset
-.16083b	8d a1 00	sta $1600a1	                STA NEST_UP
-.16083e	bb		tyx		                TYX
-.16083f	a9 1e		lda #$1e	                LDA #30
-.160841	9f 50 5a b0	sta $b05a50,x	                STA VTILE_MAP1 + 6 * 40 , X
-.160845	a9 1f		lda #$1f	                LDA #31
-.160847	9f 52 5a b0	sta $b05a52,x	                STA VTILE_MAP1 + 6 * 40 + 2, X
-.16084b	a9 2e		lda #$2e	                LDA #46
-.16084d	9f a0 5a b0	sta $b05aa0,x	                STA VTILE_MAP1 + 8 * 40, X
-.160851	a9 2f		lda #$2f	                LDA #47
-.160853	9f a2 5a b0	sta $b05aa2,x	                STA VTILE_MAP1 + 8 * 40 + 2, X
-.160857	20 4e 09	jsr $16094e	                JSR SHOW_SCORE_BOARD
-.16085a	60		rts		                RTS
->16085b	00				LILLY_CYCLE     .byte 0
-.16085c					UPDATE_LILLY
-.16085c	af 5b 08 16	lda $16085b	                LDA @l LILLY_CYCLE
-.160860	1a		inc a		                INC A
-.160861	c9 0a		cmp #$0a	                CMP #10 ; only update every N SOF cycle
-.160863	d0 4c		bne $1608b1	                BNE UL_SKIP
-.160865	a9 00		lda #$00	                LDA #0
-.160867	8f 5b 08 16	sta $16085b	                STA @l LILLY_CYCLE
-.16086b	08		php		                PHP
-.16086c	48		pha		                PHA             ; begin setdbr macro
-.16086d	08		php		                PHP
-.16086e	e2 20		sep #$20	                SEP #$20        ; set A short
-.160870	a9 00		lda #$00	                LDA #`<game_array
-.160872	48		pha		                PHA
-.160873	ab		plb		                PLB
-.160874	28		plp		                PLP
-.160875	68		pla		                PLA             ; end setdbr macro
-.160876	a2 f0 00	ldx #$00f0	                LDX #NPC_SPRITES / 2 * 8
-.160879	a0 00 00	ldy #$0000	                LDY #0
-.16087c					        UP_LI_CHECK
-.16087c	bf 40 28 16	lda $162840,x	                LDA game_array,X
-.160880	f0 1d		beq $16089f	                BEQ UP_LI_SKIP_ROW
-.160882	bf 46 28 16	lda $162846,x	                LDA game_array + 6,X
-.160886	89 10		bit #$10	                BIT #$10
-.160888	f0 15		beq $16089f	                BEQ UP_LI_SKIP_ROW
-.16088a	89 20		bit #$20	                BIT #$20
-.16088c	d0 11		bne $16089f	                BNE UP_LI_SKIP_ROW
-.16088e	1a		inc a		                INC A
-.16088f	c9 18		cmp #$18	                CMP #LILLYPAD+8
-.160891	d0 02		bne $160895	                BNE STORE_LILLY
-.160893	a9 10		lda #$10	                LDA #LILLYPAD
-.160895					        STORE_LILLY
-.160895	9f 46 28 16	sta $162846,x	                STA game_array + 6,X
-.160899	0a		asl a		                ASL A
-.16089a	0a		asl a		                ASL A
-.16089b	9f 22 0c af	sta $af0c22,x	                STA SP04_ADDY_PTR_M,X
-.16089f					        UP_LI_SKIP_ROW
-.16089f	c2 20		rep #$20	                REP #$20        ; set A long
-.1608a1	8a		txa		                TXA
-.1608a2	18		clc		                CLC
-.1608a3	69 08 00	adc #$0008	                ADC #8
-.1608a6	aa		tax		                TAX
-.1608a7	e2 20		sep #$20	                SEP #$20        ; set A short
-.1608a9	c8		iny		                INY
-.1608aa	c0 1e 00	cpy #$001e	                CPY #NPC_SPRITES/2
-.1608ad	d0 cd		bne $16087c	                BNE UP_LI_CHECK
-.1608af	ab		plb		                PLB
-.1608b0	60		rts		                RTS
-.1608b1					        UL_SKIP
-.1608b1	8f 5b 08 16	sta $16085b	                STA @l LILLY_CYCLE
-.1608b5	60		rts		                RTS
->1608b6	00				TURTLE_CYCLE    .byte 0
-.1608b7					UPDATE_TURTLE
-.1608b7	af b6 08 16	lda $1608b6	                LDA @l TURTLE_CYCLE
-.1608bb	1a		inc a		                INC A
-.1608bc	c9 0a		cmp #$0a	                CMP #10 ; only update every N SOF cycle
-.1608be	d0 40		bne $160900	                BNE UT_SKIP
-.1608c0	a9 00		lda #$00	                LDA #0
-.1608c2	8f b6 08 16	sta $1608b6	                STA @l TURTLE_CYCLE
-.1608c6	a2 f0 00	ldx #$00f0	                LDX #NPC_SPRITES / 2 * 8
-.1608c9	a0 00 00	ldy #$0000	                LDY #0
-.1608cc					        UP_TTL_CHECK
-.1608cc	bf 40 28 16	lda $162840,x	                LDA @l game_array,X
-.1608d0	f0 1d		beq $1608ef	                BEQ UP_TTL_SKIP_ROW
-.1608d2	bf 46 28 16	lda $162846,x	                LDA @l game_array + 6,X
-.1608d6	89 20		bit #$20	                BIT #TURTLE1
-.1608d8	f0 15		beq $1608ef	                BEQ UP_TTL_SKIP_ROW
-.1608da	c9 24		cmp #$24	                CMP #TURTLE4 + 1
-.1608dc	b0 11		bcs $1608ef	                BGE UP_TTL_SKIP_ROW
-.1608de	1a		inc a		                INC A
-.1608df	c9 24		cmp #$24	                CMP #TURTLE4+1
-.1608e1	d0 02		bne $1608e5	                BNE STORE_TURTLE
-.1608e3	a9 20		lda #$20	                LDA #TURTLE1
-.1608e5					        STORE_TURTLE
-.1608e5	9f 46 28 16	sta $162846,x	                STA @l game_array + 6,X
-.1608e9	0a		asl a		                ASL A
-.1608ea	0a		asl a		                ASL A
-.1608eb	9f 22 0c af	sta $af0c22,x	                STA @l SP04_ADDY_PTR_M,X
-.1608ef					        UP_TTL_SKIP_ROW
-.1608ef	c2 20		rep #$20	                REP #$20        ; set A long
-.1608f1	8a		txa		                TXA
-.1608f2	18		clc		                CLC
-.1608f3	69 08 00	adc #$0008	                ADC #8
-.1608f6	aa		tax		                TAX
-.1608f7	e2 20		sep #$20	                SEP #$20        ; set A short
-.1608f9	c8		iny		                INY
-.1608fa	c0 3c 00	cpy #$003c	                CPY #NPC_SPRITES
-.1608fd	d0 cd		bne $1608cc	                BNE UP_TTL_CHECK
-.1608ff	60		rts		                RTS
-.160900					        UT_SKIP
-.160900	8f b6 08 16	sta $1608b6	                STA @l TURTLE_CYCLE
-.160904	60		rts		                RTS
->160905	30 31 32 33 34 35 36 37		HEX_MAP         .text '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
->16090d	38 39 41 42 43 44 45 46
->160915	00				LOW_NIBBLE      .byte 0
->160916	00				HIGH_NIBBLE     .byte 0
-.160917					WRITE_HEX
-.160917	48		pha		        PHA
-.160918	da		phx		            PHX
-.160919	5a		phy		                PHY
-.16091a	48		pha		                PHA
-.16091b	29 f0		and #$f0	                    AND #$F0
-.16091d	4a		lsr a		                    lsr A
-.16091e	4a		lsr a		                    lsr A
-.16091f	4a		lsr a		                    lsr A
-.160920	4a		lsr a		                    lsr A
-.160921	e2 10		sep #$10	                SEP #$10        ; set X short
-.160923	aa		tax		                    TAX
-.160924	bf 05 09 16	lda $160905,x	                    LDA HEX_MAP,X
-.160928	8f 15 09 16	sta $160915	                    STA @lLOW_NIBBLE
-.16092c	68		pla		                PLA
-.16092d	29 0f		and #$0f	                AND #$0F
-.16092f	aa		tax		                TAX
-.160930	bf 05 09 16	lda $160905,x	                LDA HEX_MAP,X
-.160934	8f 16 09 16	sta $160916	                STA @lHIGH_NIBBLE
-.160938	c2 30		rep #$30	                REP #$30        ; set A&X long
-.16093a	7a		ply		                PLY
-.16093b	af 15 09 16	lda $160915	                LDA @lLOW_NIBBLE
-.16093f	97 0c		sta [$0c],y	                STA [SCREENBEGIN], Y
-.160941	a9 10 10	lda #$1010	                LDA #$1010
-.160944	bb		tyx		                TYX
-.160945	9f 00 c0 af	sta $afc000,x	                STA @lCS_COLOR_MEM_PTR, X
-.160949	e2 20		sep #$20	                SEP #$20        ; set A short
-.16094b	fa		plx		            PLX
-.16094c	68		pla		        PLA
-.16094d	60		rts		                RTS
-.16094e					SHOW_SCORE_BOARD
-.16094e	8b		phb		                PHB
-.16094f	48		pha		                PHA             ; begin setdbr macro
-.160950	08		php		                PHP
-.160951	e2 20		sep #$20	                SEP #$20        ; set A short
-.160953	a9 b0		lda #$b0	                LDA #<`VTILE_MAP1
-.160955	48		pha		                PHA
-.160956	ab		plb		                PLB
-.160957	28		plp		                PLP
-.160958	68		pla		                PLA             ; end setdbr macro
-.160959	a9 00		lda #$00	                LDA #0
-.16095b	a2 00 00	ldx #$0000	                LDX #0
-.16095e	a0 0c 00	ldy #$000c	                LDY #12 ; clear the 6 tiles
-.160961					        HEART_CLEAR_LOOP
-.160961	9d b4 59	sta $b059b4,x	                STA VTILE_MAP1 + (40+2)*2,X ; descending loop offset by 1
-.160964	e8		inx		                INX
-.160965	88		dey		                DEY
-.160966	d0 f9		bne $160961	                BNE HEART_CLEAR_LOOP
-.160968	eb		xba		                XBA
-.160969	af 7a 00 16	lda $16007a	                LDA LIVES
-.16096d	f0 0b		beq $16097a	                BEQ SSB_SCORE
-.16096f	0a		asl a		                ASL A
-.160970	aa		tax		                TAX
-.160971					        SHOW_HEART
-.160971	a9 10		lda #$10	                LDA #TILE_HEART
-.160973	9d b4 59	sta $b059b4,x	                STA VTILE_MAP1 + (40+2)*2,X
-.160976	ca		dex		                DEX
-.160977	ca		dex		                DEX
-.160978	d0 f7		bne $160971	                BNE SHOW_HEART
-.16097a					        SSB_SCORE
-.16097a	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the high byte
-.16097e	4a		lsr a		                LSR ; get the high nibble
-.16097f	4a		lsr a		                LSR A
-.160980	4a		lsr a		                LSR A
-.160981	4a		lsr a		                LSR A
-.160982	18		clc		                CLC
-.160983	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160985	8d f2 59	sta $b059f2	                STA VTILE_MAP1 + 146
-.160988	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the low nibble
-.16098c	29 0f		and #$0f	                AND #$F
-.16098e	18		clc		                CLC
-.16098f	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160991	8d f4 59	sta $b059f4	                STA VTILE_MAP1 + 148
-.160994	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the high byte
-.160998	4a		lsr a		                LSR ; get the high nibble
-.160999	4a		lsr a		                LSR A
-.16099a	4a		lsr a		                LSR A
-.16099b	4a		lsr a		                LSR A
-.16099c	18		clc		                CLC
-.16099d	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.16099f	8d f6 59	sta $b059f6	                STA VTILE_MAP1 + 150
-.1609a2	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the low nibble
-.1609a6	29 0f		and #$0f	                AND #$F
-.1609a8	18		clc		                CLC
-.1609a9	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.1609ab	8d f8 59	sta $b059f8	                STA VTILE_MAP1 + 152
-.1609ae	af 80 00 16	lda $160080	                LDA SCORE
-.1609b2	4a		lsr a		                LSR ; get the high nibble
-.1609b3	4a		lsr a		                LSR A
-.1609b4	4a		lsr a		                LSR A
-.1609b5	4a		lsr a		                LSR A
-.1609b6	18		clc		                CLC
-.1609b7	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.1609b9	8d fa 59	sta $b059fa	                STA VTILE_MAP1 + 154
-.1609bc	af 80 00 16	lda $160080	                LDA SCORE ; the low nibble
-.1609c0	29 0f		and #$0f	                AND #$F
-.1609c2	18		clc		                CLC
-.1609c3	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.1609c5	8d fc 59	sta $b059fc	                STA VTILE_MAP1 + 156
-.1609c8	ab		plb		                PLB
-.1609c9	60		rts		                RTS
-.1609ca					SHOW_LEVEL
-.1609ca	8b		phb		                PHB
-.1609cb	48		pha		                PHA             ; begin setdbr macro
-.1609cc	08		php		                PHP
-.1609cd	e2 20		sep #$20	                SEP #$20        ; set A short
-.1609cf	a9 b0		lda #$b0	                LDA #<`VTILE_MAP1
-.1609d1	48		pha		                PHA
-.1609d2	ab		plb		                PLB
-.1609d3	28		plp		                PLP
-.1609d4	68		pla		                PLA             ; end setdbr macro
-.1609d5	a9 00		lda #$00	                LDA #0
-.1609d7	a0 20 00	ldy #$0020	                LDY #32
-.1609da	a2 00 00	ldx #$0000	                LDX #0
-.1609dd					        SSB_LEVEL_CLR
-.1609dd	9d 76 62	sta $b06276,x	                STA VTILE_MAP1 + (29*40+3)*2, X
-.1609e0	e8		inx		                INX
-.1609e1	88		dey		                DEY
-.1609e2	d0 f9		bne $1609dd	                BNE SSB_LEVEL_CLR
-.1609e4	eb		xba		                XBA
-.1609e5	af a0 00 16	lda $1600a0	                LDA LEVEL
-.1609e9	29 0f		and #$0f	                AND #$F ; mask to 16
-.1609eb	0a		asl a		                ASL A
-.1609ec	aa		tax		                TAX
-.1609ed	a9 2a		lda #$2a	                LDA #LEVEL_FROG
-.1609ef					        SSB_LEVEL
-.1609ef	9d 74 62	sta $b06274,x	                STA VTILE_MAP1 + (29*40+2)*2, X
-.1609f2	ca		dex		                DEX
-.1609f3	ca		dex		                DEX
-.1609f4	d0 f9		bne $1609ef	                BNE SSB_LEVEL
-.1609f6	a0 05 00	ldy #$0005	                LDY #5
-.1609f9	a2 0c 00	ldx #$000c	                LDX #6*2
-.1609fc					        SSB_ERASE_NEST
-.1609fc	a9 05		lda #$05	                LDA #5
-.1609fe	9d 50 5a	sta $b05a50,x	                STA VTILE_MAP1 + 6 * 40 , X
-.160a01	a9 04		lda #$04	                LDA #4
-.160a03	9d 52 5a	sta $b05a52,x	                STA VTILE_MAP1 + 6 * 40 + 2, X
-.160a06	a9 08		lda #$08	                LDA #8
-.160a08	9d a0 5a	sta $b05aa0,x	                STA VTILE_MAP1 + 8 * 40, X
-.160a0b	a9 09		lda #$09	                LDA #9
-.160a0d	9d a2 5a	sta $b05aa2,x	                STA VTILE_MAP1 + 8 * 40 + 2, X
-.160a10	8a		txa		                TXA
-.160a11	69 0e		adc #$0e	                ADC #14
-.160a13	aa		tax		                TAX
-.160a14	88		dey		                DEY
-.160a15	d0 e5		bne $1609fc	                BNE SSB_ERASE_NEST
-.160a17	ab		plb		                PLB
-.160a18	60		rts		                RTS
-.160a19					UPDATE_TIMER_BAR
-.160a19	8b		phb		                PHB
-.160a1a	48		pha		                PHA             ; begin setdbr macro
-.160a1b	08		php		                PHP
-.160a1c	e2 20		sep #$20	                SEP #$20        ; set A short
-.160a1e	a9 b0		lda #$b0	                LDA #<`VTILE_MAP1
-.160a20	48		pha		                PHA
-.160a21	ab		plb		                PLB
-.160a22	28		plp		                PLP
-.160a23	68		pla		                PLA             ; end setdbr macro
-.160a24	a9 00		lda #$00	                LDA #0
-.160a26	eb		xba		                XBA
-.160a27	a9 00		lda #$00	                LDA #0
-.160a29	a0 1a 00	ldy #$001a	                LDY #26 ; clear the 13 tiles
-.160a2c	a2 00 00	ldx #$0000	                LDX #0
-.160a2f					        UTB_CLEAR
-.160a2f	9d 9e 62	sta $b0629e,x	                STA VTILE_MAP1 + (29*40+23)*2, X
-.160a32	e8		inx		                INX
-.160a33	88		dey		                DEY
-.160a34	d0 f9		bne $160a2f	                BNE UTB_CLEAR
-.160a36	af 83 00 16	lda $160083	                LDA GTIMER
-.160a3a	c9 0b		cmp #$0b	                CMP #11
-.160a3c	90 22		bcc $160a60	                BLT RED_PROGRESS
-.160a3e	4a		lsr a		                LSR A ; divide by 4 to get the number of full tiles
-.160a3f	4a		lsr a		                LSR A ; this number should never be 0
-.160a40	a8		tay		                TAY
-.160a41	a2 1a 00	ldx #$001a	                LDX #26
-.160a44	a9 30		lda #$30	                LDA #PBAR_1
-.160a46					        UTB_DRAW_PRG
-.160a46	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
-.160a49	ca		dex		                DEX
-.160a4a	ca		dex		                DEX
-.160a4b	88		dey		                DEY
-.160a4c	d0 f8		bne $160a46	                BNE UTB_DRAW_PRG
-.160a4e					        UTB_DRAW_SUBTILE
-.160a4e	af 83 00 16	lda $160083	                LDA GTIMER
-.160a52	29 03		and #$03	                AND #3  ; remainder of division by 4
-.160a54	f0 08		beq $160a5e	                BEQ UTB_BLANK_DONE
-.160a56	49 03		eor #$03	                EOR #3  ; flip the bits
-.160a58	38		sec		                SEC     ; magic math - two's complement
-.160a59	69 30		adc #$30	                ADC #PBAR_1
-.160a5b	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
-.160a5e					        UTB_BLANK_DONE
-.160a5e	ab		plb		                PLB
-.160a5f	60		rts		                RTS
-.160a60					    RED_PROGRESS
-.160a60	4a		lsr a		                LSR A
-.160a61	4a		lsr a		                LSR A  ; divide by 4 to get the number of full tiles
-.160a62	f0 0e		beq $160a72	                BEQ DRAW_RED_SUBTILE
-.160a64	a8		tay		                TAY
-.160a65	a2 1a 00	ldx #$001a	                LDX #26
-.160a68	a9 34		lda #$34	                LDA #RBAR_1
-.160a6a					    UTB_DRAW_RED_PRG
-.160a6a	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
-.160a6d	ca		dex		                DEX
-.160a6e	ca		dex		                DEX
-.160a6f	88		dey		                DEY
-.160a70	d0 f8		bne $160a6a	                BNE UTB_DRAW_RED_PRG
-.160a72					    DRAW_RED_SUBTILE
-.160a72	af 83 00 16	lda $160083	                LDA GTIMER
-.160a76	29 03		and #$03	                AND #3  ; remainder of division by 4
-.160a78	f0 e4		beq $160a5e	                BEQ UTB_BLANK_DONE
-.160a7a	49 03		eor #$03	                EOR #3  ; flip the bits
-.160a7c	38		sec		                SEC     ; magic math - two's complement
-.160a7d	69 34		adc #$34	                ADC #RBAR_1
-.160a7f	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
-.160a82	ab		plb		                PLB
-.160a83	60		rts		                RTS
-.160a84					LOAD_SPLASH
-.160a84	8b		phb		                PHB
-.160a85	c2 20		rep #$20	                REP #$20        ; set A long
-.160a87	a9 00 04	lda #$0400	                LDA #1024
-.160a8a	a2 00 f4	ldx #$f400	                LDX #<>SPLASH_PALETTE
-.160a8d	a0 00 24	ldy #$2400	                LDY #<>GRPH_LUT1_PTR
-.160a90	54 af 17	mvn #$17,#$af	                MVN <`SPLASH_PALETTE,<`GRPH_LUT1_PTR
-.160a93	a9 ff ff	lda #$ffff	                LDA #$FFFF
-.160a96	a2 00 00	ldx #$0000	                LDX #<>SPLASH
-.160a99	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
-.160a9c	54 b3 1b	mvn #$1b,#$b3	                MVN <`SPLASH,<`VSPLASH
-.160a9f	a2 00 00	ldx #$0000	                LDX #<>SPLASH
-.160aa2	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
-.160aa5	54 b4 1c	mvn #$1c,#$b4	                MVN (<`SPLASH)+1,(<`VSPLASH)+1
-.160aa8	a2 00 00	ldx #$0000	                LDX #<>SPLASH
-.160aab	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
-.160aae	54 b5 1d	mvn #$1d,#$b5	                MVN (<`SPLASH)+2,(<`VSPLASH)+2
-.160ab1	a2 00 00	ldx #$0000	                LDX #<>SPLASH
-.160ab4	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
-.160ab7	54 b6 1e	mvn #$1e,#$b6	                MVN (<`SPLASH)+3,(<`VSPLASH)+3
-.160aba	a9 ff af	lda #$afff	                LDA #$AFFF
-.160abd	a2 00 00	ldx #$0000	                LDX #<>SPLASH
-.160ac0	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
-.160ac3	54 b7 1f	mvn #$1f,#$b7	                MVN (<`SPLASH)+4,(<`VSPLASH)+4
-.160ac6	e2 20		sep #$20	                SEP #$20        ; set A short
-.160ac8	ab		plb		                PLB
-.160ac9	60		rts		                RTS
-.160aca					LOAD_ASSETS
-.160aca	8b		phb		                PHB
-.160acb	a9 08		lda #$08	                LDA #8
-.160acd	8f 83 02 af	sta $af0283	                STA TILESET0_ADDY_CFG
-.160ad1	c2 20		rep #$20	                REP #$20        ; set A long
-.160ad3	a2 00 00	ldx #$0000	                LDX #<>TILES
-.160ad6	a0 00 00	ldy #$0000	                LDY #<>VTILE_SET0
-.160ad9	a9 00 50	lda #$5000	                LDA #256 * 80 ; four rows of tiles
-.160adc	54 b0 17	mvn #$17,#$b0	                MVN <`TILES,<`VTILE_SET0
-.160adf	a2 00 f0	ldx #$f000	                LDX #<>TILES_PALETTE
-.160ae2	a0 00 20	ldy #$2000	                LDY #<>GRPH_LUT0_PTR
-.160ae5	a9 00 04	lda #$0400	                LDA #1024
-.160ae8	54 af 17	mvn #$17,#$af	                MVN <`TILES_PALETTE,<`GRPH_LUT0_PTR
-.160aeb	a2 e0 1e	ldx #$1ee0	                LDX #<>game_over_board
-.160aee	a0 00 50	ldy #$5000	                LDY #<>VTILE_MAP0
-.160af1	a9 60 09	lda #$0960	                LDA #40*30*2
-.160af4	54 b0 16	mvn #$16,#$b0	                MVN <`game_over_board,<`VTILE_MAP0
-.160af7	a2 80 15	ldx #$1580	                LDX #<>game_board
-.160afa	a0 60 59	ldy #$5960	                LDY #<>VTILE_MAP1
-.160afd	a9 60 09	lda #$0960	                LDA #40*30*2
-.160b00	54 b0 16	mvn #$16,#$b0	                MVN <`game_board,<`VTILE_MAP1
-.160b03	a2 00 50	ldx #$5000	                LDX #<>SPRITES
-.160b06	a0 00 00	ldy #$0000	                LDY #<>VSPRITES
-.160b09	a9 00 80	lda #$8000	                LDA #4 * 8 * 32 * 32  ; 32 k
-.160b0c	54 b1 17	mvn #$17,#$b1	                MVN <`SPRITES,<`VSPRITES
-.160b0f	a2 00 00	ldx #$0000	                LDX #<>FROG_UP
-.160b12	a0 00 00	ldy #$0000	                LDY #<>VFROGS_UP
-.160b15	a9 00 40	lda #$4000	                LDA #4 * 4 * 32 * 32  ; 16 k
-.160b18	54 b2 18	mvn #$18,#$b2	                MVN <`FROG_UP,<`VFROGS_UP
-.160b1b	a2 00 d0	ldx #$d000	                LDX #<>TURTLE
-.160b1e	a0 00 80	ldy #$8000	                LDY #<>VTURTLE
-.160b21	a9 00 10	lda #$1000	                LDA #4 * 32 * 32      ; 4 k
-.160b24	54 b1 17	mvn #$17,#$b1	                MVN <`TURTLE,<`VTURTLE
-.160b27	e2 20		sep #$20	                SEP #$20        ; set A short
-.160b29	ab		plb		                PLB
-.160b2a	60		rts		                RTS
-.160b2b					J_TABLE
->160b2b	00				                .byte 0
->160b2c	01				                .byte 1
->160b2d	02				                .byte 2
->160b2e	04				                .byte 4
->160b2f	08				                .byte $8
->160b30	10				                .byte $10
+.1607ec	a9 00		lda #$00	                LDA #0
+.1607ee	8f 00 0c af	sta $af0c00	                STA SP00_CONTROL_REG
+.1607f2	c2 20		rep #$20	                REP #$20        ; set A long
+.1607f4	f8		sed		                SED
+.1607f5	18		clc		                CLC
+.1607f6	ad 80 00	lda $160080	                LDA SCORE
+.1607f9	69 50 00	adc #$0050	                ADC #$50
+.1607fc	8d 80 00	sta $160080	                STA SCORE
+.1607ff					      SCR_CONTINUE
+.1607ff	90 0d		bcc $16080e	                BCC HL_MULTIPLY_TIMER
+.160801	e2 20		sep #$20	                SEP #$20        ; set A short
+.160803	18		clc		                CLC
+.160804	ad 82 00	lda $160082	                LDA SCORE + 2
+.160807	69 01		adc #$01	                ADC #1
+.160809	8d 82 00	sta $160082	                STA SCORE + 2
+.16080c	c2 20		rep #$20	                REP #$20        ; set A long
+.16080e					        HL_MULTIPLY_TIMER
+.16080e	ad 83 00	lda $160083	                LDA GTIMER
+.160811	29 ff 00	and #$00ff	                AND #$FF
+.160814	aa		tax		                TAX
+.160815	ad 80 00	lda $160080	                LDA SCORE
+.160818					        HL_MULTIPLY_LOOP
+.160818	18		clc		                CLC
+.160819	69 10 00	adc #$0010	                ADC #$10
+.16081c	8d 80 00	sta $160080	                STA SCORE
+.16081f	90 10		bcc $160831	                BCC HL_MULT_LP_END
+.160821	e2 20		sep #$20	                SEP #$20        ; set A short
+.160823	18		clc		                CLC
+.160824	ad 82 00	lda $160082	                LDA SCORE + 2
+.160827	69 01		adc #$01	                ADC #1
+.160829	8d 82 00	sta $160082	                STA SCORE + 2
+.16082c	c2 20		rep #$20	                REP #$20        ; set A long
+.16082e	a9 00 00	lda #$0000	                LDA #0 ; the thousands have rolled over, so set A to 0.
+.160831					        HL_MULT_LP_END
+.160831	ca		dex		                DEX
+.160832	d0 e4		bne $160818	                BNE HL_MULTIPLY_LOOP
+.160834	d8		cld		                CLD
+.160835	a9 00 00	lda #$0000	                LDA #0
+.160838	e2 20		sep #$20	                SEP #$20        ; set A short
+.16083a	a9 b4		lda #$b4	                LDA #THREE_SECS
+.16083c	8d 7d 00	sta $16007d	                STA RESET_BOARD
+.16083f	a9 01		lda #$01	                LDA #1         ; flag that the player has nested and the position needs to be reset
+.160841	8d a1 00	sta $1600a1	                STA NEST_UP
+.160844	bb		tyx		                TYX
+.160845	a9 1e		lda #$1e	                LDA #30
+.160847	9f 50 5a b0	sta $b05a50,x	                STA VTILE_MAP1 + 6 * 40 , X
+.16084b	a9 1f		lda #$1f	                LDA #31
+.16084d	9f 52 5a b0	sta $b05a52,x	                STA VTILE_MAP1 + 6 * 40 + 2, X
+.160851	a9 2e		lda #$2e	                LDA #46
+.160853	9f a0 5a b0	sta $b05aa0,x	                STA VTILE_MAP1 + 8 * 40, X
+.160857	a9 2f		lda #$2f	                LDA #47
+.160859	9f a2 5a b0	sta $b05aa2,x	                STA VTILE_MAP1 + 8 * 40 + 2, X
+.16085d	20 54 09	jsr $160954	                JSR SHOW_SCORE_BOARD
+.160860	60		rts		                RTS
+>160861	00				LILLY_CYCLE     .byte 0
+.160862					UPDATE_LILLY
+.160862	af 61 08 16	lda $160861	                LDA @l LILLY_CYCLE
+.160866	1a		inc a		                INC A
+.160867	c9 0a		cmp #$0a	                CMP #10 ; only update every N SOF cycle
+.160869	d0 4c		bne $1608b7	                BNE UL_SKIP
+.16086b	a9 00		lda #$00	                LDA #0
+.16086d	8f 61 08 16	sta $160861	                STA @l LILLY_CYCLE
+.160871	08		php		                PHP
+.160872	48		pha		                PHA             ; begin setdbr macro
+.160873	08		php		                PHP
+.160874	e2 20		sep #$20	                SEP #$20        ; set A short
+.160876	a9 00		lda #$00	                LDA #`<game_array
+.160878	48		pha		                PHA
+.160879	ab		plb		                PLB
+.16087a	28		plp		                PLP
+.16087b	68		pla		                PLA             ; end setdbr macro
+.16087c	a2 f0 00	ldx #$00f0	                LDX #NPC_SPRITES / 2 * 8
+.16087f	a0 00 00	ldy #$0000	                LDY #0
+.160882					        UP_LI_CHECK
+.160882	bf 40 28 16	lda $162840,x	                LDA game_array,X
+.160886	f0 1d		beq $1608a5	                BEQ UP_LI_SKIP_ROW
+.160888	bf 46 28 16	lda $162846,x	                LDA game_array + 6,X
+.16088c	89 10		bit #$10	                BIT #$10
+.16088e	f0 15		beq $1608a5	                BEQ UP_LI_SKIP_ROW
+.160890	89 20		bit #$20	                BIT #$20
+.160892	d0 11		bne $1608a5	                BNE UP_LI_SKIP_ROW
+.160894	1a		inc a		                INC A
+.160895	c9 18		cmp #$18	                CMP #LILLYPAD+8
+.160897	d0 02		bne $16089b	                BNE STORE_LILLY
+.160899	a9 10		lda #$10	                LDA #LILLYPAD
+.16089b					        STORE_LILLY
+.16089b	9f 46 28 16	sta $162846,x	                STA game_array + 6,X
+.16089f	0a		asl a		                ASL A
+.1608a0	0a		asl a		                ASL A
+.1608a1	9f 22 0c af	sta $af0c22,x	                STA SP04_ADDY_PTR_M,X
+.1608a5					        UP_LI_SKIP_ROW
+.1608a5	c2 20		rep #$20	                REP #$20        ; set A long
+.1608a7	8a		txa		                TXA
+.1608a8	18		clc		                CLC
+.1608a9	69 08 00	adc #$0008	                ADC #8
+.1608ac	aa		tax		                TAX
+.1608ad	e2 20		sep #$20	                SEP #$20        ; set A short
+.1608af	c8		iny		                INY
+.1608b0	c0 1e 00	cpy #$001e	                CPY #NPC_SPRITES/2
+.1608b3	d0 cd		bne $160882	                BNE UP_LI_CHECK
+.1608b5	ab		plb		                PLB
+.1608b6	60		rts		                RTS
+.1608b7					        UL_SKIP
+.1608b7	8f 61 08 16	sta $160861	                STA @l LILLY_CYCLE
+.1608bb	60		rts		                RTS
+>1608bc	00				TURTLE_CYCLE    .byte 0
+.1608bd					UPDATE_TURTLE
+.1608bd	af bc 08 16	lda $1608bc	                LDA @l TURTLE_CYCLE
+.1608c1	1a		inc a		                INC A
+.1608c2	c9 0a		cmp #$0a	                CMP #10 ; only update every N SOF cycle
+.1608c4	d0 40		bne $160906	                BNE UT_SKIP
+.1608c6	a9 00		lda #$00	                LDA #0
+.1608c8	8f bc 08 16	sta $1608bc	                STA @l TURTLE_CYCLE
+.1608cc	a2 f0 00	ldx #$00f0	                LDX #NPC_SPRITES / 2 * 8
+.1608cf	a0 00 00	ldy #$0000	                LDY #0
+.1608d2					        UP_TTL_CHECK
+.1608d2	bf 40 28 16	lda $162840,x	                LDA @l game_array,X
+.1608d6	f0 1d		beq $1608f5	                BEQ UP_TTL_SKIP_ROW
+.1608d8	bf 46 28 16	lda $162846,x	                LDA @l game_array + 6,X
+.1608dc	89 20		bit #$20	                BIT #TURTLE1
+.1608de	f0 15		beq $1608f5	                BEQ UP_TTL_SKIP_ROW
+.1608e0	c9 24		cmp #$24	                CMP #TURTLE4 + 1
+.1608e2	b0 11		bcs $1608f5	                BGE UP_TTL_SKIP_ROW
+.1608e4	1a		inc a		                INC A
+.1608e5	c9 24		cmp #$24	                CMP #TURTLE4+1
+.1608e7	d0 02		bne $1608eb	                BNE STORE_TURTLE
+.1608e9	a9 20		lda #$20	                LDA #TURTLE1
+.1608eb					        STORE_TURTLE
+.1608eb	9f 46 28 16	sta $162846,x	                STA @l game_array + 6,X
+.1608ef	0a		asl a		                ASL A
+.1608f0	0a		asl a		                ASL A
+.1608f1	9f 22 0c af	sta $af0c22,x	                STA @l SP04_ADDY_PTR_M,X
+.1608f5					        UP_TTL_SKIP_ROW
+.1608f5	c2 20		rep #$20	                REP #$20        ; set A long
+.1608f7	8a		txa		                TXA
+.1608f8	18		clc		                CLC
+.1608f9	69 08 00	adc #$0008	                ADC #8
+.1608fc	aa		tax		                TAX
+.1608fd	e2 20		sep #$20	                SEP #$20        ; set A short
+.1608ff	c8		iny		                INY
+.160900	c0 3c 00	cpy #$003c	                CPY #NPC_SPRITES
+.160903	d0 cd		bne $1608d2	                BNE UP_TTL_CHECK
+.160905	60		rts		                RTS
+.160906					        UT_SKIP
+.160906	8f bc 08 16	sta $1608bc	                STA @l TURTLE_CYCLE
+.16090a	60		rts		                RTS
+>16090b	30 31 32 33 34 35 36 37		HEX_MAP         .text '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+>160913	38 39 41 42 43 44 45 46
+>16091b	00				LOW_NIBBLE      .byte 0
+>16091c	00				HIGH_NIBBLE     .byte 0
+.16091d					WRITE_HEX
+.16091d	48		pha		        PHA
+.16091e	da		phx		            PHX
+.16091f	5a		phy		                PHY
+.160920	48		pha		                PHA
+.160921	29 f0		and #$f0	                    AND #$F0
+.160923	4a		lsr a		                    lsr A
+.160924	4a		lsr a		                    lsr A
+.160925	4a		lsr a		                    lsr A
+.160926	4a		lsr a		                    lsr A
+.160927	e2 10		sep #$10	                SEP #$10        ; set X short
+.160929	aa		tax		                    TAX
+.16092a	bf 0b 09 16	lda $16090b,x	                    LDA HEX_MAP,X
+.16092e	8f 1b 09 16	sta $16091b	                    STA @lLOW_NIBBLE
+.160932	68		pla		                PLA
+.160933	29 0f		and #$0f	                AND #$0F
+.160935	aa		tax		                TAX
+.160936	bf 0b 09 16	lda $16090b,x	                LDA HEX_MAP,X
+.16093a	8f 1c 09 16	sta $16091c	                STA @lHIGH_NIBBLE
+.16093e	c2 30		rep #$30	                REP #$30        ; set A&X long
+.160940	7a		ply		                PLY
+.160941	af 1b 09 16	lda $16091b	                LDA @lLOW_NIBBLE
+.160945	97 0c		sta [$0c],y	                STA [SCREENBEGIN], Y
+.160947	a9 10 10	lda #$1010	                LDA #$1010
+.16094a	bb		tyx		                TYX
+.16094b	9f 00 c0 af	sta $afc000,x	                STA @lCS_COLOR_MEM_PTR, X
+.16094f	e2 20		sep #$20	                SEP #$20        ; set A short
+.160951	fa		plx		            PLX
+.160952	68		pla		        PLA
+.160953	60		rts		                RTS
+.160954					SHOW_SCORE_BOARD
+.160954	8b		phb		                PHB
+.160955	48		pha		                PHA             ; begin setdbr macro
+.160956	08		php		                PHP
+.160957	e2 20		sep #$20	                SEP #$20        ; set A short
+.160959	a9 b0		lda #$b0	                LDA #<`VTILE_MAP1
+.16095b	48		pha		                PHA
+.16095c	ab		plb		                PLB
+.16095d	28		plp		                PLP
+.16095e	68		pla		                PLA             ; end setdbr macro
+.16095f	a9 00		lda #$00	                LDA #0
+.160961	a2 00 00	ldx #$0000	                LDX #0
+.160964	a0 0c 00	ldy #$000c	                LDY #12 ; clear the 6 tiles
+.160967					        HEART_CLEAR_LOOP
+.160967	9d b4 59	sta $b059b4,x	                STA VTILE_MAP1 + (40+2)*2,X ; descending loop offset by 1
+.16096a	e8		inx		                INX
+.16096b	88		dey		                DEY
+.16096c	d0 f9		bne $160967	                BNE HEART_CLEAR_LOOP
+.16096e	eb		xba		                XBA
+.16096f	af 7a 00 16	lda $16007a	                LDA LIVES
+.160973	f0 0b		beq $160980	                BEQ SSB_SCORE
+.160975	0a		asl a		                ASL A
+.160976	aa		tax		                TAX
+.160977					        SHOW_HEART
+.160977	a9 10		lda #$10	                LDA #TILE_HEART
+.160979	9d b4 59	sta $b059b4,x	                STA VTILE_MAP1 + (40+2)*2,X
+.16097c	ca		dex		                DEX
+.16097d	ca		dex		                DEX
+.16097e	d0 f7		bne $160977	                BNE SHOW_HEART
+.160980					        SSB_SCORE
+.160980	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the high byte
+.160984	4a		lsr a		                LSR ; get the high nibble
+.160985	4a		lsr a		                LSR A
+.160986	4a		lsr a		                LSR A
+.160987	4a		lsr a		                LSR A
+.160988	18		clc		                CLC
+.160989	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.16098b	8d f2 59	sta $b059f2	                STA VTILE_MAP1 + 146
+.16098e	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the low nibble
+.160992	29 0f		and #$0f	                AND #$F
+.160994	18		clc		                CLC
+.160995	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.160997	8d f4 59	sta $b059f4	                STA VTILE_MAP1 + 148
+.16099a	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the high byte
+.16099e	4a		lsr a		                LSR ; get the high nibble
+.16099f	4a		lsr a		                LSR A
+.1609a0	4a		lsr a		                LSR A
+.1609a1	4a		lsr a		                LSR A
+.1609a2	18		clc		                CLC
+.1609a3	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.1609a5	8d f6 59	sta $b059f6	                STA VTILE_MAP1 + 150
+.1609a8	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the low nibble
+.1609ac	29 0f		and #$0f	                AND #$F
+.1609ae	18		clc		                CLC
+.1609af	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.1609b1	8d f8 59	sta $b059f8	                STA VTILE_MAP1 + 152
+.1609b4	af 80 00 16	lda $160080	                LDA SCORE
+.1609b8	4a		lsr a		                LSR ; get the high nibble
+.1609b9	4a		lsr a		                LSR A
+.1609ba	4a		lsr a		                LSR A
+.1609bb	4a		lsr a		                LSR A
+.1609bc	18		clc		                CLC
+.1609bd	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.1609bf	8d fa 59	sta $b059fa	                STA VTILE_MAP1 + 154
+.1609c2	af 80 00 16	lda $160080	                LDA SCORE ; the low nibble
+.1609c6	29 0f		and #$0f	                AND #$F
+.1609c8	18		clc		                CLC
+.1609c9	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.1609cb	8d fc 59	sta $b059fc	                STA VTILE_MAP1 + 156
+.1609ce	ab		plb		                PLB
+.1609cf	60		rts		                RTS
+.1609d0					SHOW_LEVEL
+.1609d0	8b		phb		                PHB
+.1609d1	48		pha		                PHA             ; begin setdbr macro
+.1609d2	08		php		                PHP
+.1609d3	e2 20		sep #$20	                SEP #$20        ; set A short
+.1609d5	a9 b0		lda #$b0	                LDA #<`VTILE_MAP1
+.1609d7	48		pha		                PHA
+.1609d8	ab		plb		                PLB
+.1609d9	28		plp		                PLP
+.1609da	68		pla		                PLA             ; end setdbr macro
+.1609db	a9 00		lda #$00	                LDA #0
+.1609dd	a0 20 00	ldy #$0020	                LDY #32
+.1609e0	a2 00 00	ldx #$0000	                LDX #0
+.1609e3					        SSB_LEVEL_CLR
+.1609e3	9d 76 62	sta $b06276,x	                STA VTILE_MAP1 + (29*40+3)*2, X
+.1609e6	e8		inx		                INX
+.1609e7	88		dey		                DEY
+.1609e8	d0 f9		bne $1609e3	                BNE SSB_LEVEL_CLR
+.1609ea	eb		xba		                XBA
+.1609eb	af a0 00 16	lda $1600a0	                LDA LEVEL
+.1609ef	29 0f		and #$0f	                AND #$F ; mask to 16
+.1609f1	0a		asl a		                ASL A
+.1609f2	aa		tax		                TAX
+.1609f3	a9 2a		lda #$2a	                LDA #LEVEL_FROG
+.1609f5					        SSB_LEVEL
+.1609f5	9d 74 62	sta $b06274,x	                STA VTILE_MAP1 + (29*40+2)*2, X
+.1609f8	ca		dex		                DEX
+.1609f9	ca		dex		                DEX
+.1609fa	d0 f9		bne $1609f5	                BNE SSB_LEVEL
+.1609fc	a0 05 00	ldy #$0005	                LDY #5
+.1609ff	a2 0c 00	ldx #$000c	                LDX #6*2
+.160a02					        SSB_ERASE_NEST
+.160a02	a9 05		lda #$05	                LDA #5
+.160a04	9d 50 5a	sta $b05a50,x	                STA VTILE_MAP1 + 6 * 40 , X
+.160a07	a9 04		lda #$04	                LDA #4
+.160a09	9d 52 5a	sta $b05a52,x	                STA VTILE_MAP1 + 6 * 40 + 2, X
+.160a0c	a9 08		lda #$08	                LDA #8
+.160a0e	9d a0 5a	sta $b05aa0,x	                STA VTILE_MAP1 + 8 * 40, X
+.160a11	a9 09		lda #$09	                LDA #9
+.160a13	9d a2 5a	sta $b05aa2,x	                STA VTILE_MAP1 + 8 * 40 + 2, X
+.160a16	8a		txa		                TXA
+.160a17	69 0e		adc #$0e	                ADC #14
+.160a19	aa		tax		                TAX
+.160a1a	88		dey		                DEY
+.160a1b	d0 e5		bne $160a02	                BNE SSB_ERASE_NEST
+.160a1d	ab		plb		                PLB
+.160a1e	60		rts		                RTS
+.160a1f					UPDATE_TIMER_BAR
+.160a1f	8b		phb		                PHB
+.160a20	48		pha		                PHA             ; begin setdbr macro
+.160a21	08		php		                PHP
+.160a22	e2 20		sep #$20	                SEP #$20        ; set A short
+.160a24	a9 b0		lda #$b0	                LDA #<`VTILE_MAP1
+.160a26	48		pha		                PHA
+.160a27	ab		plb		                PLB
+.160a28	28		plp		                PLP
+.160a29	68		pla		                PLA             ; end setdbr macro
+.160a2a	a9 00		lda #$00	                LDA #0
+.160a2c	eb		xba		                XBA
+.160a2d	a9 00		lda #$00	                LDA #0
+.160a2f	a0 1a 00	ldy #$001a	                LDY #26 ; clear the 13 tiles
+.160a32	a2 00 00	ldx #$0000	                LDX #0
+.160a35					        UTB_CLEAR
+.160a35	9d 9e 62	sta $b0629e,x	                STA VTILE_MAP1 + (29*40+23)*2, X
+.160a38	e8		inx		                INX
+.160a39	88		dey		                DEY
+.160a3a	d0 f9		bne $160a35	                BNE UTB_CLEAR
+.160a3c	af 83 00 16	lda $160083	                LDA GTIMER
+.160a40	c9 0b		cmp #$0b	                CMP #11
+.160a42	90 22		bcc $160a66	                BLT RED_PROGRESS
+.160a44	4a		lsr a		                LSR A ; divide by 4 to get the number of full tiles
+.160a45	4a		lsr a		                LSR A ; this number should never be 0
+.160a46	a8		tay		                TAY
+.160a47	a2 1a 00	ldx #$001a	                LDX #26
+.160a4a	a9 30		lda #$30	                LDA #PBAR_1
+.160a4c					        UTB_DRAW_PRG
+.160a4c	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
+.160a4f	ca		dex		                DEX
+.160a50	ca		dex		                DEX
+.160a51	88		dey		                DEY
+.160a52	d0 f8		bne $160a4c	                BNE UTB_DRAW_PRG
+.160a54					        UTB_DRAW_SUBTILE
+.160a54	af 83 00 16	lda $160083	                LDA GTIMER
+.160a58	29 03		and #$03	                AND #3  ; remainder of division by 4
+.160a5a	f0 08		beq $160a64	                BEQ UTB_BLANK_DONE
+.160a5c	49 03		eor #$03	                EOR #3  ; flip the bits
+.160a5e	38		sec		                SEC     ; magic math - two's complement
+.160a5f	69 30		adc #$30	                ADC #PBAR_1
+.160a61	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
+.160a64					        UTB_BLANK_DONE
+.160a64	ab		plb		                PLB
+.160a65	60		rts		                RTS
+.160a66					    RED_PROGRESS
+.160a66	4a		lsr a		                LSR A
+.160a67	4a		lsr a		                LSR A  ; divide by 4 to get the number of full tiles
+.160a68	f0 0e		beq $160a78	                BEQ DRAW_RED_SUBTILE
+.160a6a	a8		tay		                TAY
+.160a6b	a2 1a 00	ldx #$001a	                LDX #26
+.160a6e	a9 34		lda #$34	                LDA #RBAR_1
+.160a70					    UTB_DRAW_RED_PRG
+.160a70	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
+.160a73	ca		dex		                DEX
+.160a74	ca		dex		                DEX
+.160a75	88		dey		                DEY
+.160a76	d0 f8		bne $160a70	                BNE UTB_DRAW_RED_PRG
+.160a78					    DRAW_RED_SUBTILE
+.160a78	af 83 00 16	lda $160083	                LDA GTIMER
+.160a7c	29 03		and #$03	                AND #3  ; remainder of division by 4
+.160a7e	f0 e4		beq $160a64	                BEQ UTB_BLANK_DONE
+.160a80	49 03		eor #$03	                EOR #3  ; flip the bits
+.160a82	38		sec		                SEC     ; magic math - two's complement
+.160a83	69 34		adc #$34	                ADC #RBAR_1
+.160a85	9d 9c 62	sta $b0629c,x	                STA VTILE_MAP1 + (29*40+22)*2, X
+.160a88	ab		plb		                PLB
+.160a89	60		rts		                RTS
+.160a8a					LOAD_SPLASH
+.160a8a	8b		phb		                PHB
+.160a8b	c2 20		rep #$20	                REP #$20        ; set A long
+.160a8d	a9 00 04	lda #$0400	                LDA #1024
+.160a90	a2 00 f4	ldx #$f400	                LDX #<>SPLASH_PALETTE
+.160a93	a0 00 24	ldy #$2400	                LDY #<>GRPH_LUT1_PTR
+.160a96	54 af 17	mvn #$17,#$af	                MVN <`SPLASH_PALETTE,<`GRPH_LUT1_PTR
+.160a99	a9 ff ff	lda #$ffff	                LDA #$FFFF
+.160a9c	a2 00 00	ldx #$0000	                LDX #<>SPLASH
+.160a9f	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
+.160aa2	54 b3 1b	mvn #$1b,#$b3	                MVN <`SPLASH,<`VSPLASH
+.160aa5	a2 00 00	ldx #$0000	                LDX #<>SPLASH
+.160aa8	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
+.160aab	54 b4 1c	mvn #$1c,#$b4	                MVN (<`SPLASH)+1,(<`VSPLASH)+1
+.160aae	a2 00 00	ldx #$0000	                LDX #<>SPLASH
+.160ab1	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
+.160ab4	54 b5 1d	mvn #$1d,#$b5	                MVN (<`SPLASH)+2,(<`VSPLASH)+2
+.160ab7	a2 00 00	ldx #$0000	                LDX #<>SPLASH
+.160aba	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
+.160abd	54 b6 1e	mvn #$1e,#$b6	                MVN (<`SPLASH)+3,(<`VSPLASH)+3
+.160ac0	a9 ff af	lda #$afff	                LDA #$AFFF
+.160ac3	a2 00 00	ldx #$0000	                LDX #<>SPLASH
+.160ac6	a0 00 00	ldy #$0000	                LDY #<>VSPLASH
+.160ac9	54 b7 1f	mvn #$1f,#$b7	                MVN (<`SPLASH)+4,(<`VSPLASH)+4
+.160acc	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ace	ab		plb		                PLB
+.160acf	60		rts		                RTS
+.160ad0					LOAD_ASSETS
+.160ad0	8b		phb		                PHB
+.160ad1	a9 08		lda #$08	                LDA #8
+.160ad3	8f 83 02 af	sta $af0283	                STA TILESET0_ADDY_CFG
+.160ad7	c2 20		rep #$20	                REP #$20        ; set A long
+.160ad9	a2 00 00	ldx #$0000	                LDX #<>TILES
+.160adc	a0 00 00	ldy #$0000	                LDY #<>VTILE_SET0
+.160adf	a9 00 50	lda #$5000	                LDA #256 * 80 ; four rows of tiles
+.160ae2	54 b0 17	mvn #$17,#$b0	                MVN <`TILES,<`VTILE_SET0
+.160ae5	a2 00 f0	ldx #$f000	                LDX #<>TILES_PALETTE
+.160ae8	a0 00 20	ldy #$2000	                LDY #<>GRPH_LUT0_PTR
+.160aeb	a9 00 04	lda #$0400	                LDA #1024
+.160aee	54 af 17	mvn #$17,#$af	                MVN <`TILES_PALETTE,<`GRPH_LUT0_PTR
+.160af1	a2 e0 1e	ldx #$1ee0	                LDX #<>game_over_board
+.160af4	a0 00 50	ldy #$5000	                LDY #<>VTILE_MAP0
+.160af7	a9 60 09	lda #$0960	                LDA #40*30*2
+.160afa	54 b0 16	mvn #$16,#$b0	                MVN <`game_over_board,<`VTILE_MAP0
+.160afd	a2 80 15	ldx #$1580	                LDX #<>game_board
+.160b00	a0 60 59	ldy #$5960	                LDY #<>VTILE_MAP1
+.160b03	a9 60 09	lda #$0960	                LDA #40*30*2
+.160b06	54 b0 16	mvn #$16,#$b0	                MVN <`game_board,<`VTILE_MAP1
+.160b09	a2 00 50	ldx #$5000	                LDX #<>SPRITES
+.160b0c	a0 00 00	ldy #$0000	                LDY #<>VSPRITES
+.160b0f	a9 00 80	lda #$8000	                LDA #4 * 8 * 32 * 32  ; 32 k
+.160b12	54 b1 17	mvn #$17,#$b1	                MVN <`SPRITES,<`VSPRITES
+.160b15	a2 00 00	ldx #$0000	                LDX #<>FROG_UP
+.160b18	a0 00 00	ldy #$0000	                LDY #<>VFROGS_UP
+.160b1b	a9 00 40	lda #$4000	                LDA #4 * 4 * 32 * 32  ; 16 k
+.160b1e	54 b2 18	mvn #$18,#$b2	                MVN <`FROG_UP,<`VFROGS_UP
+.160b21	a2 00 d0	ldx #$d000	                LDX #<>TURTLE
+.160b24	a0 00 80	ldy #$8000	                LDY #<>VTURTLE
+.160b27	a9 00 10	lda #$1000	                LDA #4 * 32 * 32      ; 4 k
+.160b2a	54 b1 17	mvn #$17,#$b1	                MVN <`TURTLE,<`VTURTLE
+.160b2d	e2 20		sep #$20	                SEP #$20        ; set A short
+.160b2f	ab		plb		                PLB
+.160b30	60		rts		                RTS
+.160b31					J_TABLE
 >160b31	00				                .byte 0
->160b32	00				                .byte 0
->160b33	00 00				X_TABLE         .word 0
->160b35	70 00				                .word $70
->160b37	e0 00				                .word $e0
->160b39	50 01				                .word $150
->160b3b	c0 01				                .word $1c0
->160b3d	30 02				                .word $230
-.160b3f					CHECK_BEE_TIMER
-.160b3f	af 7e 00 16	lda $16007e	                LDA BEE_TIMER
-.160b43	3a		dec a		                DEC A
-.160b44	f0 05		beq $160b4b	                BEQ CBT_CONTINUE
-.160b46	8f 7e 00 16	sta $16007e	                STA BEE_TIMER
-.160b4a	60		rts		                RTS
-.160b4b					        CBT_CONTINUE
-.160b4b	a9 0a		lda #$0a	                LDA #DEFAULT_BEE_TIME
-.160b4d	8f 7e 00 16	sta $16007e	                STA BEE_TIMER
-.160b51	a9 01		lda #$01	                LDA #GABE_RNG_CTRL_EN
-.160b53	8f 86 e8 af	sta $afe886	                STA GABE_RNG_CTRL
-.160b57	8b		phb		                PHB
-.160b58	48		pha		                PHA             ; begin setdbr macro
-.160b59	08		php		                PHP
-.160b5a	e2 20		sep #$20	                SEP #$20        ; set A short
-.160b5c	a9 16		lda #$16	                LDA #$16
-.160b5e	48		pha		                PHA
-.160b5f	ab		plb		                PLB
-.160b60	28		plp		                PLP
-.160b61	68		pla		                PLA             ; end setdbr macro
-.160b62					        CBT_TRY_AGAIN
-.160b62	af 84 e8 af	lda $afe884	                LDA GABE_RNG_DAT_LO
-.160b66	29 07		and #$07	                AND #7
-.160b68	c9 06		cmp #$06	                CMP #6
-.160b6a	b0 f6		bcs $160b62	                BGE CBT_TRY_AGAIN
-.160b6c	c9 00		cmp #$00	                CMP #0
-.160b6e	f0 f2		beq $160b62	                BEQ CBT_TRY_AGAIN
-.160b70	a8		tay		                TAY
-.160b71	b9 2b 0b	lda $160b2b,y	                LDA J_TABLE,Y
-.160b74	2c 9f 00	bit $16009f	                BIT HOME_NEST     ; the bee should not appear if the nest is already full
-.160b77	d0 e9		bne $160b62	                BNE CBT_TRY_AGAIN
-.160b79	8d 7f 00	sta $16007f	                STA BEE_NEST
-.160b7c	98		tya		                TYA
-.160b7d	0a		asl a		                ASL A
-.160b7e	a8		tay		                TAY
-.160b7f	c2 20		rep #$20	                REP #$20        ; set A long
-.160b81	b9 33 0b	lda $160b33,y	                LDA X_TABLE,Y
-.160b84	8f 14 0c af	sta $af0c14	                STA @l SP02_X_POS_L
-.160b88	e2 20		sep #$20	                SEP #$20        ; set A short
-.160b8a	a9 01		lda #$01	                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
-.160b8c	8f 10 0c af	sta $af0c10	                STA @l SP02_CONTROL_REG
-.160b90	80 09		bra $160b9b	                BRA CBT_DONE
-.160b92					    CBT_HIDE
-.160b92	a9 00		lda #$00	                LDA #0
-.160b94	8d 7f 00	sta $16007f	                STA BEE_NEST
-.160b97	8f 10 0c af	sta $af0c10	                STA @l SP02_CONTROL_REG  ; hide the bee
-.160b9b					    CBT_DONE
-.160b9b	ab		plb		                PLB
-.160b9c	60		rts		                RTS
+>160b32	01				                .byte 1
+>160b33	02				                .byte 2
+>160b34	04				                .byte 4
+>160b35	08				                .byte $8
+>160b36	10				                .byte $10
+>160b37	00				                .byte 0
+>160b38	00				                .byte 0
+>160b39	00 00				X_TABLE         .word 0
+>160b3b	70 00				                .word $70
+>160b3d	e0 00				                .word $e0
+>160b3f	50 01				                .word $150
+>160b41	c0 01				                .word $1c0
+>160b43	30 02				                .word $230
+.160b45					CHECK_BEE_TIMER
+.160b45	af 7e 00 16	lda $16007e	                LDA BEE_TIMER
+.160b49	3a		dec a		                DEC A
+.160b4a	f0 05		beq $160b51	                BEQ CBT_CONTINUE
+.160b4c	8f 7e 00 16	sta $16007e	                STA BEE_TIMER
+.160b50	60		rts		                RTS
+.160b51					        CBT_CONTINUE
+.160b51	a9 0a		lda #$0a	                LDA #DEFAULT_BEE_TIME
+.160b53	8f 7e 00 16	sta $16007e	                STA BEE_TIMER
+.160b57	a9 01		lda #$01	                LDA #GABE_RNG_CTRL_EN
+.160b59	8f 86 e8 af	sta $afe886	                STA GABE_RNG_CTRL
+.160b5d	8b		phb		                PHB
+.160b5e	48		pha		                PHA             ; begin setdbr macro
+.160b5f	08		php		                PHP
+.160b60	e2 20		sep #$20	                SEP #$20        ; set A short
+.160b62	a9 16		lda #$16	                LDA #$16
+.160b64	48		pha		                PHA
+.160b65	ab		plb		                PLB
+.160b66	28		plp		                PLP
+.160b67	68		pla		                PLA             ; end setdbr macro
+.160b68					        CBT_TRY_AGAIN
+.160b68	af 84 e8 af	lda $afe884	                LDA GABE_RNG_DAT_LO
+.160b6c	29 07		and #$07	                AND #7
+.160b6e	c9 06		cmp #$06	                CMP #6
+.160b70	b0 f6		bcs $160b68	                BGE CBT_TRY_AGAIN
+.160b72	c9 00		cmp #$00	                CMP #0
+.160b74	f0 f2		beq $160b68	                BEQ CBT_TRY_AGAIN
+.160b76	a8		tay		                TAY
+.160b77	b9 31 0b	lda $160b31,y	                LDA J_TABLE,Y
+.160b7a	2c 9f 00	bit $16009f	                BIT HOME_NEST     ; the bee should not appear if the nest is already full
+.160b7d	d0 e9		bne $160b68	                BNE CBT_TRY_AGAIN
+.160b7f	8d 7f 00	sta $16007f	                STA BEE_NEST
+.160b82	98		tya		                TYA
+.160b83	0a		asl a		                ASL A
+.160b84	a8		tay		                TAY
+.160b85	c2 20		rep #$20	                REP #$20        ; set A long
+.160b87	b9 39 0b	lda $160b39,y	                LDA X_TABLE,Y
+.160b8a	8f 14 0c af	sta $af0c14	                STA @l SP02_X_POS_L
+.160b8e	e2 20		sep #$20	                SEP #$20        ; set A short
+.160b90	a9 01		lda #$01	                LDA #(SPRITE_Enable | SPRITE_DEPTH0 | SPRITE_LUT0)
+.160b92	8f 10 0c af	sta $af0c10	                STA @l SP02_CONTROL_REG
+.160b96	80 09		bra $160ba1	                BRA CBT_DONE
+.160b98					    CBT_HIDE
+.160b98	a9 00		lda #$00	                LDA #0
+.160b9a	8d 7f 00	sta $16007f	                STA BEE_NEST
+.160b9d	8f 10 0c af	sta $af0c10	                STA @l SP02_CONTROL_REG  ; hide the bee
+.160ba1					    CBT_DONE
+.160ba1	ab		plb		                PLB
+.160ba2	60		rts		                RTS
 =1242					G_O_SCORE_POS   = (15*40+21) * 2
-.160b9d					DRAW_GAME_OVER_MAP
-.160b9d	8b		phb		                PHB
-.160b9e	48		pha		                PHA             ; begin setdbr macro
-.160b9f	08		php		                PHP
-.160ba0	e2 20		sep #$20	                SEP #$20        ; set A short
-.160ba2	a9 b0		lda #$b0	                LDA #<`VTILE_MAP0
-.160ba4	48		pha		                PHA
-.160ba5	ab		plb		                PLB
-.160ba6	28		plp		                PLP
-.160ba7	68		pla		                PLA             ; end setdbr macro
-.160ba8	a9 01		lda #$01	                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
-.160baa	8f 00 02 af	sta $af0200	                STA @lTL0_CONTROL_REG
-.160bae	a9 00		lda #$00	                LDA #0
-.160bb0	8f 0c 02 af	sta $af020c	                STA @lTL1_CONTROL_REG
-.160bb4	a9 02		lda #$02	                LDA #2
-.160bb6	8f 7b 00 16	sta $16007b	                STA GAME_OVER  ; signify that the tilemap is loaded
-.160bba	a9 14		lda #$14	                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
-.160bbc	8f 00 00 af	sta $af0000	                STA MASTER_CTRL_REG_L
-.160bc0	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the high byte
-.160bc4	4a		lsr a		                LSR ; get the high nibble
-.160bc5	4a		lsr a		                LSR A
-.160bc6	4a		lsr a		                LSR A
-.160bc7	4a		lsr a		                LSR A
-.160bc8	18		clc		                CLC
-.160bc9	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160bcb	8d da 54	sta $b054da	                STA VTILE_MAP0 + G_O_SCORE_POS
-.160bce	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the low nibble
-.160bd2	29 0f		and #$0f	                AND #$F
-.160bd4	18		clc		                CLC
-.160bd5	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160bd7	8d dc 54	sta $b054dc	                STA VTILE_MAP0 + G_O_SCORE_POS + 2
-.160bda	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the high byte
-.160bde	4a		lsr a		                LSR ; get the high nibble
-.160bdf	4a		lsr a		                LSR A
-.160be0	4a		lsr a		                LSR A
-.160be1	4a		lsr a		                LSR A
-.160be2	18		clc		                CLC
-.160be3	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160be5	8d de 54	sta $b054de	                STA VTILE_MAP0 + G_O_SCORE_POS + 4
-.160be8	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the low nibble
-.160bec	29 0f		and #$0f	                AND #$F
-.160bee	18		clc		                CLC
-.160bef	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160bf1	8d e0 54	sta $b054e0	                STA VTILE_MAP0 + G_O_SCORE_POS + 6
-.160bf4	af 80 00 16	lda $160080	                LDA SCORE
-.160bf8	4a		lsr a		                LSR ; get the high nibble
-.160bf9	4a		lsr a		                LSR A
-.160bfa	4a		lsr a		                LSR A
-.160bfb	4a		lsr a		                LSR A
-.160bfc	18		clc		                CLC
-.160bfd	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160bff	8d e2 54	sta $b054e2	                STA VTILE_MAP0 + G_O_SCORE_POS + 8
-.160c02	af 80 00 16	lda $160080	                LDA SCORE ; the low nibble
-.160c06	29 0f		and #$0f	                AND #$F
-.160c08	18		clc		                CLC
-.160c09	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
-.160c0b	8d e4 54	sta $b054e4	                STA VTILE_MAP0 + G_O_SCORE_POS + 10
-.160c0e	ab		plb		                PLB
-.160c0f	60		rts		                RTS
+.160ba3					DRAW_GAME_OVER_MAP
+.160ba3	8b		phb		                PHB
+.160ba4	48		pha		                PHA             ; begin setdbr macro
+.160ba5	08		php		                PHP
+.160ba6	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ba8	a9 b0		lda #$b0	                LDA #<`VTILE_MAP0
+.160baa	48		pha		                PHA
+.160bab	ab		plb		                PLB
+.160bac	28		plp		                PLP
+.160bad	68		pla		                PLA             ; end setdbr macro
+.160bae	a9 01		lda #$01	                LDA #TILE_Enable + 0 ; the 0 is there to signify LUT0
+.160bb0	8f 00 02 af	sta $af0200	                STA @lTL0_CONTROL_REG
+.160bb4	a9 00		lda #$00	                LDA #0
+.160bb6	8f 0c 02 af	sta $af020c	                STA @lTL1_CONTROL_REG
+.160bba	a9 02		lda #$02	                LDA #2
+.160bbc	8f 7b 00 16	sta $16007b	                STA GAME_OVER  ; signify that the tilemap is loaded
+.160bc0	a9 14		lda #$14	                LDA #Mstr_Ctrl_Graph_Mode_En + Mstr_Ctrl_TileMap_En; + Mstr_Ctrl_Text_Mode_En + Mstr_Ctrl_Text_Overlay
+.160bc2	8f 00 00 af	sta $af0000	                STA MASTER_CTRL_REG_L
+.160bc6	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the high byte
+.160bca	4a		lsr a		                LSR ; get the high nibble
+.160bcb	4a		lsr a		                LSR A
+.160bcc	4a		lsr a		                LSR A
+.160bcd	4a		lsr a		                LSR A
+.160bce	18		clc		                CLC
+.160bcf	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.160bd1	8d da 54	sta $b054da	                STA VTILE_MAP0 + G_O_SCORE_POS
+.160bd4	af 82 00 16	lda $160082	                LDA SCORE + 2 ; the low nibble
+.160bd8	29 0f		and #$0f	                AND #$F
+.160bda	18		clc		                CLC
+.160bdb	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.160bdd	8d dc 54	sta $b054dc	                STA VTILE_MAP0 + G_O_SCORE_POS + 2
+.160be0	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the high byte
+.160be4	4a		lsr a		                LSR ; get the high nibble
+.160be5	4a		lsr a		                LSR A
+.160be6	4a		lsr a		                LSR A
+.160be7	4a		lsr a		                LSR A
+.160be8	18		clc		                CLC
+.160be9	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.160beb	8d de 54	sta $b054de	                STA VTILE_MAP0 + G_O_SCORE_POS + 4
+.160bee	af 81 00 16	lda $160081	                LDA SCORE + 1 ; the low nibble
+.160bf2	29 0f		and #$0f	                AND #$F
+.160bf4	18		clc		                CLC
+.160bf5	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.160bf7	8d e0 54	sta $b054e0	                STA VTILE_MAP0 + G_O_SCORE_POS + 6
+.160bfa	af 80 00 16	lda $160080	                LDA SCORE
+.160bfe	4a		lsr a		                LSR ; get the high nibble
+.160bff	4a		lsr a		                LSR A
+.160c00	4a		lsr a		                LSR A
+.160c01	4a		lsr a		                LSR A
+.160c02	18		clc		                CLC
+.160c03	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.160c05	8d e2 54	sta $b054e2	                STA VTILE_MAP0 + G_O_SCORE_POS + 8
+.160c08	af 80 00 16	lda $160080	                LDA SCORE ; the low nibble
+.160c0c	29 0f		and #$0f	                AND #$F
+.160c0e	18		clc		                CLC
+.160c0f	69 20		adc #$20	                ADC #TILE_0 ; tiles are offset at 20
+.160c11	8d e4 54	sta $b054e4	                STA VTILE_MAP0 + G_O_SCORE_POS + 10
+.160c14	ab		plb		                PLB
+.160c15	60		rts		                RTS
 
 ;******  Return to file: fraggy.asm
 
@@ -2776,888 +2778,888 @@
 =$aff100				PSG_BASE_ADDRESS  = $AFF100
 =$aff200				OPN2_BASE_ADDRESS = $AFF200
 =$afe600				OPL3_BASE_ADRESS  = $AFE600
-.160c10					VGM_WRITE_REGISTER
-.160c10	a6 8c		ldx $8c		            LDX WAIT_CNTR
-.160c12	e0 00 00	cpx #$0000	            CPX #0
-.160c15	f0 04		beq $160c1b	            BEQ READ_COMMAND
-.160c17	ca		dex		            DEX
-.160c18	86 8c		stx $8c		            STX WAIT_CNTR
-.160c1a	6b		rtl		            RTL
-.160c1b					    READ_COMMAND
-.160c1b	a9 00		lda #$00	            LDA #0
-.160c1d	eb		xba		            XBA
-.160c1e	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160c20	85 7f		sta $7f		            STA COMMAND
-.160c22	c2 20		rep #$20	                REP #$20        ; set A long
-.160c24	e6 88		inc $88		            INC CURRENT_POSITION
-.160c26	d0 02		bne $160c2a	            BNE increment_done
-.160c28	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160c2a					    increment_done
-.160c2a	e2 20		sep #$20	                SEP #$20        ; set A short
-.160c2c	29 f0		and #$f0	            AND #$F0
-.160c2e	4a		lsr a		            LSR A
-.160c2f	4a		lsr a		            LSR A
-.160c30	4a		lsr a		            LSR A
-.160c31	aa		tax		            TAX
-.160c32	7c 36 0c	jmp ($160c36,x)	            JMP (VGM_COMMAND_TABLE,X)
-.160c35					    VGM_LOOP_DONE
-.160c35	6b		rtl		            RTL
-.160c36					VGM_COMMAND_TABLE
->160c36	56 0c				            .word <>INVALID_COMMAND ;0
->160c38	56 0c				            .word <>INVALID_COMMAND ;1
->160c3a	56 0c				            .word <>INVALID_COMMAND ;2
->160c3c	59 0c				            .word <>SKIP_BYTE_CMD   ;3 - reserved - not implemented
->160c3e	59 0c				            .word <>SKIP_BYTE_CMD   ;4 - not implemented
->160c40	c3 0e				            .word <>WRITE_YM_CMD    ;5 - YM*
->160c42	ba 10				            .word <>WAIT_COMMANDS   ;6
->160c44	0c 11				            .word <>WAIT_N_1        ;7
->160c46	1a 11				            .word <>YM2612_SAMPLE   ;8
->160c48	3d 11				            .word <>DAC_STREAM      ;9
->160c4a	12 0d				            .word <>AY8910          ;A - AY8910
->160c4c	66 0c				            .word <>SKIP_TWO_BYTES  ;B - not implemented
->160c4e	79 0c				            .word <>SKIP_THREE_BYTES;C - not implemented
->160c50	79 0c				            .word <>SKIP_THREE_BYTES;D - not implemented
->160c52	92 0c				            .word <>SEEK_OFFSET     ;E - not implemented
->160c54	f3 0c				            .word <>SKIP_FOUR_BYTES ;F - not implemented
-.160c56					INVALID_COMMAND
-.160c56	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160c59					SKIP_BYTE_CMD
-.160c59	c2 20		rep #$20	                REP #$20        ; set A long
-.160c5b	e6 88		inc $88		            INC CURRENT_POSITION
-.160c5d	d0 02		bne $160c61	            BNE increment_done
-.160c5f	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160c61					    increment_done
-.160c61	e2 20		sep #$20	                SEP #$20        ; set A short
-.160c63	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160c66					SKIP_TWO_BYTES
-.160c66	c2 20		rep #$20	                REP #$20        ; set A long
-.160c68	e6 88		inc $88		            INC CURRENT_POSITION
-.160c6a	d0 02		bne $160c6e	            BNE s2_1
-.160c6c	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160c6e					    s2_1
+.160c16					VGM_WRITE_REGISTER
+.160c16	a6 8c		ldx $8c		            LDX WAIT_CNTR
+.160c18	e0 00 00	cpx #$0000	            CPX #0
+.160c1b	f0 04		beq $160c21	            BEQ READ_COMMAND
+.160c1d	ca		dex		            DEX
+.160c1e	86 8c		stx $8c		            STX WAIT_CNTR
+.160c20	6b		rtl		            RTL
+.160c21					    READ_COMMAND
+.160c21	a9 00		lda #$00	            LDA #0
+.160c23	eb		xba		            XBA
+.160c24	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160c26	85 7f		sta $7f		            STA COMMAND
+.160c28	c2 20		rep #$20	                REP #$20        ; set A long
+.160c2a	e6 88		inc $88		            INC CURRENT_POSITION
+.160c2c	d0 02		bne $160c30	            BNE increment_done
+.160c2e	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160c30					    increment_done
+.160c30	e2 20		sep #$20	                SEP #$20        ; set A short
+.160c32	29 f0		and #$f0	            AND #$F0
+.160c34	4a		lsr a		            LSR A
+.160c35	4a		lsr a		            LSR A
+.160c36	4a		lsr a		            LSR A
+.160c37	aa		tax		            TAX
+.160c38	7c 3c 0c	jmp ($160c3c,x)	            JMP (VGM_COMMAND_TABLE,X)
+.160c3b					    VGM_LOOP_DONE
+.160c3b	6b		rtl		            RTL
+.160c3c					VGM_COMMAND_TABLE
+>160c3c	5c 0c				            .word <>INVALID_COMMAND ;0
+>160c3e	5c 0c				            .word <>INVALID_COMMAND ;1
+>160c40	5c 0c				            .word <>INVALID_COMMAND ;2
+>160c42	5f 0c				            .word <>SKIP_BYTE_CMD   ;3 - reserved - not implemented
+>160c44	5f 0c				            .word <>SKIP_BYTE_CMD   ;4 - not implemented
+>160c46	c9 0e				            .word <>WRITE_YM_CMD    ;5 - YM*
+>160c48	c0 10				            .word <>WAIT_COMMANDS   ;6
+>160c4a	12 11				            .word <>WAIT_N_1        ;7
+>160c4c	20 11				            .word <>YM2612_SAMPLE   ;8
+>160c4e	43 11				            .word <>DAC_STREAM      ;9
+>160c50	18 0d				            .word <>AY8910          ;A - AY8910
+>160c52	6c 0c				            .word <>SKIP_TWO_BYTES  ;B - not implemented
+>160c54	7f 0c				            .word <>SKIP_THREE_BYTES;C - not implemented
+>160c56	7f 0c				            .word <>SKIP_THREE_BYTES;D - not implemented
+>160c58	98 0c				            .word <>SEEK_OFFSET     ;E - not implemented
+>160c5a	f9 0c				            .word <>SKIP_FOUR_BYTES ;F - not implemented
+.160c5c					INVALID_COMMAND
+.160c5c	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160c5f					SKIP_BYTE_CMD
+.160c5f	c2 20		rep #$20	                REP #$20        ; set A long
+.160c61	e6 88		inc $88		            INC CURRENT_POSITION
+.160c63	d0 02		bne $160c67	            BNE increment_done
+.160c65	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160c67					    increment_done
+.160c67	e2 20		sep #$20	                SEP #$20        ; set A short
+.160c69	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160c6c					SKIP_TWO_BYTES
+.160c6c	c2 20		rep #$20	                REP #$20        ; set A long
 .160c6e	e6 88		inc $88		            INC CURRENT_POSITION
-.160c70	d0 02		bne $160c74	            BNE s2_2
+.160c70	d0 02		bne $160c74	            BNE s2_1
 .160c72	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160c74					    s2_2
-.160c74	e2 20		sep #$20	                SEP #$20        ; set A short
-.160c76	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160c79					SKIP_THREE_BYTES
-.160c79	c2 20		rep #$20	                REP #$20        ; set A long
-.160c7b	e6 88		inc $88		            INC CURRENT_POSITION
-.160c7d	d0 02		bne $160c81	            BNE s3_1
-.160c7f	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160c81					    s3_1
+.160c74					    s2_1
+.160c74	e6 88		inc $88		            INC CURRENT_POSITION
+.160c76	d0 02		bne $160c7a	            BNE s2_2
+.160c78	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160c7a					    s2_2
+.160c7a	e2 20		sep #$20	                SEP #$20        ; set A short
+.160c7c	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160c7f					SKIP_THREE_BYTES
+.160c7f	c2 20		rep #$20	                REP #$20        ; set A long
 .160c81	e6 88		inc $88		            INC CURRENT_POSITION
-.160c83	d0 02		bne $160c87	            BNE s3_2
+.160c83	d0 02		bne $160c87	            BNE s3_1
 .160c85	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160c87					    s3_2
+.160c87					    s3_1
 .160c87	e6 88		inc $88		            INC CURRENT_POSITION
-.160c89	d0 02		bne $160c8d	            BNE s3_3
+.160c89	d0 02		bne $160c8d	            BNE s3_2
 .160c8b	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160c8d					    s3_3
-.160c8d	e2 20		sep #$20	                SEP #$20        ; set A short
-.160c8f	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160c92					SEEK_OFFSET
-.160c92	a5 7f		lda $7f		            LDA COMMAND
-.160c94	c9 e0		cmp #$e0	            CMP #$E0
-.160c96	d0 5b		bne $160cf3	            BNE SKIP_FOUR_BYTES
-.160c98	c2 20		rep #$20	                REP #$20        ; set A long
-.160c9a	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160c9c	8f 20 01 00	sta $000120	            STA ADDER_A
-.160ca0	c2 20		rep #$20	                REP #$20        ; set A long
-.160ca2	e6 88		inc $88		            INC CURRENT_POSITION
-.160ca4	d0 02		bne $160ca8	            BNE increment_done
-.160ca6	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160ca8					    increment_done
-.160ca8	e2 20		sep #$20	                SEP #$20        ; set A short
-.160caa	c2 20		rep #$20	                REP #$20        ; set A long
-.160cac	e6 88		inc $88		            INC CURRENT_POSITION
-.160cae	d0 02		bne $160cb2	            BNE increment_done
-.160cb0	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160cb2					    increment_done
-.160cb2	e2 20		sep #$20	                SEP #$20        ; set A short
-.160cb4	c2 20		rep #$20	                REP #$20        ; set A long
-.160cb6	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160cb8	8f 22 01 00	sta $000122	            STA ADDER_A + 2
-.160cbc	c2 20		rep #$20	                REP #$20        ; set A long
-.160cbe	e6 88		inc $88		            INC CURRENT_POSITION
-.160cc0	d0 02		bne $160cc4	            BNE increment_done
-.160cc2	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160cc4					    increment_done
-.160cc4	e2 20		sep #$20	                SEP #$20        ; set A short
-.160cc6	c2 20		rep #$20	                REP #$20        ; set A long
-.160cc8	e6 88		inc $88		            INC CURRENT_POSITION
-.160cca	d0 02		bne $160cce	            BNE increment_done
-.160ccc	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160cce					    increment_done
-.160cce	e2 20		sep #$20	                SEP #$20        ; set A short
-.160cd0	c2 20		rep #$20	                REP #$20        ; set A long
-.160cd2	af 00 80 00	lda $008000	            LDA DATA_STREAM_TBL
-.160cd6	8f 24 01 00	sta $000124	            STA ADDER_B
-.160cda	af 02 80 00	lda $008002	            LDA DATA_STREAM_TBL + 2
-.160cde	8f 26 01 00	sta $000126	            STA ADDER_B + 2
-.160ce2	af 28 01 00	lda $000128	            LDA ADDER_R
-.160ce6	85 8a		sta $8a		            STA PCM_OFFSET
-.160ce8	af 2a 01 00	lda $00012a	            LDA ADDER_R + 2
-.160cec	85 8c		sta $8c		            STA PCM_OFFSET + 2
-.160cee	e2 20		sep #$20	                SEP #$20        ; set A short
-.160cf0	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE
-.160cf3					SKIP_FOUR_BYTES
-.160cf3	c2 20		rep #$20	                REP #$20        ; set A long
-.160cf5	e6 88		inc $88		            INC CURRENT_POSITION
-.160cf7	d0 02		bne $160cfb	            BNE s4_1
-.160cf9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160cfb					    s4_1
+.160c8d					    s3_2
+.160c8d	e6 88		inc $88		            INC CURRENT_POSITION
+.160c8f	d0 02		bne $160c93	            BNE s3_3
+.160c91	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160c93					    s3_3
+.160c93	e2 20		sep #$20	                SEP #$20        ; set A short
+.160c95	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160c98					SEEK_OFFSET
+.160c98	a5 7f		lda $7f		            LDA COMMAND
+.160c9a	c9 e0		cmp #$e0	            CMP #$E0
+.160c9c	d0 5b		bne $160cf9	            BNE SKIP_FOUR_BYTES
+.160c9e	c2 20		rep #$20	                REP #$20        ; set A long
+.160ca0	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160ca2	8f 20 01 00	sta $000120	            STA ADDER_A
+.160ca6	c2 20		rep #$20	                REP #$20        ; set A long
+.160ca8	e6 88		inc $88		            INC CURRENT_POSITION
+.160caa	d0 02		bne $160cae	            BNE increment_done
+.160cac	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160cae					    increment_done
+.160cae	e2 20		sep #$20	                SEP #$20        ; set A short
+.160cb0	c2 20		rep #$20	                REP #$20        ; set A long
+.160cb2	e6 88		inc $88		            INC CURRENT_POSITION
+.160cb4	d0 02		bne $160cb8	            BNE increment_done
+.160cb6	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160cb8					    increment_done
+.160cb8	e2 20		sep #$20	                SEP #$20        ; set A short
+.160cba	c2 20		rep #$20	                REP #$20        ; set A long
+.160cbc	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160cbe	8f 22 01 00	sta $000122	            STA ADDER_A + 2
+.160cc2	c2 20		rep #$20	                REP #$20        ; set A long
+.160cc4	e6 88		inc $88		            INC CURRENT_POSITION
+.160cc6	d0 02		bne $160cca	            BNE increment_done
+.160cc8	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160cca					    increment_done
+.160cca	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ccc	c2 20		rep #$20	                REP #$20        ; set A long
+.160cce	e6 88		inc $88		            INC CURRENT_POSITION
+.160cd0	d0 02		bne $160cd4	            BNE increment_done
+.160cd2	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160cd4					    increment_done
+.160cd4	e2 20		sep #$20	                SEP #$20        ; set A short
+.160cd6	c2 20		rep #$20	                REP #$20        ; set A long
+.160cd8	af 00 80 00	lda $008000	            LDA DATA_STREAM_TBL
+.160cdc	8f 24 01 00	sta $000124	            STA ADDER_B
+.160ce0	af 02 80 00	lda $008002	            LDA DATA_STREAM_TBL + 2
+.160ce4	8f 26 01 00	sta $000126	            STA ADDER_B + 2
+.160ce8	af 28 01 00	lda $000128	            LDA ADDER_R
+.160cec	85 8a		sta $8a		            STA PCM_OFFSET
+.160cee	af 2a 01 00	lda $00012a	            LDA ADDER_R + 2
+.160cf2	85 8c		sta $8c		            STA PCM_OFFSET + 2
+.160cf4	e2 20		sep #$20	                SEP #$20        ; set A short
+.160cf6	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE
+.160cf9					SKIP_FOUR_BYTES
+.160cf9	c2 20		rep #$20	                REP #$20        ; set A long
 .160cfb	e6 88		inc $88		            INC CURRENT_POSITION
-.160cfd	d0 02		bne $160d01	            BNE s4_2
+.160cfd	d0 02		bne $160d01	            BNE s4_1
 .160cff	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160d01					    s4_2
+.160d01					    s4_1
 .160d01	e6 88		inc $88		            INC CURRENT_POSITION
-.160d03	d0 02		bne $160d07	            BNE s4_3
+.160d03	d0 02		bne $160d07	            BNE s4_2
 .160d05	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160d07					    s4_3
+.160d07					    s4_2
 .160d07	e6 88		inc $88		            INC CURRENT_POSITION
-.160d09	d0 02		bne $160d0d	            BNE s4_4
+.160d09	d0 02		bne $160d0d	            BNE s4_3
 .160d0b	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160d0d					    s4_4
-.160d0d	e2 20		sep #$20	                SEP #$20        ; set A short
-.160d0f	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160d12					AY8910
-.160d12	a5 7f		lda $7f		            LDA COMMAND
-.160d14	c9 a0		cmp #$a0	            CMP #$A0
-.160d16	f0 03		beq $160d1b	            BEQ AY_COMMAND
-.160d18	4c 66 0c	jmp $160c66	            JMP SKIP_TWO_BYTES
-.160d1b					    AY_COMMAND
-.160d1b	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160d1d	c2 20		rep #$20	                REP #$20        ; set A long
-.160d1f	e6 88		inc $88		            INC CURRENT_POSITION
-.160d21	d0 02		bne $160d25	            BNE increment_done
-.160d23	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160d25					    increment_done
-.160d25	e2 20		sep #$20	                SEP #$20        ; set A short
-.160d27	c9 00		cmp #$00	            CMP #0 ; Register 0 fine
-.160d29	d0 4c		bne $160d77	            BNE AY_R1
-.160d2b	a5 90		lda $90		            LDA AY_3_8910_A
-.160d2d	c9 08		cmp #$08	            CMP #8
-.160d2f	90 19		bcc $160d4a	            BLT R0_FINE
-.160d31	a9 87		lda #$87	            LDA #$87
-.160d33	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160d37	a9 3f		lda #$3f	            LDA #$3F
+.160d0d					    s4_3
+.160d0d	e6 88		inc $88		            INC CURRENT_POSITION
+.160d0f	d0 02		bne $160d13	            BNE s4_4
+.160d11	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160d13					    s4_4
+.160d13	e2 20		sep #$20	                SEP #$20        ; set A short
+.160d15	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160d18					AY8910
+.160d18	a5 7f		lda $7f		            LDA COMMAND
+.160d1a	c9 a0		cmp #$a0	            CMP #$A0
+.160d1c	f0 03		beq $160d21	            BEQ AY_COMMAND
+.160d1e	4c 6c 0c	jmp $160c6c	            JMP SKIP_TWO_BYTES
+.160d21					    AY_COMMAND
+.160d21	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160d23	c2 20		rep #$20	                REP #$20        ; set A long
+.160d25	e6 88		inc $88		            INC CURRENT_POSITION
+.160d27	d0 02		bne $160d2b	            BNE increment_done
+.160d29	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160d2b					    increment_done
+.160d2b	e2 20		sep #$20	                SEP #$20        ; set A short
+.160d2d	c9 00		cmp #$00	            CMP #0 ; Register 0 fine
+.160d2f	d0 4c		bne $160d7d	            BNE AY_R1
+.160d31	a5 90		lda $90		            LDA AY_3_8910_A
+.160d33	c9 08		cmp #$08	            CMP #8
+.160d35	90 19		bcc $160d50	            BLT R0_FINE
+.160d37	a9 87		lda #$87	            LDA #$87
 .160d39	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160d3d	c2 20		rep #$20	                REP #$20        ; set A long
-.160d3f	e6 88		inc $88		            INC CURRENT_POSITION
-.160d41	d0 02		bne $160d45	            BNE increment_done
-.160d43	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160d45					    increment_done
-.160d45	e2 20		sep #$20	                SEP #$20        ; set A short
-.160d47	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160d4a					        R0_FINE
-.160d4a	eb		xba		            XBA
-.160d4b	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160d4d	c2 20		rep #$20	                REP #$20        ; set A long
-.160d4f	e6 88		inc $88		            INC CURRENT_POSITION
-.160d51	d0 02		bne $160d55	            BNE increment_done
-.160d53	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160d55					    increment_done
-.160d55	e2 20		sep #$20	                SEP #$20        ; set A short
-.160d57	c2 20		rep #$20	                REP #$20        ; set A long
-.160d59	4a		lsr a		            LSR A ; drop the LSB
-.160d5a	e2 20		sep #$20	                SEP #$20        ; set A short
-.160d5c	48		pha		            PHA
-.160d5d	29 0f		and #$0f	            AND #$F
-.160d5f	09 80		ora #$80	            ORA #$80
-.160d61	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160d65	68		pla		            PLA
-.160d66	c2 20		rep #$20	                REP #$20        ; set A long
-.160d68	4a		lsr a		            LSR A
-.160d69	4a		lsr a		            LSR A
-.160d6a	4a		lsr a		            LSR A
-.160d6b	4a		lsr a		            LSR A
-.160d6c	e2 20		sep #$20	                SEP #$20        ; set A short
-.160d6e	29 3f		and #$3f	            AND #$3F ; 6 bits
-.160d70	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160d74	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160d77	c9 01		cmp #$01	    AY_R1   CMP #1
-.160d79	d0 13		bne $160d8e	            BNE AY_R2
-.160d7b	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160d7d	c2 20		rep #$20	                REP #$20        ; set A long
-.160d7f	e6 88		inc $88		            INC CURRENT_POSITION
-.160d81	d0 02		bne $160d85	            BNE increment_done
-.160d83	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160d85					    increment_done
-.160d85	e2 20		sep #$20	                SEP #$20        ; set A short
-.160d87	29 0f		and #$0f	            AND #$F
-.160d89	85 90		sta $90		            STA AY_3_8910_A
-.160d8b	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160d8e	c9 02		cmp #$02	    AY_R2   CMP #2
-.160d90	d0 4c		bne $160dde	            BNE AY_R3
-.160d92	a5 92		lda $92		            LDA AY_3_8910_B
-.160d94	c9 08		cmp #$08	            CMP #8
-.160d96	90 19		bcc $160db1	            BLT R1_FINE
-.160d98	a9 a7		lda #$a7	            LDA #$A7
-.160d9a	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160d9e	a9 3f		lda #$3f	            LDA #$3F
+.160d3d	a9 3f		lda #$3f	            LDA #$3F
+.160d3f	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160d43	c2 20		rep #$20	                REP #$20        ; set A long
+.160d45	e6 88		inc $88		            INC CURRENT_POSITION
+.160d47	d0 02		bne $160d4b	            BNE increment_done
+.160d49	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160d4b					    increment_done
+.160d4b	e2 20		sep #$20	                SEP #$20        ; set A short
+.160d4d	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160d50					        R0_FINE
+.160d50	eb		xba		            XBA
+.160d51	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160d53	c2 20		rep #$20	                REP #$20        ; set A long
+.160d55	e6 88		inc $88		            INC CURRENT_POSITION
+.160d57	d0 02		bne $160d5b	            BNE increment_done
+.160d59	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160d5b					    increment_done
+.160d5b	e2 20		sep #$20	                SEP #$20        ; set A short
+.160d5d	c2 20		rep #$20	                REP #$20        ; set A long
+.160d5f	4a		lsr a		            LSR A ; drop the LSB
+.160d60	e2 20		sep #$20	                SEP #$20        ; set A short
+.160d62	48		pha		            PHA
+.160d63	29 0f		and #$0f	            AND #$F
+.160d65	09 80		ora #$80	            ORA #$80
+.160d67	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160d6b	68		pla		            PLA
+.160d6c	c2 20		rep #$20	                REP #$20        ; set A long
+.160d6e	4a		lsr a		            LSR A
+.160d6f	4a		lsr a		            LSR A
+.160d70	4a		lsr a		            LSR A
+.160d71	4a		lsr a		            LSR A
+.160d72	e2 20		sep #$20	                SEP #$20        ; set A short
+.160d74	29 3f		and #$3f	            AND #$3F ; 6 bits
+.160d76	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160d7a	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160d7d	c9 01		cmp #$01	    AY_R1   CMP #1
+.160d7f	d0 13		bne $160d94	            BNE AY_R2
+.160d81	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160d83	c2 20		rep #$20	                REP #$20        ; set A long
+.160d85	e6 88		inc $88		            INC CURRENT_POSITION
+.160d87	d0 02		bne $160d8b	            BNE increment_done
+.160d89	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160d8b					    increment_done
+.160d8b	e2 20		sep #$20	                SEP #$20        ; set A short
+.160d8d	29 0f		and #$0f	            AND #$F
+.160d8f	85 90		sta $90		            STA AY_3_8910_A
+.160d91	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160d94	c9 02		cmp #$02	    AY_R2   CMP #2
+.160d96	d0 4c		bne $160de4	            BNE AY_R3
+.160d98	a5 92		lda $92		            LDA AY_3_8910_B
+.160d9a	c9 08		cmp #$08	            CMP #8
+.160d9c	90 19		bcc $160db7	            BLT R1_FINE
+.160d9e	a9 a7		lda #$a7	            LDA #$A7
 .160da0	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160da4	c2 20		rep #$20	                REP #$20        ; set A long
-.160da6	e6 88		inc $88		            INC CURRENT_POSITION
-.160da8	d0 02		bne $160dac	            BNE increment_done
-.160daa	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160dac					    increment_done
-.160dac	e2 20		sep #$20	                SEP #$20        ; set A short
-.160dae	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160db1					        R1_FINE
-.160db1	eb		xba		            XBA
-.160db2	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160db4	c2 20		rep #$20	                REP #$20        ; set A long
-.160db6	e6 88		inc $88		            INC CURRENT_POSITION
-.160db8	d0 02		bne $160dbc	            BNE increment_done
-.160dba	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160dbc					    increment_done
-.160dbc	e2 20		sep #$20	                SEP #$20        ; set A short
-.160dbe	c2 20		rep #$20	                REP #$20        ; set A long
-.160dc0	4a		lsr a		            LSR A ; drop the LSB
-.160dc1	e2 20		sep #$20	                SEP #$20        ; set A short
-.160dc3	48		pha		            PHA
-.160dc4	29 0f		and #$0f	            AND #$F
-.160dc6	09 a0		ora #$a0	            ORA #$A0
-.160dc8	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160dcc	68		pla		            PLA
-.160dcd	c2 20		rep #$20	                REP #$20        ; set A long
-.160dcf	4a		lsr a		            LSR A
-.160dd0	4a		lsr a		            LSR A
-.160dd1	4a		lsr a		            LSR A
-.160dd2	4a		lsr a		            LSR A
-.160dd3	e2 20		sep #$20	                SEP #$20        ; set A short
-.160dd5	29 3f		and #$3f	            AND #$3F ; 6 bits
-.160dd7	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160ddb	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160dde	c9 03		cmp #$03	    AY_R3   CMP #3
-.160de0	d0 13		bne $160df5	            BNE AY_R4
-.160de2	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160de4	c2 20		rep #$20	                REP #$20        ; set A long
-.160de6	e6 88		inc $88		            INC CURRENT_POSITION
-.160de8	d0 02		bne $160dec	            BNE increment_done
-.160dea	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160dec					    increment_done
-.160dec	e2 20		sep #$20	                SEP #$20        ; set A short
-.160dee	29 0f		and #$0f	            AND #$F
-.160df0	85 92		sta $92		            STA AY_3_8910_B
-.160df2	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160df5	c9 04		cmp #$04	    AY_R4   CMP #4
-.160df7	d0 4c		bne $160e45	            BNE AY_R5
-.160df9	a5 94		lda $94		            LDA AY_3_8910_C
-.160dfb	c9 08		cmp #$08	            CMP #8
-.160dfd	90 19		bcc $160e18	            BLT R2_FINE
-.160dff	a9 c7		lda #$c7	            LDA #$C7
-.160e01	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160e05	a9 3f		lda #$3f	            LDA #$3F
+.160da4	a9 3f		lda #$3f	            LDA #$3F
+.160da6	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160daa	c2 20		rep #$20	                REP #$20        ; set A long
+.160dac	e6 88		inc $88		            INC CURRENT_POSITION
+.160dae	d0 02		bne $160db2	            BNE increment_done
+.160db0	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160db2					    increment_done
+.160db2	e2 20		sep #$20	                SEP #$20        ; set A short
+.160db4	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160db7					        R1_FINE
+.160db7	eb		xba		            XBA
+.160db8	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160dba	c2 20		rep #$20	                REP #$20        ; set A long
+.160dbc	e6 88		inc $88		            INC CURRENT_POSITION
+.160dbe	d0 02		bne $160dc2	            BNE increment_done
+.160dc0	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160dc2					    increment_done
+.160dc2	e2 20		sep #$20	                SEP #$20        ; set A short
+.160dc4	c2 20		rep #$20	                REP #$20        ; set A long
+.160dc6	4a		lsr a		            LSR A ; drop the LSB
+.160dc7	e2 20		sep #$20	                SEP #$20        ; set A short
+.160dc9	48		pha		            PHA
+.160dca	29 0f		and #$0f	            AND #$F
+.160dcc	09 a0		ora #$a0	            ORA #$A0
+.160dce	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160dd2	68		pla		            PLA
+.160dd3	c2 20		rep #$20	                REP #$20        ; set A long
+.160dd5	4a		lsr a		            LSR A
+.160dd6	4a		lsr a		            LSR A
+.160dd7	4a		lsr a		            LSR A
+.160dd8	4a		lsr a		            LSR A
+.160dd9	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ddb	29 3f		and #$3f	            AND #$3F ; 6 bits
+.160ddd	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160de1	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160de4	c9 03		cmp #$03	    AY_R3   CMP #3
+.160de6	d0 13		bne $160dfb	            BNE AY_R4
+.160de8	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160dea	c2 20		rep #$20	                REP #$20        ; set A long
+.160dec	e6 88		inc $88		            INC CURRENT_POSITION
+.160dee	d0 02		bne $160df2	            BNE increment_done
+.160df0	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160df2					    increment_done
+.160df2	e2 20		sep #$20	                SEP #$20        ; set A short
+.160df4	29 0f		and #$0f	            AND #$F
+.160df6	85 92		sta $92		            STA AY_3_8910_B
+.160df8	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160dfb	c9 04		cmp #$04	    AY_R4   CMP #4
+.160dfd	d0 4c		bne $160e4b	            BNE AY_R5
+.160dff	a5 94		lda $94		            LDA AY_3_8910_C
+.160e01	c9 08		cmp #$08	            CMP #8
+.160e03	90 19		bcc $160e1e	            BLT R2_FINE
+.160e05	a9 c7		lda #$c7	            LDA #$C7
 .160e07	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160e0b	c2 20		rep #$20	                REP #$20        ; set A long
-.160e0d	e6 88		inc $88		            INC CURRENT_POSITION
-.160e0f	d0 02		bne $160e13	            BNE increment_done
-.160e11	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160e13					    increment_done
-.160e13	e2 20		sep #$20	                SEP #$20        ; set A short
-.160e15	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160e18					        R2_FINE
-.160e18	eb		xba		            XBA
-.160e19	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160e1b	c2 20		rep #$20	                REP #$20        ; set A long
-.160e1d	e6 88		inc $88		            INC CURRENT_POSITION
-.160e1f	d0 02		bne $160e23	            BNE increment_done
-.160e21	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160e23					    increment_done
-.160e23	e2 20		sep #$20	                SEP #$20        ; set A short
-.160e25	c2 20		rep #$20	                REP #$20        ; set A long
-.160e27	4a		lsr a		            LSR A ; drop the LSB
-.160e28	e2 20		sep #$20	                SEP #$20        ; set A short
-.160e2a	48		pha		            PHA
-.160e2b	29 0f		and #$0f	            AND #$F
-.160e2d	09 c0		ora #$c0	            ORA #$C0
-.160e2f	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160e33	68		pla		            PLA
-.160e34	c2 20		rep #$20	                REP #$20        ; set A long
-.160e36	4a		lsr a		            LSR A
-.160e37	4a		lsr a		            LSR A
-.160e38	4a		lsr a		            LSR A
-.160e39	4a		lsr a		            LSR A
-.160e3a	e2 20		sep #$20	                SEP #$20        ; set A short
-.160e3c	29 3f		and #$3f	            AND #$3F ; 6 bits
-.160e3e	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160e42	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160e45	c9 05		cmp #$05	    AY_R5   CMP #5
-.160e47	d0 13		bne $160e5c	            BNE AY_R10
-.160e49	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160e4b	c2 20		rep #$20	                REP #$20        ; set A long
-.160e4d	e6 88		inc $88		            INC CURRENT_POSITION
-.160e4f	d0 02		bne $160e53	            BNE increment_done
-.160e51	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160e53					    increment_done
-.160e53	e2 20		sep #$20	                SEP #$20        ; set A short
-.160e55	29 0f		and #$0f	            AND #$F
-.160e57	85 94		sta $94		            STA AY_3_8910_C
-.160e59	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160e5c					    AY_R10
-.160e5c	c9 08		cmp #$08	            CMP #8
-.160e5e	d0 1a		bne $160e7a	            BNE AY_R11
-.160e60	a9 0f		lda #$0f	            LDA #$F
-.160e62	38		sec		            SEC
-.160e63	e7 88		sbc [$88]	            SBC [CURRENT_POSITION]
-.160e65	c2 20		rep #$20	                REP #$20        ; set A long
-.160e67	e6 88		inc $88		            INC CURRENT_POSITION
-.160e69	d0 02		bne $160e6d	            BNE increment_done
-.160e6b	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160e6d					    increment_done
-.160e6d	e2 20		sep #$20	                SEP #$20        ; set A short
-.160e6f	29 0f		and #$0f	            AND #$F
-.160e71	09 90		ora #$90	            ORA #$90
-.160e73	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160e77	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160e7a					    AY_R11
-.160e7a	c9 09		cmp #$09	            CMP #9
-.160e7c	d0 1a		bne $160e98	            BNE AY_R12
-.160e7e	a9 0f		lda #$0f	            LDA #$F
-.160e80	38		sec		            SEC
-.160e81	e7 88		sbc [$88]	            SBC [CURRENT_POSITION]
-.160e83	c2 20		rep #$20	                REP #$20        ; set A long
-.160e85	e6 88		inc $88		            INC CURRENT_POSITION
-.160e87	d0 02		bne $160e8b	            BNE increment_done
-.160e89	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160e8b					    increment_done
-.160e8b	e2 20		sep #$20	                SEP #$20        ; set A short
-.160e8d	29 0f		and #$0f	            AND #$F
-.160e8f	09 b0		ora #$b0	            ORA #$B0
-.160e91	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160e95	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160e98					    AY_R12
-.160e98	c9 0a		cmp #$0a	            CMP #10
-.160e9a	d0 1a		bne $160eb6	            BNE AY_R15
-.160e9c	a9 0f		lda #$0f	            LDA #$F
-.160e9e	38		sec		            SEC
-.160e9f	e7 88		sbc [$88]	            SBC [CURRENT_POSITION]
-.160ea1	c2 20		rep #$20	                REP #$20        ; set A long
-.160ea3	e6 88		inc $88		            INC CURRENT_POSITION
-.160ea5	d0 02		bne $160ea9	            BNE increment_done
-.160ea7	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160ea9					    increment_done
-.160ea9	e2 20		sep #$20	                SEP #$20        ; set A short
-.160eab	29 0f		and #$0f	            AND #$F
-.160ead	09 d0		ora #$d0	            ORA #$D0
-.160eaf	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160eb3	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160eb6					    AY_R15
-.160eb6	c2 20		rep #$20	                REP #$20        ; set A long
-.160eb8	e6 88		inc $88		            INC CURRENT_POSITION
-.160eba	d0 02		bne $160ebe	            BNE increment_done
-.160ebc	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160ebe					    increment_done
-.160ebe	e2 20		sep #$20	                SEP #$20        ; set A short
-.160ec0	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160ec3					WRITE_YM_CMD
-.160ec3	a5 7f		lda $7f		            LDA COMMAND
-.160ec5	c9 50		cmp #$50	            CMP #$50
-.160ec7	d0 13		bne $160edc	            BNE CHK_YM2413
-.160ec9	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160ecb	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
-.160ecf	c2 20		rep #$20	                REP #$20        ; set A long
-.160ed1	e6 88		inc $88		            INC CURRENT_POSITION
-.160ed3	d0 02		bne $160ed7	            BNE increment_done
-.160ed5	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160ed7					    increment_done
-.160ed7	e2 20		sep #$20	                SEP #$20        ; set A short
-.160ed9	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE ; for some reason, this chip needs more time between writes
-.160edc					        CHK_YM2413
-.160edc	c9 51		cmp #$51	            CMP #$51
-.160ede	d0 23		bne $160f03	            BNE CHK_YM2612_P0
-.160ee0	a9 00		lda #$00	            LDA #0
-.160ee2	eb		xba		            XBA
-.160ee3	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160ee5	aa		tax		            TAX
-.160ee6	c2 20		rep #$20	                REP #$20        ; set A long
-.160ee8	e6 88		inc $88		            INC CURRENT_POSITION
-.160eea	d0 02		bne $160eee	            BNE increment_done
-.160eec	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160eee					    increment_done
-.160eee	e2 20		sep #$20	                SEP #$20        ; set A short
-.160ef0	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160ef2	9f 00 e6 af	sta $afe600,x	            STA @lOPL3_BASE_ADRESS,X
-.160ef6	c2 20		rep #$20	                REP #$20        ; set A long
-.160ef8	e6 88		inc $88		            INC CURRENT_POSITION
-.160efa	d0 02		bne $160efe	            BNE increment_done
-.160efc	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160efe					    increment_done
-.160efe	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f00	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160f03					        CHK_YM2612_P0
-.160f03	c9 52		cmp #$52	            CMP #$52
-.160f05	d0 23		bne $160f2a	            BNE CHK_YM2612_P1
-.160f07	a9 00		lda #$00	            LDA #0
-.160f09	eb		xba		            XBA
-.160f0a	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f0c	aa		tax		            TAX
-.160f0d	c2 20		rep #$20	                REP #$20        ; set A long
-.160f0f	e6 88		inc $88		            INC CURRENT_POSITION
-.160f11	d0 02		bne $160f15	            BNE increment_done
-.160f13	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f15					    increment_done
-.160f15	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f17	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f19	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
-.160f1d	c2 20		rep #$20	                REP #$20        ; set A long
-.160f1f	e6 88		inc $88		            INC CURRENT_POSITION
-.160f21	d0 02		bne $160f25	            BNE increment_done
-.160f23	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f25					    increment_done
-.160f25	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f27	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE ; for some reason, this chip needs more time between writes
-.160f2a					        CHK_YM2612_P1
-.160f2a	c9 53		cmp #$53	            CMP #$53
-.160f2c	d0 23		bne $160f51	            BNE CHK_YM2151
-.160f2e	a9 00		lda #$00	            LDA #0
-.160f30	eb		xba		            XBA
-.160f31	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f33	aa		tax		            TAX
-.160f34	c2 20		rep #$20	                REP #$20        ; set A long
-.160f36	e6 88		inc $88		            INC CURRENT_POSITION
-.160f38	d0 02		bne $160f3c	            BNE increment_done
-.160f3a	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f3c					    increment_done
-.160f3c	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f3e	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f40	9f 00 f3 af	sta $aff300,x	            STA @lOPN2_BASE_ADDRESS + $100,X
-.160f44	c2 20		rep #$20	                REP #$20        ; set A long
-.160f46	e6 88		inc $88		            INC CURRENT_POSITION
-.160f48	d0 02		bne $160f4c	            BNE increment_done
-.160f4a	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f4c					    increment_done
-.160f4c	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f4e	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE ; for some reason, this chip needs more time between writes
-.160f51					        CHK_YM2151
-.160f51	c9 54		cmp #$54	            CMP #$54
-.160f53	d0 23		bne $160f78	            BNE CHK_YM2203
-.160f55	a9 00		lda #$00	            LDA #0
-.160f57	eb		xba		            XBA
-.160f58	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f5a	aa		tax		            TAX
-.160f5b	c2 20		rep #$20	                REP #$20        ; set A long
-.160f5d	e6 88		inc $88		            INC CURRENT_POSITION
-.160f5f	d0 02		bne $160f63	            BNE increment_done
-.160f61	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f63					    increment_done
-.160f63	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f65	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f67	9f 00 f0 af	sta $aff000,x	            STA @lOPM_BASE_ADDRESS,X
-.160f6b	c2 20		rep #$20	                REP #$20        ; set A long
-.160f6d	e6 88		inc $88		            INC CURRENT_POSITION
-.160f6f	d0 02		bne $160f73	            BNE increment_done
-.160f71	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f73					    increment_done
-.160f73	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f75	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160f78					        CHK_YM2203
-.160f78	c9 55		cmp #$55	            CMP #$55
-.160f7a	d0 1f		bne $160f9b	            BNE CHK_YM2608_P0
-.160f7c	a9 00		lda #$00	            LDA #0
-.160f7e	eb		xba		            XBA
-.160f7f	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f81	aa		tax		            TAX
-.160f82	c2 20		rep #$20	                REP #$20        ; set A long
-.160f84	e6 88		inc $88		            INC CURRENT_POSITION
-.160f86	d0 02		bne $160f8a	            BNE increment_done
-.160f88	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f8a					    increment_done
-.160f8a	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f8c	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160f8e	c2 20		rep #$20	                REP #$20        ; set A long
-.160f90	e6 88		inc $88		            INC CURRENT_POSITION
-.160f92	d0 02		bne $160f96	            BNE increment_done
-.160f94	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160f96					    increment_done
-.160f96	e2 20		sep #$20	                SEP #$20        ; set A short
-.160f98	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160f9b					        CHK_YM2608_P0
-.160f9b	c9 56		cmp #$56	            CMP #$56
-.160f9d	d0 2a		bne $160fc9	            BNE CHK_YM2608_P1
-.160f9f	a9 00		lda #$00	            LDA #0
-.160fa1	eb		xba		            XBA
-.160fa2	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160fa4	c9 10		cmp #$10	            CMP #$10  ; if the register is 0 to $1F, process as SSG
-.160fa6	b0 03		bcs $160fab	            BGE YM2608_FM
-.160fa8	4c 12 0d	jmp $160d12	            JMP AY8910
-.160fab					        YM2608_FM
-.160fab	aa		tax		            TAX
-.160fac	c2 20		rep #$20	                REP #$20        ; set A long
-.160fae	e6 88		inc $88		            INC CURRENT_POSITION
-.160fb0	d0 02		bne $160fb4	            BNE increment_done
-.160fb2	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160fb4					    increment_done
-.160fb4	e2 20		sep #$20	                SEP #$20        ; set A short
-.160fb6	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160fb8	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
-.160fbc	c2 20		rep #$20	                REP #$20        ; set A long
-.160fbe	e6 88		inc $88		            INC CURRENT_POSITION
-.160fc0	d0 02		bne $160fc4	            BNE increment_done
-.160fc2	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160fc4					    increment_done
-.160fc4	e2 20		sep #$20	                SEP #$20        ; set A short
-.160fc6	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160fc9					        CHK_YM2608_P1
-.160fc9	c9 57		cmp #$57	            CMP #$57
-.160fcb	d0 23		bne $160ff0	            BNE CHK_YM2610_P0
-.160fcd	a9 00		lda #$00	            LDA #0
-.160fcf	eb		xba		            XBA
-.160fd0	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160fd2	aa		tax		            TAX
-.160fd3	c2 20		rep #$20	                REP #$20        ; set A long
-.160fd5	e6 88		inc $88		            INC CURRENT_POSITION
-.160fd7	d0 02		bne $160fdb	            BNE increment_done
-.160fd9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160fdb					    increment_done
-.160fdb	e2 20		sep #$20	                SEP #$20        ; set A short
-.160fdd	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160fdf	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
-.160fe3	c2 20		rep #$20	                REP #$20        ; set A long
-.160fe5	e6 88		inc $88		            INC CURRENT_POSITION
-.160fe7	d0 02		bne $160feb	            BNE increment_done
-.160fe9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.160feb					    increment_done
-.160feb	e2 20		sep #$20	                SEP #$20        ; set A short
-.160fed	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.160ff0					        CHK_YM2610_P0
-.160ff0	c9 58		cmp #$58	            CMP #$58
-.160ff2	d0 2a		bne $16101e	            BNE CHK_YM2610_P1
-.160ff4	a9 00		lda #$00	            LDA #0
-.160ff6	eb		xba		            XBA
-.160ff7	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.160ff9	c9 10		cmp #$10	            CMP #$10  ; if the register is 0 to $1F, process as SSG
-.160ffb	b0 03		bcs $161000	            BGE YM2610_FM
-.160ffd	4c 12 0d	jmp $160d12	            JMP AY8910
-.161000					        YM2610_FM
-.161000	aa		tax		            TAX
-.161001	c2 20		rep #$20	                REP #$20        ; set A long
-.161003	e6 88		inc $88		            INC CURRENT_POSITION
-.161005	d0 02		bne $161009	            BNE increment_done
-.161007	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161009					    increment_done
-.161009	e2 20		sep #$20	                SEP #$20        ; set A short
-.16100b	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.16100d	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
-.161011	c2 20		rep #$20	                REP #$20        ; set A long
-.161013	e6 88		inc $88		            INC CURRENT_POSITION
-.161015	d0 02		bne $161019	            BNE increment_done
-.161017	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161019					    increment_done
-.161019	e2 20		sep #$20	                SEP #$20        ; set A short
-.16101b	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.16101e					        CHK_YM2610_P1
-.16101e	c9 59		cmp #$59	            CMP #$59
-.161020	d0 23		bne $161045	            BNE CHK_YM3812
-.161022	a9 00		lda #$00	            LDA #0
-.161024	eb		xba		            XBA
-.161025	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.161027	aa		tax		            TAX
-.161028	c2 20		rep #$20	                REP #$20        ; set A long
-.16102a	e6 88		inc $88		            INC CURRENT_POSITION
-.16102c	d0 02		bne $161030	            BNE increment_done
-.16102e	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161030					    increment_done
-.161030	e2 20		sep #$20	                SEP #$20        ; set A short
-.161032	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.161034	9f 00 f3 af	sta $aff300,x	            STA @lOPN2_BASE_ADDRESS + $100,X
-.161038	c2 20		rep #$20	                REP #$20        ; set A long
-.16103a	e6 88		inc $88		            INC CURRENT_POSITION
-.16103c	d0 02		bne $161040	            BNE increment_done
-.16103e	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161040					    increment_done
-.161040	e2 20		sep #$20	                SEP #$20        ; set A short
-.161042	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.161045					        CHK_YM3812
-.161045	c9 5a		cmp #$5a	            CMP #$5A
-.161047	d0 23		bne $16106c	            BNE CHK_YM262_P0
-.161049	a9 00		lda #$00	            LDA #0
-.16104b	eb		xba		            XBA
-.16104c	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.16104e	aa		tax		            TAX
-.16104f	c2 20		rep #$20	                REP #$20        ; set A long
-.161051	e6 88		inc $88		            INC CURRENT_POSITION
-.161053	d0 02		bne $161057	            BNE increment_done
-.161055	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161057					    increment_done
-.161057	e2 20		sep #$20	                SEP #$20        ; set A short
-.161059	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.16105b	9f 00 e6 af	sta $afe600,x	            STA @lOPL3_BASE_ADRESS,X
-.16105f	c2 20		rep #$20	                REP #$20        ; set A long
-.161061	e6 88		inc $88		            INC CURRENT_POSITION
-.161063	d0 02		bne $161067	            BNE increment_done
-.161065	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161067					    increment_done
-.161067	e2 20		sep #$20	                SEP #$20        ; set A short
-.161069	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.16106c					        CHK_YM262_P0
-.16106c	c9 5e		cmp #$5e	            CMP #$5E
-.16106e	d0 23		bne $161093	            BNE CHK_YM262_P1
-.161070	a9 00		lda #$00	            LDA #0
-.161072	eb		xba		            XBA
-.161073	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.161075	aa		tax		            TAX
-.161076	c2 20		rep #$20	                REP #$20        ; set A long
-.161078	e6 88		inc $88		            INC CURRENT_POSITION
-.16107a	d0 02		bne $16107e	            BNE increment_done
-.16107c	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.16107e					    increment_done
-.16107e	e2 20		sep #$20	                SEP #$20        ; set A short
-.161080	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.161082	9f 00 e6 af	sta $afe600,x	            STA @lOPL3_BASE_ADRESS,X
-.161086	c2 20		rep #$20	                REP #$20        ; set A long
-.161088	e6 88		inc $88		            INC CURRENT_POSITION
-.16108a	d0 02		bne $16108e	            BNE increment_done
-.16108c	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.16108e					    increment_done
-.16108e	e2 20		sep #$20	                SEP #$20        ; set A short
-.161090	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.161093					        CHK_YM262_P1
-.161093	c9 5f		cmp #$5f	            CMP #$5F
-.161095	d0 20		bne $1610b7	            BNE YM_DONE
-.161097	a9 00		lda #$00	            LDA #0
-.161099	eb		xba		            XBA
-.16109a	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.16109c	aa		tax		            TAX
-.16109d	c2 20		rep #$20	                REP #$20        ; set A long
-.16109f	e6 88		inc $88		            INC CURRENT_POSITION
-.1610a1	d0 02		bne $1610a5	            BNE increment_done
-.1610a3	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.1610a5					    increment_done
-.1610a5	e2 20		sep #$20	                SEP #$20        ; set A short
-.1610a7	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.1610a9	9f 00 e7 af	sta $afe700,x	            STA @lOPL3_BASE_ADRESS+ $100,X
-.1610ad	c2 20		rep #$20	                REP #$20        ; set A long
-.1610af	e6 88		inc $88		            INC CURRENT_POSITION
-.1610b1	d0 02		bne $1610b5	            BNE increment_done
-.1610b3	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.1610b5					    increment_done
-.1610b5	e2 20		sep #$20	                SEP #$20        ; set A short
-.1610b7					    YM_DONE
-.1610b7	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.1610ba					WAIT_COMMANDS
-.1610ba	a5 7f		lda $7f		            LDA COMMAND
-.1610bc	c9 61		cmp #$61	            CMP #$61
-.1610be	d0 20		bne $1610e0	            BNE CHK_WAIT_60th
-.1610c0	c2 20		rep #$20	                REP #$20        ; set A long
-.1610c2	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.1610c4	aa		tax		            TAX
-.1610c5	86 8c		stx $8c		            STX WAIT_CNTR
-.1610c7	e2 20		sep #$20	                SEP #$20        ; set A short
-.1610c9	c2 20		rep #$20	                REP #$20        ; set A long
-.1610cb	e6 88		inc $88		            INC CURRENT_POSITION
-.1610cd	d0 02		bne $1610d1	            BNE increment_done
-.1610cf	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.1610d1					    increment_done
-.1610d1	e2 20		sep #$20	                SEP #$20        ; set A short
-.1610d3	c2 20		rep #$20	                REP #$20        ; set A long
-.1610d5	e6 88		inc $88		            INC CURRENT_POSITION
-.1610d7	d0 02		bne $1610db	            BNE increment_done
-.1610d9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.1610db					    increment_done
-.1610db	e2 20		sep #$20	                SEP #$20        ; set A short
-.1610dd	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE
-.1610e0					        CHK_WAIT_60th
-.1610e0	c9 62		cmp #$62	            CMP #$62
-.1610e2	d0 08		bne $1610ec	            BNE CHK_WAIT_50th
-.1610e4	a2 df 02	ldx #$02df	            LDX #$2df
-.1610e7	86 8c		stx $8c		            STX WAIT_CNTR
-.1610e9	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE
-.1610ec					        CHK_WAIT_50th
-.1610ec	c9 63		cmp #$63	            CMP #$63
-.1610ee	d0 08		bne $1610f8	            BNE CHK_END_SONG
-.1610f0	a2 72 03	ldx #$0372	            LDX #$372
-.1610f3	86 8c		stx $8c		            STX WAIT_CNTR
-.1610f5	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE
-.1610f8					        CHK_END_SONG
-.1610f8	c9 66		cmp #$66	            CMP #$66 ; end of song
-.1610fa	d0 06		bne $161102	            BNE CHK_DATA_BLOCK
-.1610fc	20 5f 11	jsr $16115f	            JSR VGM_SET_LOOP_POINTERS
-.1610ff	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE
-.161102					        CHK_DATA_BLOCK
-.161102	c9 67		cmp #$67	            CMP #$67
-.161104	d0 03		bne $161109	            BNE DONE_WAIT
-.161106	20 db 11	jsr $1611db	            JSR READ_DATA_BLOCK
-.161109					    DONE_WAIT
-.161109	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE
-.16110c					WAIT_N_1
-.16110c	a9 00		lda #$00	            LDA #0
-.16110e	eb		xba		            XBA
-.16110f	a5 7f		lda $7f		            LDA COMMAND
-.161111	29 0f		and #$0f	            AND #$F
-.161113	aa		tax		            TAX
-.161114	e8		inx		            INX ; $7n where we wait n+1
-.161115	86 8c		stx $8c		            STX WAIT_CNTR
-.161117	4c 35 0c	jmp $160c35	            JMP VGM_LOOP_DONE
-.16111a					YM2612_SAMPLE
-.16111a	a7 8a		lda [$8a]	            LDA [PCM_OFFSET]
-.16111c	8f 2a f2 af	sta $aff22a	            STA OPN2_BASE_ADDRESS + $2A
-.161120	c2 20		rep #$20	                REP #$20        ; set A long
-.161122	a5 8a		lda $8a		            LDA PCM_OFFSET
-.161124	1a		inc a		            INC A
-.161125	85 8a		sta $8a		            STA PCM_OFFSET
-.161127	90 05		bcc $16112e	            BCC YMS_WAIT
-.161129	a5 8c		lda $8c		            LDA PCM_OFFSET + 2
-.16112b	1a		inc a		            INC A
-.16112c	85 8c		sta $8c		            STA PCM_OFFSET + 2
-.16112e					    YMS_WAIT
-.16112e	e2 20		sep #$20	                SEP #$20        ; set A short
-.161130	a9 00		lda #$00	            LDA #0
-.161132	eb		xba		            XBA
-.161133	a5 7f		lda $7f		            LDA COMMAND
-.161135	29 0f		and #$0f	            AND #$F
-.161137	aa		tax		            TAX
-.161138	86 8c		stx $8c		            STX WAIT_CNTR
-.16113a					    YMS_NOT_ZERO
-.16113a	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.16113d					DAC_STREAM
-.16113d	4c 10 0c	jmp $160c10	            JMP VGM_WRITE_REGISTER
-.161140					VGM_SET_SONG_POINTERS
-.161140	c2 20		rep #$20	                REP #$20        ; set A long
-.161142	a9 00 00	lda #$0000	            LDA #0
-.161145	85 8c		sta $8c		            STA WAIT_CNTR
-.161147	a5 86		lda $86		            LDA SONG_START + 2
-.161149	85 8a		sta $8a		            STA CURRENT_POSITION + 2
-.16114b	18		clc		            CLC
-.16114c	a0 34 00	ldy #$0034	            LDY #VGM_OFFSET
-.16114f	b7 84		lda [$84],y	            LDA [SONG_START],Y
-.161151	69 34 00	adc #$0034	            ADC #VGM_OFFSET
-.161154	65 84		adc $84		            ADC SONG_START
-.161156	85 88		sta $88		            STA CURRENT_POSITION
-.161158	90 02		bcc $16115c	            BCC VSP_DONE
-.16115a	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.16115c					    VSP_DONE
-.16115c	e2 20		sep #$20	                SEP #$20        ; set A short
-.16115e	6b		rtl		            RTL
-.16115f					VGM_SET_LOOP_POINTERS
-.16115f	c2 20		rep #$20	                REP #$20        ; set A long
-.161161	a9 00 00	lda #$0000	            LDA #0
-.161164	85 8c		sta $8c		            STA WAIT_CNTR
-.161166	18		clc		            CLC
-.161167	a0 1c 00	ldy #$001c	            LDY #LOOP_OFFSET
-.16116a	b7 84		lda [$84],y	            LDA [SONG_START],Y
-.16116c	f0 29		beq $161197	            BEQ NO_LOOP_INFO ; if this is zero, assume that the upper word is also 0
-.16116e	69 1c 00	adc #$001c	            ADC #LOOP_OFFSET ; add the current position
-.161171	8f 20 01 00	sta $000120	            STA ADDER_A
-.161175	c8		iny		            INY
-.161176	c8		iny		            INY
-.161177	b7 84		lda [$84],y	            LDA [SONG_START],Y
-.161179	8f 22 01 00	sta $000122	            STA ADDER_A + 2
-.16117d	a5 84		lda $84		            LDA SONG_START
-.16117f	8f 24 01 00	sta $000124	            STA ADDER_B
-.161183	a5 86		lda $86		            LDA SONG_START + 2
-.161185	8f 26 01 00	sta $000126	            STA ADDER_B + 2
-.161189	af 28 01 00	lda $000128	            LDA ADDER_R
-.16118d	85 88		sta $88		            STA CURRENT_POSITION
-.16118f	af 2a 01 00	lda $00012a	            LDA ADDER_R + 2
-.161193	85 8a		sta $8a		            STA CURRENT_POSITION + 2
-.161195	80 14		bra $1611ab	            BRA VSL_DONE
-.161197					    NO_LOOP_INFO
-.161197	a0 34 00	ldy #$0034	            LDY #VGM_OFFSET
-.16119a	b7 84		lda [$84],y	            LDA [SONG_START],Y
-.16119c	69 34 00	adc #$0034	            ADC #VGM_OFFSET
-.16119f	65 84		adc $84		            ADC SONG_START
-.1611a1	85 88		sta $88		            STA CURRENT_POSITION
-.1611a3	a5 86		lda $86		            LDA SONG_START + 2
-.1611a5	85 8a		sta $8a		            STA CURRENT_POSITION + 2
-.1611a7	90 02		bcc $1611ab	            BCC VSL_DONE
-.1611a9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.1611ab					    VSL_DONE
-.1611ab	e2 20		sep #$20	                SEP #$20        ; set A short
-.1611ad	60		rts		            RTS
-.1611ae					VGM_INIT_TIMERS
-.1611ae	a9 40		lda #$40	            LDA #64
-.1611b0	8f 65 01 00	sta $000165	            STA TIMER0_CMP_L
-.1611b4	a9 01		lda #$01	            LDA #1
-.1611b6	8f 66 01 00	sta $000166	            STA TIMER0_CMP_M
-.1611ba	a9 00		lda #$00	            LDA #0
-.1611bc	8f 67 01 00	sta $000167	            STA TIMER0_CMP_H
-.1611c0	a9 00		lda #$00	            LDA #0    ; set timer0 charge to 0
-.1611c2	8f 61 01 00	sta $000161	            STA TIMER0_CHARGE_L
-.1611c6	8f 62 01 00	sta $000162	            STA TIMER0_CHARGE_M
-.1611ca	8f 63 01 00	sta $000163	            STA TIMER0_CHARGE_H
-.1611ce	a9 01		lda #$01	            LDA #TMR0_CMP_RECLR  ; count up from "CHARGE" value to TIMER_CMP
-.1611d0	8f 64 01 00	sta $000164	            STA TIMER0_CMP_REG
-.1611d4	a9 0b		lda #$0b	            LDA #(TMR0_EN | TMR0_UPDWN | TMR0_SCLR)
-.1611d6	8f 60 01 00	sta $000160	            STA TIMER0_CTRL_REG
-.1611da	6b		rtl		            RTL
-.1611db					READ_DATA_BLOCK
-.1611db	a7 88		lda [$88]	            LDA [CURRENT_POSITION] ; should be 66
-.1611dd	c2 20		rep #$20	                REP #$20        ; set A long
-.1611df	e6 88		inc $88		            INC CURRENT_POSITION
-.1611e1	d0 02		bne $1611e5	            BNE increment_done
-.1611e3	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.1611e5					    increment_done
-.1611e5	e2 20		sep #$20	                SEP #$20        ; set A short
-.1611e7	a7 88		lda [$88]	            LDA  [CURRENT_POSITION] ; should be the type - I expect $C0
-.1611e9	48		pha		            PHA
-.1611ea	c2 20		rep #$20	                REP #$20        ; set A long
-.1611ec	e6 88		inc $88		            INC CURRENT_POSITION
-.1611ee	d0 02		bne $1611f2	            BNE increment_done
-.1611f0	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.1611f2					    increment_done
-.1611f2	e2 20		sep #$20	                SEP #$20        ; set A short
-.1611f4	c2 20		rep #$20	                REP #$20        ; set A long
-.1611f6	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.1611f8	8f 20 01 00	sta $000120	            STA ADDER_A
-.1611fc	c2 20		rep #$20	                REP #$20        ; set A long
-.1611fe	e6 88		inc $88		            INC CURRENT_POSITION
-.161200	d0 02		bne $161204	            BNE increment_done
-.161202	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161204					    increment_done
-.161204	e2 20		sep #$20	                SEP #$20        ; set A short
-.161206	c2 20		rep #$20	                REP #$20        ; set A long
-.161208	e6 88		inc $88		            INC CURRENT_POSITION
-.16120a	d0 02		bne $16120e	            BNE increment_done
-.16120c	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.16120e					    increment_done
-.16120e	e2 20		sep #$20	                SEP #$20        ; set A short
-.161210	c2 20		rep #$20	                REP #$20        ; set A long
-.161212	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
-.161214	8f 22 01 00	sta $000122	            STA ADDER_A + 2
-.161218	c2 20		rep #$20	                REP #$20        ; set A long
-.16121a	e6 88		inc $88		            INC CURRENT_POSITION
-.16121c	d0 02		bne $161220	            BNE increment_done
-.16121e	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.161220					    increment_done
-.161220	e2 20		sep #$20	                SEP #$20        ; set A short
-.161222	c2 20		rep #$20	                REP #$20        ; set A long
-.161224	e6 88		inc $88		            INC CURRENT_POSITION
-.161226	d0 02		bne $16122a	            BNE increment_done
-.161228	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
-.16122a					    increment_done
-.16122a	e2 20		sep #$20	                SEP #$20        ; set A short
-.16122c	c2 20		rep #$20	                REP #$20        ; set A long
-.16122e	a5 88		lda $88		            LDA CURRENT_POSITION
-.161230	8f 24 01 00	sta $000124	            STA ADDER_B
-.161234	a5 8a		lda $8a		            LDA CURRENT_POSITION + 2
-.161236	8f 26 01 00	sta $000126	            STA ADDER_B + 2
-.16123a	af 28 01 00	lda $000128	            LDA ADDER_R
-.16123e	85 88		sta $88		            STA CURRENT_POSITION
-.161240	af 2a 01 00	lda $00012a	            LDA ADDER_R + 2
-.161244	85 8a		sta $8a		            STA CURRENT_POSITION + 2
-.161246	e2 20		sep #$20	                SEP #$20        ; set A short
-.161248	68		pla		            PLA
-.161249	f0 04		beq $16124f	            BEQ UNCOMPRESSED
-.16124b	c9 c0		cmp #$c0	            CMP #$C0
-.16124d	d0 1b		bne $16126a	            BNE UNKNOWN_DATA_BLOCK
-.16124f					    UNCOMPRESSED
-.16124f	c2 20		rep #$20	                REP #$20        ; set A long
-.161251	a5 7d		lda $7d		            LDA DATA_STREAM_CNT ; multiply by 4
-.161253	0a		asl a		            ASL A
-.161254	0a		asl a		            ASL A
-.161255	aa		tax		            TAX
-.161256	af 24 01 00	lda $000124	            LDA ADDER_B
-.16125a	9f 00 80 00	sta $008000,x	            STA DATA_STREAM_TBL,X
-.16125e	af 26 01 00	lda $000126	            LDA ADDER_B + 2
-.161262	9f 02 80 00	sta $008002,x	            STA DATA_STREAM_TBL,X + 2
-.161266	e6 7d		inc $7d		            INC DATA_STREAM_CNT
-.161268	e2 20		sep #$20	                SEP #$20        ; set A short
-.16126a					    UNKNOWN_DATA_BLOCK
-.16126a	60		rts		            RTS
+.160e0b	a9 3f		lda #$3f	            LDA #$3F
+.160e0d	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160e11	c2 20		rep #$20	                REP #$20        ; set A long
+.160e13	e6 88		inc $88		            INC CURRENT_POSITION
+.160e15	d0 02		bne $160e19	            BNE increment_done
+.160e17	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160e19					    increment_done
+.160e19	e2 20		sep #$20	                SEP #$20        ; set A short
+.160e1b	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160e1e					        R2_FINE
+.160e1e	eb		xba		            XBA
+.160e1f	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160e21	c2 20		rep #$20	                REP #$20        ; set A long
+.160e23	e6 88		inc $88		            INC CURRENT_POSITION
+.160e25	d0 02		bne $160e29	            BNE increment_done
+.160e27	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160e29					    increment_done
+.160e29	e2 20		sep #$20	                SEP #$20        ; set A short
+.160e2b	c2 20		rep #$20	                REP #$20        ; set A long
+.160e2d	4a		lsr a		            LSR A ; drop the LSB
+.160e2e	e2 20		sep #$20	                SEP #$20        ; set A short
+.160e30	48		pha		            PHA
+.160e31	29 0f		and #$0f	            AND #$F
+.160e33	09 c0		ora #$c0	            ORA #$C0
+.160e35	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160e39	68		pla		            PLA
+.160e3a	c2 20		rep #$20	                REP #$20        ; set A long
+.160e3c	4a		lsr a		            LSR A
+.160e3d	4a		lsr a		            LSR A
+.160e3e	4a		lsr a		            LSR A
+.160e3f	4a		lsr a		            LSR A
+.160e40	e2 20		sep #$20	                SEP #$20        ; set A short
+.160e42	29 3f		and #$3f	            AND #$3F ; 6 bits
+.160e44	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160e48	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160e4b	c9 05		cmp #$05	    AY_R5   CMP #5
+.160e4d	d0 13		bne $160e62	            BNE AY_R10
+.160e4f	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160e51	c2 20		rep #$20	                REP #$20        ; set A long
+.160e53	e6 88		inc $88		            INC CURRENT_POSITION
+.160e55	d0 02		bne $160e59	            BNE increment_done
+.160e57	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160e59					    increment_done
+.160e59	e2 20		sep #$20	                SEP #$20        ; set A short
+.160e5b	29 0f		and #$0f	            AND #$F
+.160e5d	85 94		sta $94		            STA AY_3_8910_C
+.160e5f	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160e62					    AY_R10
+.160e62	c9 08		cmp #$08	            CMP #8
+.160e64	d0 1a		bne $160e80	            BNE AY_R11
+.160e66	a9 0f		lda #$0f	            LDA #$F
+.160e68	38		sec		            SEC
+.160e69	e7 88		sbc [$88]	            SBC [CURRENT_POSITION]
+.160e6b	c2 20		rep #$20	                REP #$20        ; set A long
+.160e6d	e6 88		inc $88		            INC CURRENT_POSITION
+.160e6f	d0 02		bne $160e73	            BNE increment_done
+.160e71	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160e73					    increment_done
+.160e73	e2 20		sep #$20	                SEP #$20        ; set A short
+.160e75	29 0f		and #$0f	            AND #$F
+.160e77	09 90		ora #$90	            ORA #$90
+.160e79	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160e7d	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160e80					    AY_R11
+.160e80	c9 09		cmp #$09	            CMP #9
+.160e82	d0 1a		bne $160e9e	            BNE AY_R12
+.160e84	a9 0f		lda #$0f	            LDA #$F
+.160e86	38		sec		            SEC
+.160e87	e7 88		sbc [$88]	            SBC [CURRENT_POSITION]
+.160e89	c2 20		rep #$20	                REP #$20        ; set A long
+.160e8b	e6 88		inc $88		            INC CURRENT_POSITION
+.160e8d	d0 02		bne $160e91	            BNE increment_done
+.160e8f	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160e91					    increment_done
+.160e91	e2 20		sep #$20	                SEP #$20        ; set A short
+.160e93	29 0f		and #$0f	            AND #$F
+.160e95	09 b0		ora #$b0	            ORA #$B0
+.160e97	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160e9b	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160e9e					    AY_R12
+.160e9e	c9 0a		cmp #$0a	            CMP #10
+.160ea0	d0 1a		bne $160ebc	            BNE AY_R15
+.160ea2	a9 0f		lda #$0f	            LDA #$F
+.160ea4	38		sec		            SEC
+.160ea5	e7 88		sbc [$88]	            SBC [CURRENT_POSITION]
+.160ea7	c2 20		rep #$20	                REP #$20        ; set A long
+.160ea9	e6 88		inc $88		            INC CURRENT_POSITION
+.160eab	d0 02		bne $160eaf	            BNE increment_done
+.160ead	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160eaf					    increment_done
+.160eaf	e2 20		sep #$20	                SEP #$20        ; set A short
+.160eb1	29 0f		and #$0f	            AND #$F
+.160eb3	09 d0		ora #$d0	            ORA #$D0
+.160eb5	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160eb9	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160ebc					    AY_R15
+.160ebc	c2 20		rep #$20	                REP #$20        ; set A long
+.160ebe	e6 88		inc $88		            INC CURRENT_POSITION
+.160ec0	d0 02		bne $160ec4	            BNE increment_done
+.160ec2	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160ec4					    increment_done
+.160ec4	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ec6	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160ec9					WRITE_YM_CMD
+.160ec9	a5 7f		lda $7f		            LDA COMMAND
+.160ecb	c9 50		cmp #$50	            CMP #$50
+.160ecd	d0 13		bne $160ee2	            BNE CHK_YM2413
+.160ecf	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160ed1	8f 00 f1 af	sta $aff100	            STA PSG_BASE_ADDRESS
+.160ed5	c2 20		rep #$20	                REP #$20        ; set A long
+.160ed7	e6 88		inc $88		            INC CURRENT_POSITION
+.160ed9	d0 02		bne $160edd	            BNE increment_done
+.160edb	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160edd					    increment_done
+.160edd	e2 20		sep #$20	                SEP #$20        ; set A short
+.160edf	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE ; for some reason, this chip needs more time between writes
+.160ee2					        CHK_YM2413
+.160ee2	c9 51		cmp #$51	            CMP #$51
+.160ee4	d0 23		bne $160f09	            BNE CHK_YM2612_P0
+.160ee6	a9 00		lda #$00	            LDA #0
+.160ee8	eb		xba		            XBA
+.160ee9	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160eeb	aa		tax		            TAX
+.160eec	c2 20		rep #$20	                REP #$20        ; set A long
+.160eee	e6 88		inc $88		            INC CURRENT_POSITION
+.160ef0	d0 02		bne $160ef4	            BNE increment_done
+.160ef2	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160ef4					    increment_done
+.160ef4	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ef6	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160ef8	9f 00 e6 af	sta $afe600,x	            STA @lOPL3_BASE_ADRESS,X
+.160efc	c2 20		rep #$20	                REP #$20        ; set A long
+.160efe	e6 88		inc $88		            INC CURRENT_POSITION
+.160f00	d0 02		bne $160f04	            BNE increment_done
+.160f02	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f04					    increment_done
+.160f04	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f06	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160f09					        CHK_YM2612_P0
+.160f09	c9 52		cmp #$52	            CMP #$52
+.160f0b	d0 23		bne $160f30	            BNE CHK_YM2612_P1
+.160f0d	a9 00		lda #$00	            LDA #0
+.160f0f	eb		xba		            XBA
+.160f10	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f12	aa		tax		            TAX
+.160f13	c2 20		rep #$20	                REP #$20        ; set A long
+.160f15	e6 88		inc $88		            INC CURRENT_POSITION
+.160f17	d0 02		bne $160f1b	            BNE increment_done
+.160f19	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f1b					    increment_done
+.160f1b	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f1d	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f1f	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
+.160f23	c2 20		rep #$20	                REP #$20        ; set A long
+.160f25	e6 88		inc $88		            INC CURRENT_POSITION
+.160f27	d0 02		bne $160f2b	            BNE increment_done
+.160f29	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f2b					    increment_done
+.160f2b	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f2d	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE ; for some reason, this chip needs more time between writes
+.160f30					        CHK_YM2612_P1
+.160f30	c9 53		cmp #$53	            CMP #$53
+.160f32	d0 23		bne $160f57	            BNE CHK_YM2151
+.160f34	a9 00		lda #$00	            LDA #0
+.160f36	eb		xba		            XBA
+.160f37	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f39	aa		tax		            TAX
+.160f3a	c2 20		rep #$20	                REP #$20        ; set A long
+.160f3c	e6 88		inc $88		            INC CURRENT_POSITION
+.160f3e	d0 02		bne $160f42	            BNE increment_done
+.160f40	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f42					    increment_done
+.160f42	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f44	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f46	9f 00 f3 af	sta $aff300,x	            STA @lOPN2_BASE_ADDRESS + $100,X
+.160f4a	c2 20		rep #$20	                REP #$20        ; set A long
+.160f4c	e6 88		inc $88		            INC CURRENT_POSITION
+.160f4e	d0 02		bne $160f52	            BNE increment_done
+.160f50	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f52					    increment_done
+.160f52	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f54	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE ; for some reason, this chip needs more time between writes
+.160f57					        CHK_YM2151
+.160f57	c9 54		cmp #$54	            CMP #$54
+.160f59	d0 23		bne $160f7e	            BNE CHK_YM2203
+.160f5b	a9 00		lda #$00	            LDA #0
+.160f5d	eb		xba		            XBA
+.160f5e	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f60	aa		tax		            TAX
+.160f61	c2 20		rep #$20	                REP #$20        ; set A long
+.160f63	e6 88		inc $88		            INC CURRENT_POSITION
+.160f65	d0 02		bne $160f69	            BNE increment_done
+.160f67	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f69					    increment_done
+.160f69	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f6b	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f6d	9f 00 f0 af	sta $aff000,x	            STA @lOPM_BASE_ADDRESS,X
+.160f71	c2 20		rep #$20	                REP #$20        ; set A long
+.160f73	e6 88		inc $88		            INC CURRENT_POSITION
+.160f75	d0 02		bne $160f79	            BNE increment_done
+.160f77	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f79					    increment_done
+.160f79	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f7b	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160f7e					        CHK_YM2203
+.160f7e	c9 55		cmp #$55	            CMP #$55
+.160f80	d0 1f		bne $160fa1	            BNE CHK_YM2608_P0
+.160f82	a9 00		lda #$00	            LDA #0
+.160f84	eb		xba		            XBA
+.160f85	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f87	aa		tax		            TAX
+.160f88	c2 20		rep #$20	                REP #$20        ; set A long
+.160f8a	e6 88		inc $88		            INC CURRENT_POSITION
+.160f8c	d0 02		bne $160f90	            BNE increment_done
+.160f8e	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f90					    increment_done
+.160f90	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f92	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160f94	c2 20		rep #$20	                REP #$20        ; set A long
+.160f96	e6 88		inc $88		            INC CURRENT_POSITION
+.160f98	d0 02		bne $160f9c	            BNE increment_done
+.160f9a	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160f9c					    increment_done
+.160f9c	e2 20		sep #$20	                SEP #$20        ; set A short
+.160f9e	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160fa1					        CHK_YM2608_P0
+.160fa1	c9 56		cmp #$56	            CMP #$56
+.160fa3	d0 2a		bne $160fcf	            BNE CHK_YM2608_P1
+.160fa5	a9 00		lda #$00	            LDA #0
+.160fa7	eb		xba		            XBA
+.160fa8	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160faa	c9 10		cmp #$10	            CMP #$10  ; if the register is 0 to $1F, process as SSG
+.160fac	b0 03		bcs $160fb1	            BGE YM2608_FM
+.160fae	4c 18 0d	jmp $160d18	            JMP AY8910
+.160fb1					        YM2608_FM
+.160fb1	aa		tax		            TAX
+.160fb2	c2 20		rep #$20	                REP #$20        ; set A long
+.160fb4	e6 88		inc $88		            INC CURRENT_POSITION
+.160fb6	d0 02		bne $160fba	            BNE increment_done
+.160fb8	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160fba					    increment_done
+.160fba	e2 20		sep #$20	                SEP #$20        ; set A short
+.160fbc	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160fbe	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
+.160fc2	c2 20		rep #$20	                REP #$20        ; set A long
+.160fc4	e6 88		inc $88		            INC CURRENT_POSITION
+.160fc6	d0 02		bne $160fca	            BNE increment_done
+.160fc8	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160fca					    increment_done
+.160fca	e2 20		sep #$20	                SEP #$20        ; set A short
+.160fcc	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160fcf					        CHK_YM2608_P1
+.160fcf	c9 57		cmp #$57	            CMP #$57
+.160fd1	d0 23		bne $160ff6	            BNE CHK_YM2610_P0
+.160fd3	a9 00		lda #$00	            LDA #0
+.160fd5	eb		xba		            XBA
+.160fd6	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160fd8	aa		tax		            TAX
+.160fd9	c2 20		rep #$20	                REP #$20        ; set A long
+.160fdb	e6 88		inc $88		            INC CURRENT_POSITION
+.160fdd	d0 02		bne $160fe1	            BNE increment_done
+.160fdf	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160fe1					    increment_done
+.160fe1	e2 20		sep #$20	                SEP #$20        ; set A short
+.160fe3	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160fe5	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
+.160fe9	c2 20		rep #$20	                REP #$20        ; set A long
+.160feb	e6 88		inc $88		            INC CURRENT_POSITION
+.160fed	d0 02		bne $160ff1	            BNE increment_done
+.160fef	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.160ff1					    increment_done
+.160ff1	e2 20		sep #$20	                SEP #$20        ; set A short
+.160ff3	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.160ff6					        CHK_YM2610_P0
+.160ff6	c9 58		cmp #$58	            CMP #$58
+.160ff8	d0 2a		bne $161024	            BNE CHK_YM2610_P1
+.160ffa	a9 00		lda #$00	            LDA #0
+.160ffc	eb		xba		            XBA
+.160ffd	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.160fff	c9 10		cmp #$10	            CMP #$10  ; if the register is 0 to $1F, process as SSG
+.161001	b0 03		bcs $161006	            BGE YM2610_FM
+.161003	4c 18 0d	jmp $160d18	            JMP AY8910
+.161006					        YM2610_FM
+.161006	aa		tax		            TAX
+.161007	c2 20		rep #$20	                REP #$20        ; set A long
+.161009	e6 88		inc $88		            INC CURRENT_POSITION
+.16100b	d0 02		bne $16100f	            BNE increment_done
+.16100d	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.16100f					    increment_done
+.16100f	e2 20		sep #$20	                SEP #$20        ; set A short
+.161011	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.161013	9f 00 f2 af	sta $aff200,x	            STA @lOPN2_BASE_ADDRESS,X
+.161017	c2 20		rep #$20	                REP #$20        ; set A long
+.161019	e6 88		inc $88		            INC CURRENT_POSITION
+.16101b	d0 02		bne $16101f	            BNE increment_done
+.16101d	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.16101f					    increment_done
+.16101f	e2 20		sep #$20	                SEP #$20        ; set A short
+.161021	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.161024					        CHK_YM2610_P1
+.161024	c9 59		cmp #$59	            CMP #$59
+.161026	d0 23		bne $16104b	            BNE CHK_YM3812
+.161028	a9 00		lda #$00	            LDA #0
+.16102a	eb		xba		            XBA
+.16102b	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.16102d	aa		tax		            TAX
+.16102e	c2 20		rep #$20	                REP #$20        ; set A long
+.161030	e6 88		inc $88		            INC CURRENT_POSITION
+.161032	d0 02		bne $161036	            BNE increment_done
+.161034	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161036					    increment_done
+.161036	e2 20		sep #$20	                SEP #$20        ; set A short
+.161038	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.16103a	9f 00 f3 af	sta $aff300,x	            STA @lOPN2_BASE_ADDRESS + $100,X
+.16103e	c2 20		rep #$20	                REP #$20        ; set A long
+.161040	e6 88		inc $88		            INC CURRENT_POSITION
+.161042	d0 02		bne $161046	            BNE increment_done
+.161044	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161046					    increment_done
+.161046	e2 20		sep #$20	                SEP #$20        ; set A short
+.161048	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.16104b					        CHK_YM3812
+.16104b	c9 5a		cmp #$5a	            CMP #$5A
+.16104d	d0 23		bne $161072	            BNE CHK_YM262_P0
+.16104f	a9 00		lda #$00	            LDA #0
+.161051	eb		xba		            XBA
+.161052	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.161054	aa		tax		            TAX
+.161055	c2 20		rep #$20	                REP #$20        ; set A long
+.161057	e6 88		inc $88		            INC CURRENT_POSITION
+.161059	d0 02		bne $16105d	            BNE increment_done
+.16105b	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.16105d					    increment_done
+.16105d	e2 20		sep #$20	                SEP #$20        ; set A short
+.16105f	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.161061	9f 00 e6 af	sta $afe600,x	            STA @lOPL3_BASE_ADRESS,X
+.161065	c2 20		rep #$20	                REP #$20        ; set A long
+.161067	e6 88		inc $88		            INC CURRENT_POSITION
+.161069	d0 02		bne $16106d	            BNE increment_done
+.16106b	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.16106d					    increment_done
+.16106d	e2 20		sep #$20	                SEP #$20        ; set A short
+.16106f	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.161072					        CHK_YM262_P0
+.161072	c9 5e		cmp #$5e	            CMP #$5E
+.161074	d0 23		bne $161099	            BNE CHK_YM262_P1
+.161076	a9 00		lda #$00	            LDA #0
+.161078	eb		xba		            XBA
+.161079	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.16107b	aa		tax		            TAX
+.16107c	c2 20		rep #$20	                REP #$20        ; set A long
+.16107e	e6 88		inc $88		            INC CURRENT_POSITION
+.161080	d0 02		bne $161084	            BNE increment_done
+.161082	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161084					    increment_done
+.161084	e2 20		sep #$20	                SEP #$20        ; set A short
+.161086	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.161088	9f 00 e6 af	sta $afe600,x	            STA @lOPL3_BASE_ADRESS,X
+.16108c	c2 20		rep #$20	                REP #$20        ; set A long
+.16108e	e6 88		inc $88		            INC CURRENT_POSITION
+.161090	d0 02		bne $161094	            BNE increment_done
+.161092	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161094					    increment_done
+.161094	e2 20		sep #$20	                SEP #$20        ; set A short
+.161096	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.161099					        CHK_YM262_P1
+.161099	c9 5f		cmp #$5f	            CMP #$5F
+.16109b	d0 20		bne $1610bd	            BNE YM_DONE
+.16109d	a9 00		lda #$00	            LDA #0
+.16109f	eb		xba		            XBA
+.1610a0	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.1610a2	aa		tax		            TAX
+.1610a3	c2 20		rep #$20	                REP #$20        ; set A long
+.1610a5	e6 88		inc $88		            INC CURRENT_POSITION
+.1610a7	d0 02		bne $1610ab	            BNE increment_done
+.1610a9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.1610ab					    increment_done
+.1610ab	e2 20		sep #$20	                SEP #$20        ; set A short
+.1610ad	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.1610af	9f 00 e7 af	sta $afe700,x	            STA @lOPL3_BASE_ADRESS+ $100,X
+.1610b3	c2 20		rep #$20	                REP #$20        ; set A long
+.1610b5	e6 88		inc $88		            INC CURRENT_POSITION
+.1610b7	d0 02		bne $1610bb	            BNE increment_done
+.1610b9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.1610bb					    increment_done
+.1610bb	e2 20		sep #$20	                SEP #$20        ; set A short
+.1610bd					    YM_DONE
+.1610bd	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.1610c0					WAIT_COMMANDS
+.1610c0	a5 7f		lda $7f		            LDA COMMAND
+.1610c2	c9 61		cmp #$61	            CMP #$61
+.1610c4	d0 20		bne $1610e6	            BNE CHK_WAIT_60th
+.1610c6	c2 20		rep #$20	                REP #$20        ; set A long
+.1610c8	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.1610ca	aa		tax		            TAX
+.1610cb	86 8c		stx $8c		            STX WAIT_CNTR
+.1610cd	e2 20		sep #$20	                SEP #$20        ; set A short
+.1610cf	c2 20		rep #$20	                REP #$20        ; set A long
+.1610d1	e6 88		inc $88		            INC CURRENT_POSITION
+.1610d3	d0 02		bne $1610d7	            BNE increment_done
+.1610d5	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.1610d7					    increment_done
+.1610d7	e2 20		sep #$20	                SEP #$20        ; set A short
+.1610d9	c2 20		rep #$20	                REP #$20        ; set A long
+.1610db	e6 88		inc $88		            INC CURRENT_POSITION
+.1610dd	d0 02		bne $1610e1	            BNE increment_done
+.1610df	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.1610e1					    increment_done
+.1610e1	e2 20		sep #$20	                SEP #$20        ; set A short
+.1610e3	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE
+.1610e6					        CHK_WAIT_60th
+.1610e6	c9 62		cmp #$62	            CMP #$62
+.1610e8	d0 08		bne $1610f2	            BNE CHK_WAIT_50th
+.1610ea	a2 df 02	ldx #$02df	            LDX #$2df
+.1610ed	86 8c		stx $8c		            STX WAIT_CNTR
+.1610ef	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE
+.1610f2					        CHK_WAIT_50th
+.1610f2	c9 63		cmp #$63	            CMP #$63
+.1610f4	d0 08		bne $1610fe	            BNE CHK_END_SONG
+.1610f6	a2 72 03	ldx #$0372	            LDX #$372
+.1610f9	86 8c		stx $8c		            STX WAIT_CNTR
+.1610fb	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE
+.1610fe					        CHK_END_SONG
+.1610fe	c9 66		cmp #$66	            CMP #$66 ; end of song
+.161100	d0 06		bne $161108	            BNE CHK_DATA_BLOCK
+.161102	20 65 11	jsr $161165	            JSR VGM_SET_LOOP_POINTERS
+.161105	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE
+.161108					        CHK_DATA_BLOCK
+.161108	c9 67		cmp #$67	            CMP #$67
+.16110a	d0 03		bne $16110f	            BNE DONE_WAIT
+.16110c	20 e1 11	jsr $1611e1	            JSR READ_DATA_BLOCK
+.16110f					    DONE_WAIT
+.16110f	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE
+.161112					WAIT_N_1
+.161112	a9 00		lda #$00	            LDA #0
+.161114	eb		xba		            XBA
+.161115	a5 7f		lda $7f		            LDA COMMAND
+.161117	29 0f		and #$0f	            AND #$F
+.161119	aa		tax		            TAX
+.16111a	e8		inx		            INX ; $7n where we wait n+1
+.16111b	86 8c		stx $8c		            STX WAIT_CNTR
+.16111d	4c 3b 0c	jmp $160c3b	            JMP VGM_LOOP_DONE
+.161120					YM2612_SAMPLE
+.161120	a7 8a		lda [$8a]	            LDA [PCM_OFFSET]
+.161122	8f 2a f2 af	sta $aff22a	            STA OPN2_BASE_ADDRESS + $2A
+.161126	c2 20		rep #$20	                REP #$20        ; set A long
+.161128	a5 8a		lda $8a		            LDA PCM_OFFSET
+.16112a	1a		inc a		            INC A
+.16112b	85 8a		sta $8a		            STA PCM_OFFSET
+.16112d	90 05		bcc $161134	            BCC YMS_WAIT
+.16112f	a5 8c		lda $8c		            LDA PCM_OFFSET + 2
+.161131	1a		inc a		            INC A
+.161132	85 8c		sta $8c		            STA PCM_OFFSET + 2
+.161134					    YMS_WAIT
+.161134	e2 20		sep #$20	                SEP #$20        ; set A short
+.161136	a9 00		lda #$00	            LDA #0
+.161138	eb		xba		            XBA
+.161139	a5 7f		lda $7f		            LDA COMMAND
+.16113b	29 0f		and #$0f	            AND #$F
+.16113d	aa		tax		            TAX
+.16113e	86 8c		stx $8c		            STX WAIT_CNTR
+.161140					    YMS_NOT_ZERO
+.161140	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.161143					DAC_STREAM
+.161143	4c 16 0c	jmp $160c16	            JMP VGM_WRITE_REGISTER
+.161146					VGM_SET_SONG_POINTERS
+.161146	c2 20		rep #$20	                REP #$20        ; set A long
+.161148	a9 00 00	lda #$0000	            LDA #0
+.16114b	85 8c		sta $8c		            STA WAIT_CNTR
+.16114d	a5 86		lda $86		            LDA SONG_START + 2
+.16114f	85 8a		sta $8a		            STA CURRENT_POSITION + 2
+.161151	18		clc		            CLC
+.161152	a0 34 00	ldy #$0034	            LDY #VGM_OFFSET
+.161155	b7 84		lda [$84],y	            LDA [SONG_START],Y
+.161157	69 34 00	adc #$0034	            ADC #VGM_OFFSET
+.16115a	65 84		adc $84		            ADC SONG_START
+.16115c	85 88		sta $88		            STA CURRENT_POSITION
+.16115e	90 02		bcc $161162	            BCC VSP_DONE
+.161160	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161162					    VSP_DONE
+.161162	e2 20		sep #$20	                SEP #$20        ; set A short
+.161164	6b		rtl		            RTL
+.161165					VGM_SET_LOOP_POINTERS
+.161165	c2 20		rep #$20	                REP #$20        ; set A long
+.161167	a9 00 00	lda #$0000	            LDA #0
+.16116a	85 8c		sta $8c		            STA WAIT_CNTR
+.16116c	18		clc		            CLC
+.16116d	a0 1c 00	ldy #$001c	            LDY #LOOP_OFFSET
+.161170	b7 84		lda [$84],y	            LDA [SONG_START],Y
+.161172	f0 29		beq $16119d	            BEQ NO_LOOP_INFO ; if this is zero, assume that the upper word is also 0
+.161174	69 1c 00	adc #$001c	            ADC #LOOP_OFFSET ; add the current position
+.161177	8f 20 01 00	sta $000120	            STA ADDER_A
+.16117b	c8		iny		            INY
+.16117c	c8		iny		            INY
+.16117d	b7 84		lda [$84],y	            LDA [SONG_START],Y
+.16117f	8f 22 01 00	sta $000122	            STA ADDER_A + 2
+.161183	a5 84		lda $84		            LDA SONG_START
+.161185	8f 24 01 00	sta $000124	            STA ADDER_B
+.161189	a5 86		lda $86		            LDA SONG_START + 2
+.16118b	8f 26 01 00	sta $000126	            STA ADDER_B + 2
+.16118f	af 28 01 00	lda $000128	            LDA ADDER_R
+.161193	85 88		sta $88		            STA CURRENT_POSITION
+.161195	af 2a 01 00	lda $00012a	            LDA ADDER_R + 2
+.161199	85 8a		sta $8a		            STA CURRENT_POSITION + 2
+.16119b	80 14		bra $1611b1	            BRA VSL_DONE
+.16119d					    NO_LOOP_INFO
+.16119d	a0 34 00	ldy #$0034	            LDY #VGM_OFFSET
+.1611a0	b7 84		lda [$84],y	            LDA [SONG_START],Y
+.1611a2	69 34 00	adc #$0034	            ADC #VGM_OFFSET
+.1611a5	65 84		adc $84		            ADC SONG_START
+.1611a7	85 88		sta $88		            STA CURRENT_POSITION
+.1611a9	a5 86		lda $86		            LDA SONG_START + 2
+.1611ab	85 8a		sta $8a		            STA CURRENT_POSITION + 2
+.1611ad	90 02		bcc $1611b1	            BCC VSL_DONE
+.1611af	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.1611b1					    VSL_DONE
+.1611b1	e2 20		sep #$20	                SEP #$20        ; set A short
+.1611b3	60		rts		            RTS
+.1611b4					VGM_INIT_TIMERS
+.1611b4	a9 40		lda #$40	            LDA #64
+.1611b6	8f 65 01 00	sta $000165	            STA TIMER0_CMP_L
+.1611ba	a9 01		lda #$01	            LDA #1
+.1611bc	8f 66 01 00	sta $000166	            STA TIMER0_CMP_M
+.1611c0	a9 00		lda #$00	            LDA #0
+.1611c2	8f 67 01 00	sta $000167	            STA TIMER0_CMP_H
+.1611c6	a9 00		lda #$00	            LDA #0    ; set timer0 charge to 0
+.1611c8	8f 61 01 00	sta $000161	            STA TIMER0_CHARGE_L
+.1611cc	8f 62 01 00	sta $000162	            STA TIMER0_CHARGE_M
+.1611d0	8f 63 01 00	sta $000163	            STA TIMER0_CHARGE_H
+.1611d4	a9 01		lda #$01	            LDA #TMR0_CMP_RECLR  ; count up from "CHARGE" value to TIMER_CMP
+.1611d6	8f 64 01 00	sta $000164	            STA TIMER0_CMP_REG
+.1611da	a9 0b		lda #$0b	            LDA #(TMR0_EN | TMR0_UPDWN | TMR0_SCLR)
+.1611dc	8f 60 01 00	sta $000160	            STA TIMER0_CTRL_REG
+.1611e0	6b		rtl		            RTL
+.1611e1					READ_DATA_BLOCK
+.1611e1	a7 88		lda [$88]	            LDA [CURRENT_POSITION] ; should be 66
+.1611e3	c2 20		rep #$20	                REP #$20        ; set A long
+.1611e5	e6 88		inc $88		            INC CURRENT_POSITION
+.1611e7	d0 02		bne $1611eb	            BNE increment_done
+.1611e9	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.1611eb					    increment_done
+.1611eb	e2 20		sep #$20	                SEP #$20        ; set A short
+.1611ed	a7 88		lda [$88]	            LDA  [CURRENT_POSITION] ; should be the type - I expect $C0
+.1611ef	48		pha		            PHA
+.1611f0	c2 20		rep #$20	                REP #$20        ; set A long
+.1611f2	e6 88		inc $88		            INC CURRENT_POSITION
+.1611f4	d0 02		bne $1611f8	            BNE increment_done
+.1611f6	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.1611f8					    increment_done
+.1611f8	e2 20		sep #$20	                SEP #$20        ; set A short
+.1611fa	c2 20		rep #$20	                REP #$20        ; set A long
+.1611fc	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.1611fe	8f 20 01 00	sta $000120	            STA ADDER_A
+.161202	c2 20		rep #$20	                REP #$20        ; set A long
+.161204	e6 88		inc $88		            INC CURRENT_POSITION
+.161206	d0 02		bne $16120a	            BNE increment_done
+.161208	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.16120a					    increment_done
+.16120a	e2 20		sep #$20	                SEP #$20        ; set A short
+.16120c	c2 20		rep #$20	                REP #$20        ; set A long
+.16120e	e6 88		inc $88		            INC CURRENT_POSITION
+.161210	d0 02		bne $161214	            BNE increment_done
+.161212	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161214					    increment_done
+.161214	e2 20		sep #$20	                SEP #$20        ; set A short
+.161216	c2 20		rep #$20	                REP #$20        ; set A long
+.161218	a7 88		lda [$88]	            LDA [CURRENT_POSITION]
+.16121a	8f 22 01 00	sta $000122	            STA ADDER_A + 2
+.16121e	c2 20		rep #$20	                REP #$20        ; set A long
+.161220	e6 88		inc $88		            INC CURRENT_POSITION
+.161222	d0 02		bne $161226	            BNE increment_done
+.161224	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161226					    increment_done
+.161226	e2 20		sep #$20	                SEP #$20        ; set A short
+.161228	c2 20		rep #$20	                REP #$20        ; set A long
+.16122a	e6 88		inc $88		            INC CURRENT_POSITION
+.16122c	d0 02		bne $161230	            BNE increment_done
+.16122e	e6 8a		inc $8a		            INC CURRENT_POSITION + 2
+.161230					    increment_done
+.161230	e2 20		sep #$20	                SEP #$20        ; set A short
+.161232	c2 20		rep #$20	                REP #$20        ; set A long
+.161234	a5 88		lda $88		            LDA CURRENT_POSITION
+.161236	8f 24 01 00	sta $000124	            STA ADDER_B
+.16123a	a5 8a		lda $8a		            LDA CURRENT_POSITION + 2
+.16123c	8f 26 01 00	sta $000126	            STA ADDER_B + 2
+.161240	af 28 01 00	lda $000128	            LDA ADDER_R
+.161244	85 88		sta $88		            STA CURRENT_POSITION
+.161246	af 2a 01 00	lda $00012a	            LDA ADDER_R + 2
+.16124a	85 8a		sta $8a		            STA CURRENT_POSITION + 2
+.16124c	e2 20		sep #$20	                SEP #$20        ; set A short
+.16124e	68		pla		            PLA
+.16124f	f0 04		beq $161255	            BEQ UNCOMPRESSED
+.161251	c9 c0		cmp #$c0	            CMP #$C0
+.161253	d0 1b		bne $161270	            BNE UNKNOWN_DATA_BLOCK
+.161255					    UNCOMPRESSED
+.161255	c2 20		rep #$20	                REP #$20        ; set A long
+.161257	a5 7d		lda $7d		            LDA DATA_STREAM_CNT ; multiply by 4
+.161259	0a		asl a		            ASL A
+.16125a	0a		asl a		            ASL A
+.16125b	aa		tax		            TAX
+.16125c	af 24 01 00	lda $000124	            LDA ADDER_B
+.161260	9f 00 80 00	sta $008000,x	            STA DATA_STREAM_TBL,X
+.161264	af 26 01 00	lda $000126	            LDA ADDER_B + 2
+.161268	9f 02 80 00	sta $008002,x	            STA DATA_STREAM_TBL,X + 2
+.16126c	e6 7d		inc $7d		            INC DATA_STREAM_CNT
+.16126e	e2 20		sep #$20	                SEP #$20        ; set A short
+.161270					    UNKNOWN_DATA_BLOCK
+.161270	60		rts		            RTS
 
 ;******  Return to file: fraggy.asm
 
@@ -3696,7 +3698,7 @@
 =$10					KB_FA                 = $10
 =$20					KB_FE                 = $20
 =$40					KB_PR_LED             = $40
->16126b					.align 256
+>161271					.align 256
 >161300	00 1b 31 32 33 34 35 36		ScanCode_Press_Set1   .text $00, $1B, $31, $32, $33, $34, $35, $36, $37, $38, $39, $30, $2D, $3D, $08, $09    ; $00
 >161308	37 38 39 30 2d 3d 08 09
 >161310	71 77 65 72 74 79 75 69		                      .text $71, $77, $65, $72, $74, $79, $75, $69, $6F, $70, $5B, $5D, $0D, $00, $61, $73    ; $10
